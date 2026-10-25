@@ -26,7 +26,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="form-group">
                         <label for="startDate" class="form-label">Start Date (التاريخ الأول)</label>
-                        <input wire:model="startDate" type="date" id="startDate" class="form-control" 
+                        <input wire:model.live="startDate" type="date" id="startDate" class="form-control" 
                             {{ !$isConfigured ? 'disabled' : '' }}>
                         @error('startDate') 
                             <span class="text-danger-500 text-sm">{{ $message }}</span> 
@@ -35,7 +35,7 @@
 
                     <div class="form-group">
                         <label for="endDate" class="form-label">End Date (التاريخ الثاني)</label>
-                        <input wire:model="endDate" type="date" id="endDate" class="form-control"
+                        <input wire:model.live="endDate" type="date" id="endDate" class="form-control"
                             {{ !$isConfigured ? 'disabled' : '' }}>
                         @error('endDate') 
                             <span class="text-danger-500 text-sm">{{ $message }}</span> 
@@ -96,8 +96,9 @@
 
     @push('scripts')
     <script>
-        Livewire.on('downloadReport', (url) => {
-            window.open(url, '_blank');
+        Livewire.on('downloadReport', (payload) => {
+            const url = typeof payload === 'string' ? payload : (payload?.url ?? payload?.[0]);
+            if (url) window.open(url, '_blank');
         });
     </script>
     @endpush

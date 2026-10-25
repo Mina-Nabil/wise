@@ -220,7 +220,7 @@
 
                                         <div class="checkbox-area">
                                             <label class="inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" wire:model="selectAll" class="hidden"
+                                                <input type="checkbox" wire:model.live="selectAll" class="hidden"
                                                     id="select-all">
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
@@ -277,7 +277,7 @@
                                         <td class="table-td">
                                             <div class="checkbox-area">
                                                 <label class="inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" wire:model="selectedEntries"
+                                                    <input type="checkbox" wire:model.live="selectedEntries"
                                                         value="{{ $entry->id }}" class="hidden" id="select-all">
                                                     <span
                                                         class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
@@ -481,7 +481,7 @@
                                                                 wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})"
                                                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                                                             <input type="file" class="hidden"
-                                                                wire:model="accountDoc"
+                                                                wire:model.live="accountDoc"
                                                                 wire:change="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">
                                                         </label>
                                                     @else
@@ -496,7 +496,7 @@
                                                                 wire:target="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})"
                                                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                                                             <input type="file" class="hidden"
-                                                                wire:model="accountDoc"
+                                                                wire:model.live="accountDoc"
                                                                 wire:change="uploadAccountDoc({{ $entry->id }}, {{ $childAccount->id }})">
                                                         </label>
                                                     @endif
@@ -582,7 +582,7 @@
                                         <label for="searchAccountText" class="form-label">Search</label>
                                         <input id="searchAccountText" placeholder="search by name..." type="text"
                                             class="form-control @error('searchAccountText') !border-danger-500 @enderror"
-                                            wire:model="searchAccountText">
+                                            wire:model.live="searchAccountText">
                                     </div>
 
                                     <div>
@@ -991,7 +991,7 @@
                                 </label>
                                 <textarea id="actionComment" rows="3"
                                     class="form-control mt-2 w-full {{ $errors->has('actionComment') ? '!border-danger-500' : '' }}"
-                                    wire:model.defer="actionComment"
+                                    wire:model="actionComment"
                                     placeholder="{{ $isRevert ? 'Why is this entry being reverted?' : 'Add a note about this review' }}"></textarea>
                                 @error('actionComment')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

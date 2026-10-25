@@ -21,7 +21,7 @@
             <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg"
                 icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                wire:model="searchText">
+                wire:model.live="searchText">
         </header>
 
         <div class="tab-content mt-6" id="pills-tabContent">
@@ -194,7 +194,7 @@
                                 <div class="from-group mb-5">
                                     <label for="name" class="form-label">Name</label>
                                     <input type="text" name="name" class="form-control mt-2 w-full"
-                                        wire:model.defer="name" max=100>
+                                        wire:model="name" max=100>
                                     @error('name')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -203,7 +203,7 @@
 
                                 <div class="from-group">
                                     <label for="desc" class="form-label">Description</label>
-                                    <textarea name="desc" class="form-control mt-2 w-full" wire:model.defer="desc"></textarea>
+                                    <textarea name="desc" class="form-control mt-2 w-full" wire:model="desc"></textarea>
                                     @error('desc')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -221,7 +221,7 @@
                                             @endphp
                                             <div class="card-body rounded-md bg-[#E5F9FF] dark:bg-slate-700 shadow-base mb-5 p-2">
                                                 <div class="input-area col-span-2">
-                                                    <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="accounts.{{ $index }}.account_id">
+                                                    <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="accounts.{{ $index }}.account_id">
                                                         <option value="">Select Account</option>
                                                         @foreach ($accounts_list as $account)
                                                             {{ $helper->printAccountChildren('', $account, $printed_arr) }}
@@ -232,12 +232,12 @@
                                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-3">
                                                     <!-- Amount -->
                                                     <div class="input-area">
-                                                        <input type="number" class="form-control w-full mt-2 @error('accounts.' . $index . '.limit') !border-danger-500 @enderror" wire:model.defer="accounts.{{ $index }}.limit" placeholder="Limit">
+                                                        <input type="number" class="form-control w-full mt-2 @error('accounts.' . $index . '.limit') !border-danger-500 @enderror" wire:model="accounts.{{ $index }}.limit" placeholder="Limit">
                                                     </div>
 
                                                     <!-- Currency -->
                                                     <div class="input-area">
-                                                        <select class="form-control w-full mt-2 @error('accounts.' . $index . '.nature') !border-danger-500 @enderror" wire:model.defer="accounts.{{ $index }}.nature">
+                                                        <select class="form-control w-full mt-2 @error('accounts.' . $index . '.nature') !border-danger-500 @enderror" wire:model="accounts.{{ $index }}.nature">
                                                             @foreach ($NATURES as $NATURE)
                                                                 <option value="{{ $NATURE }}">{{ ucwords($NATURE) }}</option>
                                                             @endforeach
@@ -335,7 +335,7 @@
                                     
                                     <label for="name" class="form-label">Allowed Users</label>
                                     <div class="w-full">
-                                        <select wire:model.defer="loadedUsers" id="multiSelect" multiple
+                                        <select wire:model="loadedUsers" id="multiSelect" multiple
                                             aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2"
                                             multiple="multiple" style="height: 250px">
                                             @foreach ($assistants as $a)

@@ -111,7 +111,7 @@ class NewMeeting extends Component
         if ($res && $fres) {
             $this->alert('success', 'Meeting Added!');
             // dd($res->id);
-            $this->emit('dataReceived', ['clientTypeRecieved' => $this->meetingType , 'clientIdRecieved' => $res->id]);
+            $this->dispatch('dataReceived', data: ['clientTypeRecieved' => $this->meetingType , 'clientIdRecieved' => $res->id]);
             $this->toggleAddMeeting();
         } else {
             $this->alert('failed', 'server error');

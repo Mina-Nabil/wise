@@ -77,7 +77,7 @@
                             <iconify-icon wire:loading class="loading-icon text-lg"
                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model="search">
+                                wire:model.live="search">
 
 
                         </header>
@@ -218,9 +218,10 @@
                                                                 $currentDate = now();
                                                                 $startDate = $task->created_at;
                                                                 $dueDate = $task->due;
-                                                                $totalDuration = $startDate->diffInSeconds($dueDate);
+                                                                $totalDuration = $startDate->diffInSeconds($dueDate, true);
                                                                 $elapsedDuration = $startDate->diffInSeconds(
                                                                     $currentDate,
+                                                                    true,
                                                                 );
                                                                 $percentagePassed =
                                                                     ($elapsedDuration / $totalDuration) * 100;
@@ -374,7 +375,7 @@
                             <div class="from-group">
                                 <label for="Ecreator_id" class="form-label">Creator</label>
                                 <select name="Ecreator_id" id="Ecreator_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Ecreator_id">
+                                    wire:model="Ecreator_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -437,7 +438,7 @@
                             <div class="from-group">
                                 <label for="Eassignee_id" class="form-label">Assignee</label>
                                 <select name="Eassignee_id" id="Eassignee_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Eassignee_id">
+                                    wire:model="Eassignee_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -509,7 +510,7 @@
                                 <label for="Estart_from" class="form-label">Start from</label>
                                 <input name="Estart_from" type="date"
                                     class="form-control mt-2 w-full @error('Estart_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Estart_from">
+                                    wire:model="Estart_from">
                                 @error('Estart_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -519,7 +520,7 @@
                                 <label for="Estart_to" class="form-label">Start to</label>
                                 <input name="Estart_to" type="date"
                                     class="form-control mt-2 w-full @error('Estart_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Estart_to">
+                                    wire:model="Estart_to">
                                 @error('Estart_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -576,7 +577,7 @@
                                 <label for="Edue_from" class="form-label">Due from</label>
                                 <input name="Edue_from" type="date"
                                     class="form-control mt-2 w-full @error('Edue_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Edue_from">
+                                    wire:model="Edue_from">
                                 @error('Edue_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -586,7 +587,7 @@
                                 <label for="Edue_to" class="form-label">Due to</label>
                                 <input name="Edue_to" type="date"
                                     class="form-control mt-2 w-full @error('Edue_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Edue_to">
+                                    wire:model="Edue_to">
                                 @error('Edue_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

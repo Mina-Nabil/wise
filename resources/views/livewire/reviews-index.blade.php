@@ -133,7 +133,7 @@
             <iconify-icon wire:loading wire:target="search" class="loading-icon text-lg"
                 icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search reviews..."
-                wire:model="search">
+                wire:model.live="search">
         </header>
 
         <!-- Active Filters Display -->
@@ -653,7 +653,7 @@
                                                 @can('delete', $review)
                                                     <li>
                                                         <button
-                                                            wire:click="$emit('showConfirmation', 'Are you sure you want to delete this review?', 'red', 'deleteReview', {{ $review->id }})"
+                                                            wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to delete this review?', color: 'red', action: 'deleteReview', reviewId: {{ $review->id }} })"
                                                             class="text-red-600 dark:text-red-400 block font-Inter font-normal px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:text-white w-full text-left">
                                                             <iconify-icon class="text-lg ltr:mr-2 rtl:ml-2"
                                                                 icon="heroicons:trash-20-solid"></iconify-icon>
@@ -729,12 +729,12 @@
                             <div class="from-group">
                                 <label for="Ecreated_from" class="form-label">Created from</label>
                                 <input name="Ecreated_from" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Ecreated_from">
+                                    wire:model="Ecreated_from">
                             </div>
                             <div class="from-group">
                                 <label for="Ecreated_to" class="form-label">Created to</label>
                                 <input name="Ecreated_to" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Ecreated_to">
+                                    wire:model="Ecreated_to">
                             </div>
                         </div>
                         <div
@@ -774,12 +774,12 @@
                             <div class="from-group">
                                 <label for="Eemployee_rating_from" class="form-label">Rating from (0-10)</label>
                                 <input name="Eemployee_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Eemployee_rating_from">
+                                    wire:model="Eemployee_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Eemployee_rating_to" class="form-label">Rating to (0-10)</label>
                                 <input name="Eemployee_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Eemployee_rating_to">
+                                    wire:model="Eemployee_rating_to">
                             </div>
                         </div>
                         <div
@@ -819,12 +819,12 @@
                             <div class="from-group">
                                 <label for="Eservice_quality_rating_from" class="form-label">Rating from (0-10)</label>
                                 <input name="Eservice_quality_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Eservice_quality_rating_from">
+                                    wire:model="Eservice_quality_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Eservice_quality_rating_to" class="form-label">Rating to (0-10)</label>
                                 <input name="Eservice_quality_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Eservice_quality_rating_to">
+                                    wire:model="Eservice_quality_rating_to">
                             </div>
                         </div>
                         <div
@@ -864,12 +864,12 @@
                             <div class="from-group">
                                 <label for="Epricing_rating_from" class="form-label">Rating from (0-10)</label>
                                 <input name="Epricing_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Epricing_rating_from">
+                                    wire:model="Epricing_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Epricing_rating_to" class="form-label">Rating to (0-10)</label>
                                 <input name="Epricing_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Epricing_rating_to">
+                                    wire:model="Epricing_rating_to">
                             </div>
                         </div>
                         <div
@@ -909,12 +909,12 @@
                             <div class="from-group">
                                 <label for="Einsurance_company_rating_from" class="form-label">Rating from (0-10)</label>
                                 <input name="Einsurance_company_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Einsurance_company_rating_from">
+                                    wire:model="Einsurance_company_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Einsurance_company_rating_to" class="form-label">Rating to (0-10)</label>
                                 <input name="Einsurance_company_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full"
-                                    wire:model.defer="Einsurance_company_rating_to">
+                                    wire:model="Einsurance_company_rating_to">
                             </div>
                         </div>
                         <div
@@ -947,11 +947,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Eprocessing_time_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Eprocessing_time_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprocessing_time_rating_from">
+                                <input name="Eprocessing_time_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eprocessing_time_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Eprocessing_time_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Eprocessing_time_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprocessing_time_rating_to">
+                                <input name="Eprocessing_time_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eprocessing_time_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -980,11 +980,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Ecollection_channel_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Ecollection_channel_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ecollection_channel_rating_from">
+                                <input name="Ecollection_channel_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Ecollection_channel_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Ecollection_channel_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Ecollection_channel_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ecollection_channel_rating_to">
+                                <input name="Ecollection_channel_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Ecollection_channel_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1013,11 +1013,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Epolicy_conditions_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Epolicy_conditions_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Epolicy_conditions_rating_from">
+                                <input name="Epolicy_conditions_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Epolicy_conditions_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Epolicy_conditions_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Epolicy_conditions_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Epolicy_conditions_rating_to">
+                                <input name="Epolicy_conditions_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Epolicy_conditions_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1046,11 +1046,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Eprovider_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Eprovider_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprovider_rating_from">
+                                <input name="Eprovider_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eprovider_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Eprovider_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Eprovider_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eprovider_rating_to">
+                                <input name="Eprovider_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eprovider_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1079,11 +1079,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Eclaims_specialist_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Eclaims_specialist_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eclaims_specialist_rating_from">
+                                <input name="Eclaims_specialist_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eclaims_specialist_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Eclaims_specialist_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Eclaims_specialist_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Eclaims_specialist_rating_to">
+                                <input name="Eclaims_specialist_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Eclaims_specialist_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1112,11 +1112,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Ewise_rating_from" class="form-label">Rating from (0-10)</label>
-                                <input name="Ewise_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ewise_rating_from">
+                                <input name="Ewise_rating_from" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Ewise_rating_from">
                             </div>
                             <div class="from-group">
                                 <label for="Ewise_rating_to" class="form-label">Rating to (0-10)</label>
-                                <input name="Ewise_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model.defer="Ewise_rating_to">
+                                <input name="Ewise_rating_to" type="number" step="0.1" min="0" max="10" class="form-control mt-2 w-full" wire:model="Ewise_rating_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1145,7 +1145,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="Eno_answer" class="form-label">Call Status</label>
-                                <select name="Eno_answer" class="form-control mt-2 w-full" wire:model.defer="Eno_answer">
+                                <select name="Eno_answer" class="form-control mt-2 w-full" wire:model="Eno_answer">
                                     <option value="">-- Select Status --</option>
                                     <option value="__null__">Not Yet Called</option>
                                     <option value="0">No Answer</option>
@@ -1205,13 +1205,13 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_insurance_company_rating"
+                                                wire:model="form_insurance_company_rating"
                                                 placeholder="e.g. 8.5">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_insurance_company_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_insurance_company_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_insurance_company_comment"
                                                 placeholder="Enter feedback about the insurance company..."></textarea>
                                         </div>
                                     </div>
@@ -1225,11 +1225,11 @@
                                             <label for="form_provider_rating" class="form-label">Rating (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_provider_rating" placeholder="e.g. 9.0">
+                                                wire:model="form_provider_rating" placeholder="e.g. 9.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_provider_comment" class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_provider_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_provider_comment"
                                                 placeholder="Enter feedback about the provider..."></textarea>
                                         </div>
                                     </div>
@@ -1244,13 +1244,13 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_claims_specialist_rating"
+                                                wire:model="form_claims_specialist_rating"
                                                 placeholder="e.g. 8.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_claims_specialist_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_claims_specialist_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_claims_specialist_comment"
                                                 placeholder="Enter feedback about the claims specialist..."></textarea>
                                         </div>
                                     </div>
@@ -1263,12 +1263,12 @@
                                         <div class="from-group">
                                             <label for="form_wise_rating" class="form-label">Rating (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
-                                                class="form-control mt-2 w-full" wire:model.defer="form_wise_rating"
+                                                class="form-control mt-2 w-full" wire:model="form_wise_rating"
                                                 placeholder="e.g. 7.5">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_wise_comment" class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_wise_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_wise_comment"
                                                 placeholder="Enter feedback about Wise..."></textarea>
                                         </div>
                                     </div>
@@ -1284,11 +1284,11 @@
                                             <label for="form_employee_rating" class="form-label">Rating (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_employee_rating" placeholder="e.g. 8.5">
+                                                wire:model="form_employee_rating" placeholder="e.g. 8.5">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_employee_comment" class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_employee_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_employee_comment"
                                                 placeholder="Enter feedback about the employee..."></textarea>
                                         </div>
                                     </div>
@@ -1303,13 +1303,13 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_policy_conditions_rating"
+                                                wire:model="form_policy_conditions_rating"
                                                 placeholder="e.g. 9.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_policy_conditions_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_policy_conditions_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_policy_conditions_comment"
                                                 placeholder="Enter feedback about policy conditions..."></textarea>
                                         </div>
                                     </div>
@@ -1324,12 +1324,12 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_service_quality_rating" placeholder="e.g. 8.0">
+                                                wire:model="form_service_quality_rating" placeholder="e.g. 8.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_service_quality_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_service_quality_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_service_quality_comment"
                                                 placeholder="Enter feedback about service quality..."></textarea>
                                         </div>
                                     </div>
@@ -1343,11 +1343,11 @@
                                             <label for="form_pricing_rating" class="form-label">Rating (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_pricing_rating" placeholder="e.g. 7.5">
+                                                wire:model="form_pricing_rating" placeholder="e.g. 7.5">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_pricing_comment" class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_pricing_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_pricing_comment"
                                                 placeholder="Enter feedback about pricing..."></textarea>
                                         </div>
                                     </div>
@@ -1362,12 +1362,12 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_processing_time_rating" placeholder="e.g. 8.0">
+                                                wire:model="form_processing_time_rating" placeholder="e.g. 8.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_processing_time_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_processing_time_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_processing_time_comment"
                                                 placeholder="Enter feedback about processing time..."></textarea>
                                         </div>
                                     </div>
@@ -1383,13 +1383,13 @@
                                                 (0-10)</label>
                                             <input type="number" step="0.1" min="0" max="10"
                                                 class="form-control mt-2 w-full"
-                                                wire:model.defer="form_collection_channel_rating"
+                                                wire:model="form_collection_channel_rating"
                                                 placeholder="e.g. 9.0">
                                         </div>
                                         <div class="from-group">
                                             <label for="form_collection_channel_comment"
                                                 class="form-label">Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_collection_channel_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_collection_channel_comment"
                                                 placeholder="Enter feedback about collection channel..."></textarea>
                                         </div>
                                     </div>
@@ -1401,7 +1401,7 @@
                                     <div class="from-group">
                                         <label for="form_suggestions" class="form-label">Suggestions for
                                             Improvement</label>
-                                        <textarea class="form-control mt-2 w-full" rows="3" wire:model.defer="form_suggestions"
+                                        <textarea class="form-control mt-2 w-full" rows="3" wire:model="form_suggestions"
                                             placeholder="Enter your suggestions for improvement..."></textarea>
                                     </div>
                                 </div>
@@ -1414,7 +1414,7 @@
                                             <label for="form_is_referred" class="form-label">Would you refer our
                                                 service?</label>
                                             <select class="form-control mt-2 w-full"
-                                                wire:model.defer="form_is_referred">
+                                                wire:model="form_is_referred">
                                                 <option value="">Select...</option>
                                                 <option value="1">Yes</option>
                                                 <option value="0">No</option>
@@ -1423,7 +1423,7 @@
                                         <div class="from-group">
                                             <label for="form_referral_comment" class="form-label">Referral
                                                 Comment</label>
-                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model.defer="form_referral_comment"
+                                            <textarea class="form-control mt-2 w-full" rows="2" wire:model="form_referral_comment"
                                                 placeholder="Enter referral comment..."></textarea>
                                         </div>
                                     </div>
@@ -1515,7 +1515,7 @@
                             <!-- Manager Comment Section -->
                             <div class="from-group">
                                 <label for="manager_comment" class="form-label">Manager Comment</label>
-                                <textarea class="form-control mt-2 w-full" rows="4" wire:model.defer="manager_comment"
+                                <textarea class="form-control mt-2 w-full" rows="4" wire:model="manager_comment"
                                     placeholder="Enter your manager review comment..."></textarea>
                                 <small class="text-slate-500">Optional: Add your review and feedback about this
                                     review.</small>
@@ -1603,7 +1603,7 @@
                             <!-- Claim Manager Comment Section -->
                             <div class="from-group">
                                 <label for="claim_manager_comment" class="form-label">Claim Manager Comment</label>
-                                <textarea class="form-control mt-2 w-full" rows="4" wire:model.defer="claim_manager_comment"
+                                <textarea class="form-control mt-2 w-full" rows="4" wire:model="claim_manager_comment"
                                     placeholder="Enter your claim manager review comment..."></textarea>
                                 <small class="text-slate-500">Optional: Add your review and feedback about this claim
                                     review.</small>

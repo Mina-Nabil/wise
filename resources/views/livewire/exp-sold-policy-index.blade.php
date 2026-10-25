@@ -38,7 +38,7 @@
                         <div class="card">
                             <header class="card-header cust-card-header noborder justify-start gap-2">
                                 <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-                                <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+                                <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="search">
                                 
                                 @if ($isCancelledFilter !== null)
                                     <button class="btn inline-flex justify-center btn-dark btn-sm">

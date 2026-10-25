@@ -20,7 +20,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -232,7 +232,7 @@
                             <div class="from-group">
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Title</label>
-                                    <input id="lastName" type="text" class="form-control @error('followupTitle') !border-danger-500 @enderror" wire:model.defer="followupTitle">
+                                    <input id="lastName" type="text" class="form-control @error('followupTitle') !border-danger-500 @enderror" wire:model="followupTitle">
                                 </div>
                                 @error('followupTitle')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -241,14 +241,14 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Call Date</label>
-                                        <input id="lastName" type="date" class="form-control @error('followupCallDate') !border-danger-500 @enderror" wire:model.defer="followupCallDate">
+                                        <input id="lastName" type="date" class="form-control @error('followupCallDate') !border-danger-500 @enderror" wire:model="followupCallDate">
                                     </div>
                                     @error('followupCallDate')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                     <div class="input-area">
                                         <label for="firstName" class="form-label"> Time</label>
-                                        <input id="lastName" type="time" class="form-control @error('followupCallTime') !border-danger-500 @enderror" wire:model.defer="followupCallTime">
+                                        <input id="lastName" type="time" class="form-control @error('followupCallTime') !border-danger-500 @enderror" wire:model="followupCallTime">
                                     </div>
                                     @error('followupCallTime')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -257,7 +257,7 @@
 
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Description</label>
-                                    <input id="lastName" type="text" class="form-control @error('followupDesc') !border-danger-500 @enderror" wire:model.defer="followupDesc">
+                                    <input id="lastName" type="text" class="form-control @error('followupDesc') !border-danger-500 @enderror" wire:model="followupDesc">
                                 </div>
                                 @error('followupDesc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -267,7 +267,7 @@
                                     <label for="campaignId" class="form-label">Campaign</label>
                                     <select name="campaignId" id="campaignId"
                                         class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
-                                        wire:model.defer="campaignId">
+                                        wire:model="campaignId">
                                         <option value="">Keep Current Campaign</option>
                                         @foreach ($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
@@ -316,7 +316,7 @@
                         <div class="from-group">
                             <div class="input-area">
                                 <label for="firstName" class="form-label">Leave a note...</label>
-                                <input id="lastName" type="text" class="form-control @error('followupTitle') !border-danger-500 @enderror" wire:model.defer="note">
+                                <input id="lastName" type="text" class="form-control @error('followupTitle') !border-danger-500 @enderror" wire:model="note">
                             </div>
                             @error('note')
                                 <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

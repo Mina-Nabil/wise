@@ -272,7 +272,7 @@ class SalesCommissionsReport extends Component
             return;
         }
         FacadesSession::put('commissions', $commissions);
-        $this->dispatchBrowserEvent('openNewTab', ['url' => route('comm.profile.show', $commProfileID)]);
+        $this->dispatch('openNewTab', url: route('comm.profile.show', $commProfileID));
         return;
     }
 

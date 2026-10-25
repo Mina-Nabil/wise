@@ -128,7 +128,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search using client name, email or phone number" wire:model="search">
+                placeholder="Search using client name, email or phone number" wire:model.live="search">
         </header>
 
         <header class="card-header cust-card-header noborder" style="display: block;">
@@ -410,7 +410,7 @@
 
                                         <td class="table-td " wire:click.stop>
                                             <input type="checkbox" class="cursor-pointer"
-                                                value="{{ $offer->id }}" wire:model="selectedOfferIds">
+                                                value="{{ $offer->id }}" wire:model.live="selectedOfferIds">
                                         </td>
 
                                         <td class="table-td ">
@@ -599,7 +599,7 @@
                                 <label for="Efrom" class="form-label">Due Date from</label>
                                 <input name="Efrom" type="date"
                                     class="form-control mt-2 w-full @error('Efrom') !border-danger-500 @enderror"
-                                    wire:model.defer="Efrom">
+                                    wire:model="Efrom">
                                 @error('Efrom')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -609,7 +609,7 @@
                                 <label for="Eto" class="form-label">Due Date to</label>
                                 <input name="Eto" type="date"
                                     class="form-control mt-2 w-full @error('Eto') !border-danger-500 @enderror"
-                                    wire:model.defer="Eto">
+                                    wire:model="Eto">
                                 @error('Eto')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -667,7 +667,7 @@
                                 <label for="EExpiryfrom" class="form-label">Expiry Date from</label>
                                 <input name="EExpiryfrom" type="date"
                                     class="form-control mt-2 w-full @error('EExpiryfrom') !border-danger-500 @enderror"
-                                    wire:model.defer="EExpiryfrom">
+                                    wire:model="EExpiryfrom">
                                 @error('EExpiryfrom')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -677,7 +677,7 @@
                                 <label for="EExpiryto" class="form-label">Expiry Date to</label>
                                 <input name="EExpiryto" type="date"
                                     class="form-control mt-2 w-full @error('EExpiryto') !border-danger-500 @enderror"
-                                    wire:model.defer="EExpiryto">
+                                    wire:model="EExpiryto">
                                 @error('EExpiryto')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -733,7 +733,7 @@
                             <div class="from-group">
                                 <label for="Eline_of_business" class="form-label">Line of business</label>
                                 <select name="Eline_of_business" id="Eline_of_business"
-                                    class="form-control w-full mt-2" wire:model.defer="Eline_of_business">
+                                    class="form-control w-full mt-2" wire:model="Eline_of_business">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -798,7 +798,7 @@
                                     <div class="checkbox-area">
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox" class="hidden" value="{{ $STATUS }}"
-                                                name="checkbox" wire:model="Estatuses">
+                                                name="checkbox" wire:model.live="Estatuses">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                 <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -861,7 +861,7 @@
                             <div class="from-group">
                                 <label for="Esub_status" class="form-label">Select sub-status</label>
                                 <select name="Esub_status" id="Esub_status" class="form-control w-full mt-2"
-                                    wire:model.defer="Esub_status">
+                                    wire:model="Esub_status">
                                     <option value="">Any</option>
                                     @foreach ($SUB_STATUSES as $PARENT_STATUS => $VALUES)
                                         <optgroup label="{{ ucwords(str_replace('_', ' ', $PARENT_STATUS)) }}">
@@ -927,7 +927,7 @@
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox" class="hidden"
                                                 value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
-                                                name="checkbox" wire:model.defer="Eprofiles">
+                                                name="checkbox" wire:model="Eprofiles">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                 <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -991,7 +991,7 @@
                                     class="loading-icon text-lg pt-2"
                                     icon="line-md:loading-twotone-loop"></iconify-icon>
                                 <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                    wire:model="usersSearchText">
+                                    wire:model.live="usersSearchText">
 
                             </div>
 
@@ -1020,7 +1020,7 @@
                                                 style="position: sticky; left: -25px;  z-index: 10;">
                                                 <div wire:key="{{ $user->id }}" class="checkbox-area">
                                                     <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="checkbox" wire:model="selectedCreators"
+                                                        <input type="checkbox" wire:model.live="selectedCreators"
                                                             value="{{ $user->id }}" class="hidden">
                                                         <span
                                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
@@ -1092,7 +1092,7 @@
                             <div class="from-group">
                                 <label for="Eassignee_id" class="form-label">Assignee</label>
                                 <select name="Eassignee_id" id="Eassignee_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Eassignee_id">
+                                    wire:model="Eassignee_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -1163,7 +1163,7 @@
                             <div class="from-group">
                                 <label for="Eclosed_by_id" class="form-label">Closed By</label>
                                 <select name="Eclosed_by_id" id="Eassignee_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Eclosed_by_id">
+                                    wire:model="Eclosed_by_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -1226,7 +1226,7 @@
                                 <label for="Evalue_from" class="form-label">Value from</label>
                                 <input name="Evalue_from" type="number"
                                     class="form-control mt-2 w-full @error('Evalue_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Evalue_from">
+                                    wire:model="Evalue_from">
                                 @error('Evalue_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1236,7 +1236,7 @@
                                 <label for="Evalue_to" class="form-label">Value to</label>
                                 <input name="Evalue_to" type="number"
                                     class="form-control mt-2 w-full @error('Evalue_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Evalue_to">
+                                    wire:model="Evalue_to">
                                 @error('Evalue_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1303,7 +1303,7 @@
                                         icon="line-md:loading-twotone-loop"></iconify-icon>
                                 </label>
                                 <input type="text" placeholder="Search by policy, company or business..."
-                                    class="form-control mt-2 w-full" wire:model="policySearchText">
+                                    class="form-control mt-2 w-full" wire:model.live="policySearchText">
                             </div>
                             <div class="text-sm space-y-1">
                                 @forelse ($policyResults as $policy)
@@ -1376,7 +1376,7 @@
                                         icon="line-md:loading-twotone-loop"></iconify-icon>
                                 </label>
                                 <input type="text" placeholder="Search by company name..."
-                                    class="form-control mt-2 w-full" wire:model="companySearchText">
+                                    class="form-control mt-2 w-full" wire:model.live="companySearchText">
                             </div>
                             <div class="text-sm space-y-1">
                                 @forelse ($companyResults as $company)

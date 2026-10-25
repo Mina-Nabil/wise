@@ -212,7 +212,7 @@
                                         <tr>
                                             <td class="table-td">
                                                 <input type="checkbox" class="form-checkbox"
-                                                    value="{{ $commission->id }}" wire:model="selectedCommissions">
+                                                    value="{{ $commission->id }}" wire:model.live="selectedCommissions">
                                             </td>
                                             <td class="table-td">
                                                 {{ $commission->sold_policy?->policy_number ?? 'N/A' }}
@@ -328,7 +328,7 @@
                             <div class="from-group">
                                 <label for="searchProfile" class="form-label">Search Commission Profile</label>
                                 <input name="searchProfile" type="text" class="form-control mt-2 w-full"
-                                    wire:model="searchProfile">
+                                    wire:model.live="searchProfile">
                             </div>
 
                             <div class="max-h-[45vh] overflow-y-auto">
@@ -415,7 +415,7 @@
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="checkbox" class="hidden" value="{{ $status }}"
-                                            wire:model.defer="Estatuses">
+                                            wire:model="Estatuses">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                             <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
@@ -478,11 +478,11 @@
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="form-label">From</label>
-                                    <input type="date" class="form-control" wire:model.defer="Estart_from">
+                                    <input type="date" class="form-control" wire:model="Estart_from">
                                 </div>
                                 <div>
                                     <label class="form-label">To</label>
-                                    <input type="date" class="form-control" wire:model.defer="Estart_to">
+                                    <input type="date" class="form-control" wire:model="Estart_to">
                                 </div>
                             </div>
                         </div>
@@ -536,11 +536,11 @@
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="form-label">From</label>
-                                    <input type="date" class="form-control" wire:model.defer="Epayment_date_from">
+                                    <input type="date" class="form-control" wire:model="Epayment_date_from">
                                 </div>
                                 <div>
                                     <label class="form-label">To</label>
-                                    <input type="date" class="form-control" wire:model.defer="Epayment_date_to">
+                                    <input type="date" class="form-control" wire:model="Epayment_date_to">
                                 </div>
                             </div>
                         </div>
@@ -594,12 +594,12 @@
                                 <div>
                                     <label class="form-label">From</label>
                                     <input type="date" class="form-control"
-                                        wire:model.defer="Eclient_payment_date_from">
+                                        wire:model="Eclient_payment_date_from">
                                 </div>
                                 <div>
                                     <label class="form-label">To</label>
                                     <input type="date" class="form-control"
-                                        wire:model.defer="Eclient_payment_date_to">
+                                        wire:model="Eclient_payment_date_to">
                                 </div>
                             </div>
                         </div>
@@ -653,12 +653,12 @@
                                 <div>
                                     <label class="form-label">From</label>
                                     <input type="date" class="form-control"
-                                        wire:model.defer="Ecollection_date_from">
+                                        wire:model="Ecollection_date_from">
                                 </div>
                                 <div>
                                     <label class="form-label">To</label>
                                     <input type="date" class="form-control"
-                                        wire:model.defer="Ecollection_date_to">
+                                        wire:model="Ecollection_date_to">
                                 </div>
                             </div>
                         </div>

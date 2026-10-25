@@ -68,7 +68,7 @@
 
                 <!-- Search -->
                 <div class="filter-group col-span-3">
-                    <input type="text" class="form-control" placeholder="Search by serial or creator..." wire:model="searchText">
+                    <input type="text" class="form-control" placeholder="Search by serial or creator..." wire:model.live="searchText">
                 </div>
             </div>
 
@@ -178,11 +178,11 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="form-label">From Date</label>
-                                    <input type="date" class="form-control" wire:model="Ecreated_from">
+                                    <input type="date" class="form-control" wire:model.live="Ecreated_from">
                                 </div>
                                 <div>
                                     <label class="form-label">To Date</label>
-                                    <input type="date" class="form-control" wire:model="Ecreated_to">
+                                    <input type="date" class="form-control" wire:model.live="Ecreated_to">
                                 </div>
                             </div>
                         </div>
@@ -260,14 +260,14 @@
                         </div>
                         <!-- Modal body -->
                         <div class="p-6 space-y-4">
-                            <input type="text" class="form-control" placeholder="Search companies..." wire:model="searchCompany">
+                            <input type="text" class="form-control" placeholder="Search companies..." wire:model.live="searchCompany">
                             <div class="space-y-2">
                                 @foreach($companies as $company)
                                     <div class="flex items-center">
                                         <input type="checkbox" 
                                                class="form-checkbox" 
                                                value="{{ $company->id }}"
-                                               wire:model="Ecompany_ids"
+                                               wire:model.live="Ecompany_ids"
                                         >
                                         <label class="ml-2">{{ $company->name }}</label>
                                     </div>

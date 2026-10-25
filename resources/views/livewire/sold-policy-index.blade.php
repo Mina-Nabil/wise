@@ -31,7 +31,7 @@
 
                             <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" class="hidden" value="all" wire:model="isPaidCB">
+                                    <input type="radio" class="hidden" value="all" wire:model.live="isPaidCB">
                                     <span
                                         class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                               duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -41,7 +41,7 @@
 
                             <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" class="hidden" value="isPaid" wire:model="isPaidCB">
+                                    <input type="radio" class="hidden" value="isPaid" wire:model.live="isPaidCB">
                                     <span
                                         class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                               duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -51,7 +51,7 @@
 
                             <div class="secondary-radio pb-2">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="radio" class="hidden" value="notPaid" wire:model="isPaidCB">
+                                    <input type="radio" class="hidden" value="notPaid" wire:model.live="isPaidCB">
                                     <span
                                         class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                                               duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -61,7 +61,7 @@
 
                             <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5"
                                 style="width:300px" id="range-picker" data-mode="range" value="" type="text"
-                                readonly="readonly" wire:model="dateRange">
+                                readonly="readonly" wire:model.live="dateRange">
 
                         </div>
 
@@ -72,7 +72,7 @@
                             <iconify-icon wire:loading wire:target='search' class="loading-icon text-lg"
                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model.debounce.800ms="search">
+                                wire:model.live.debounce.800ms="search">
                         </header>
 
                         <div class="tab-content mt-6" id="pills-tabContent">
@@ -369,7 +369,7 @@
                                         @else
                                             <select
                                                 class="form-control w-full mt-2 @error('clientType') !border-danger-500 @enderror"
-                                                wire:model="clientType">
+                                                wire:model.live="clientType">
                                                 <option value="Customer"
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     Customer</option>
@@ -395,7 +395,7 @@
                                             {{ $selectedClientName }}
                                         @else
                                             <input placeholder="Search..." type="text" class="form-control"
-                                                wire:model="searchClient">
+                                                wire:model.live="searchClient">
                                         @endif
 
                                     </div>
@@ -433,7 +433,7 @@
                                         {{ $selectedPolicyName }}
                                     @else
                                         <input placeholder="Search..." type="text" class="form-control"
-                                            wire:model="searchPolicy">
+                                            wire:model.live="searchPolicy">
                                     @endif
                                 </div>
                             </div>
@@ -456,7 +456,7 @@
                             @else
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Item title</label>
-                                    <input type="text" class="form-control mt-2 w-full" wire:model.defer="item_title">
+                                    <input type="text" class="form-control mt-2 w-full" wire:model="item_title">
                                     @error('item_title')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -466,7 +466,7 @@
                                 <label for="lastName" class="form-label">Is Renewal</label>
                                 <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2">
                                     <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                        <input type="checkbox" checked class="sr-only peer" wire:model="isRenewal">
+                                        <input type="checkbox" checked class="sr-only peer" wire:model.live="isRenewal">
                                         <div
                                             class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                         </div>
@@ -481,7 +481,7 @@
                                 <div class="from-group">
                                     <label for="policy_number" class="form-label">Policy Number</label>
                                     <input name="policy_number" class="form-control mt-2 w-full"
-                                        wire:model.defer="policy_number">
+                                        wire:model="policy_number">
                                     @error('policy_number')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -490,7 +490,7 @@
                                 <div class="from-group">
                                     <label for="insured_value" class="form-label">Insured Value</label>
                                     <input type="number" name="insured_value" class="form-control mt-2 w-full"
-                                        wire:model.defer="insured_value">
+                                        wire:model="insured_value">
                                     @error('insured_value')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -501,7 +501,7 @@
                                 <div class="from-group">
                                     <label for="net_rate" class="form-label">Net Rate</label>
                                     <input type="number" name="net_rate" class="form-control mt-2 w-full"
-                                        wire:model.defer="net_rate" max=100>
+                                        wire:model="net_rate" max=100>
                                     @error('net_rate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -510,7 +510,7 @@
                                 <div class="from-group">
                                     <label for="net_premium" class="form-label">Net Premium</label>
                                     <input type="number" name="net_premium" class="form-control mt-2 w-full"
-                                        wire:model.defer="net_premium">
+                                        wire:model="net_premium">
                                     @error('net_premium')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -519,7 +519,7 @@
                                 <div class="from-group">
                                     <label for="gross_premium" class="form-label">Gross Premium</label>
                                     <input type="number" name="gross_premium" class="form-control mt-2 w-full"
-                                        wire:model.defer="gross_premium">
+                                        wire:model="gross_premium">
                                     @error('gross_premium')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -530,7 +530,7 @@
                                 <div class="from-group">
                                     <label for="installments_count" class="form-label">Installments Count</label>
                                     <input type="number" name="installments_count" class="form-control mt-2 w-full"
-                                        wire:model.defer="installments_count">
+                                        wire:model="installments_count">
                                     @error('installments_count')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -541,7 +541,7 @@
                                         Frequency</label>
                                     <select name="payment_frequency" id="basicSelect"
                                         class="form-control w-full mt-2  @error('payment_frequency') !border-danger-500 @enderror"
-                                        wire:model="payment_frequency">
+                                        wire:model.live="payment_frequency">
                                         <option
                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select an option...</option>
@@ -563,7 +563,7 @@
                                 <div class="from-group">
                                     <label for="issuing_date" class="form-label">Issuing</label>
                                     <input type="date" name="issuing_date" class="form-control mt-2 w-full"
-                                        wire:model.defer="issuing_date">
+                                        wire:model="issuing_date">
                                     @error('issuing_date')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -574,7 +574,7 @@
                                 <div class="from-group">
                                     <label for="start" class="form-label">start</label>
                                     <input type="date" name="start" class="form-control mt-2 w-full"
-                                        wire:model.defer="start">
+                                        wire:model="start">
                                     @error('start')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -583,7 +583,7 @@
                                 <div class="from-group">
                                     <label for="expiry" class="form-label">Expiry</label>
                                     <input type="date" name="expiry" class="form-control mt-2 w-full"
-                                        wire:model.defer="expiry">
+                                        wire:model="expiry">
                                     @error('expiry')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -593,7 +593,7 @@
                             <div class="from-group">
                                 <label for="discount" class="form-label">Discount</label>
                                 <input type="number" name="discount" class="form-control mt-2 w-full"
-                                    wire:model.defer="discount">
+                                    wire:model="discount">
                                 @error('discount')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -603,7 +603,7 @@
                                 <div class="from-group">
                                     <label for="car_chassis" class="form-label">Car Chassis</label>
                                     <input type="text" name="car_chassis" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_chassis">
+                                        wire:model="car_chassis">
                                     @error('car_chassis')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -612,7 +612,7 @@
                                 <div class="from-group">
                                     <label for="car_plate_no" class="form-label">Car Plate No.</label>
                                     <input type="text" name="car_plate_no" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_plate_no">
+                                        wire:model="car_plate_no">
                                     @error('car_plate_no')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -621,7 +621,7 @@
                                 <div class="from-group">
                                     <label for="car_engine" class="form-label">Car Engine</label>
                                     <input type="text" name="car_engine" class="form-control mt-2 w-full"
-                                        wire:model.defer="car_engine">
+                                        wire:model="car_engine">
                                     @error('car_engine')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -631,7 +631,7 @@
                             <div class="from-group">
                                 <label for="note" class="form-label">Note</label>
                                 <input type="text" name="note" class="form-control mt-2 w-full"
-                                    wire:model.defer="note">
+                                    wire:model="note">
                                 @error('note')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -641,7 +641,7 @@
                                 <label for="inFavorTo" class="form-label">In Favor To</label>
                                 <input name="inFavorTo"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="inFavorTo"
+                                    id="default-picker" type="text" wire:model="inFavorTo"
                                     autocomplete="off">
                                 @error('inFavorTo')
                                     <span
@@ -652,7 +652,7 @@
                                 <label for="policyDoc" class="form-label">Policy Document <span class="text-danger-500">*</span></label>
                                 <input name="policyDoc"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc') !border-danger-500 @enderror"
-                                    id="default-picker" type="file" wire:model.defer="policyDoc">
+                                    id="default-picker" type="file" wire:model="policyDoc">
                                 @error('policyDoc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -660,7 +660,7 @@
                                 <label for="policyDoc2" class="form-label">Policy Document 2 (Optional)</label>
                                 <input name="policyDoc2"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('policyDoc2') !border-danger-500 @enderror"
-                                    id="policyDoc2" type="file" wire:model.defer="policyDoc2">
+                                    id="policyDoc2" type="file" wire:model="policyDoc2">
                                 @error('policyDoc2')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -713,12 +713,12 @@
                                     <label class="form-label font-medium">Review Status:</label>
                                     <div class="flex items-center space-x-4">
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" class="form-radio" wire:model="reviewStatus"
+                                            <input type="radio" class="form-radio" wire:model.live="reviewStatus"
                                                 value="1" name="reviewStatus">
                                             <span class="ml-2">Reviewed</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" class="form-radio" wire:model="reviewStatus"
+                                            <input type="radio" class="form-radio" wire:model.live="reviewStatus"
                                                 value="0" name="reviewStatus">
                                             <span class="ml-2">Not Reviewed</span>
                                         </label>
@@ -729,12 +729,12 @@
                                     <label class="form-label font-medium">Data Validity:</label>
                                     <div class="flex items-center space-x-4">
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" class="form-radio" wire:model="reviewValidData"
+                                            <input type="radio" class="form-radio" wire:model.live="reviewValidData"
                                                 value="1" name="reviewValidData">
                                             <span class="ml-2">Valid Data</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" class="form-radio" wire:model="reviewValidData"
+                                            <input type="radio" class="form-radio" wire:model.live="reviewValidData"
                                                 value="0" name="reviewValidData">
                                             <span class="ml-2">Invalid Data</span>
                                         </label>
@@ -743,7 +743,7 @@
 
                                 <div class="flex flex-col">
                                     <label for="reviewComment" class="form-label font-medium">Review Comment:</label>
-                                    <textarea id="reviewComment" rows="4" class="form-control" wire:model.defer="reviewComment"
+                                    <textarea id="reviewComment" rows="4" class="form-control" wire:model="reviewComment"
                                         placeholder="Add your review comments here..."></textarea>
                                     @error('reviewComment')
                                         <span class="text-danger-500 text-sm mt-1">{{ $message }}</span>

@@ -958,7 +958,7 @@ class ReviewsIndex extends Component
                 $task = $review->reviewable;
                 if ($task->type === 'claim') {
                     // Redirect to the claim/task page
-                    $this->dispatchBrowserEvent('openNewTab', ['url' => route('tasks.show', ['id' => $task->id])]);
+                    $this->dispatch('openNewTab', url: route('tasks.show', ['id' => $task->id]));
                     return;
                 }
             }
@@ -976,7 +976,7 @@ class ReviewsIndex extends Component
 
             // Check if the reviewable is a sold policy directly
             if ($review->reviewable_type === 'sold_policy') {
-                $this->dispatchBrowserEvent('openNewTab', ['url' => route('sold.policy.show', ['id' => $review->reviewable_id])]);
+                $this->dispatch('openNewTab', url: route('sold.policy.show', ['id' => $review->reviewable_id]));
                 return;
             }
 
@@ -995,7 +995,7 @@ class ReviewsIndex extends Component
         }
     }
 
-    public function deleteReview()
+    public function deleteReview($id = null)
     {
         if (false && !Auth::user()->is_admin) {
             $this->alert('failed', 'You do not have permission to delete reviews.');

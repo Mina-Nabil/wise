@@ -42,7 +42,7 @@
                                 info</button>
 
                             <button
-                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this profile?','danger','deleteProfile')"
+                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to delete this profile?', color: 'danger', action: 'deleteProfile' })"
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('viewAny', $profile)
@@ -53,7 +53,7 @@
 
                         @can('manage', $profile)
                             <button
-                                wire:click="$emit('showConfirmation', 'Are you sure you want to refresh the profile balances?','black','refreshBalances')"
+                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to refresh the profile balances?', color: 'black', action: 'refreshBalances' })"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
@@ -505,7 +505,7 @@
                                                                                 <span>Add Document</span></label>
                                                                             <input type="file" id="pymtDocFile"
                                                                                 name="filename" style="display: none;"
-                                                                                wire:model="pymtDocFile">
+                                                                                wire:model.live="pymtDocFile">
 
                                                                         </li>
                                                                     @endif
@@ -591,7 +591,7 @@
 
                     <div class="flex gap-2">
                         <div class="relative">
-                            <input type="text" wire:model.debounce.400ms="salesCommPolicySearch"
+                            <input type="text" wire:model.live.debounce.400ms="salesCommPolicySearch"
                                 class="form-control form-control-sm !py-1.5 !pr-8 w-56"
                                 placeholder="Search by policy number...">
                             <div class="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -901,7 +901,7 @@
                                                                                 <span>Add document</span></label>
                                                                             <input type="file" id="commDoc"
                                                                                 name="filename" style="display: none;"
-                                                                                wire:model="commDoc">
+                                                                                wire:model.live="commDoc">
                                                                         </li>
                                                                     @endif
                                                                     {{-- <li>
@@ -1587,7 +1587,7 @@
                                     <label for="downloadAccountStartDate" class="form-label">Start date</label>
                                     <input type="date" name="downloadAccountStartDate"
                                         class="form-control @error('downloadAccountStartDate') !border-danger-500 @enderror !pr-32"
-                                        wire:model.defer="downloadAccountStartDate">
+                                        wire:model="downloadAccountStartDate">
                                 </div>
                                 @error('downloadAccountStartDate')
                                     <span
@@ -1598,7 +1598,7 @@
                                     <label for="downloadAccountEndDate" class="form-label">End date</label>
                                     <input type="date" name="downloadAccountEndDate"
                                         class="form-control @error('downloadAccountEndDate') !border-danger-500 @enderror !pr-32"
-                                        wire:model.defer="downloadAccountEndDate">
+                                        wire:model="downloadAccountEndDate">
                                 </div>
                                 @error('downloadAccountEndDate')
                                     <span
@@ -1734,7 +1734,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Amount</label>
                                     <input type="number" name="pymtAmount" class="form-control mt-2 w-full"
-                                        wire:model.defer="pymtAmount" step="0.01">
+                                        wire:model="pymtAmount" step="0.01">
                                     @error('pymtAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1766,7 +1766,7 @@
                                     <label for="salesCommSearch" class="form-label mb-2">Search by Policy
                                         Number</label>
                                     <div class="relative">
-                                        <input type="text" wire:model.debounce.300ms="salesCommSearch"
+                                        <input type="text" wire:model.live.debounce.300ms="salesCommSearch"
                                             wire:keyup="searchSalesComm" class="form-control w-full"
                                             placeholder="Type to search...">
                                     </div>
@@ -1805,7 +1805,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Document</label>
                                     <input type="file" name="pymtDoc" class="form-control mt-2 w-full"
-                                        wire:model.defer="pymtDoc">
+                                        wire:model="pymtDoc">
                                     @error('pymtDoc')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1815,7 +1815,7 @@
                             <div class="mb-4">
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Note</label>
-                                    <textarea name="pymtNote" class="form-control mt-2 w-full" wire:model.defer="pymtNote"></textarea>
+                                    <textarea name="pymtNote" class="form-control mt-2 w-full" wire:model="pymtNote"></textarea>
                                     @error('pymtNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1848,7 +1848,7 @@
                                             <div class="w-1/2">
                                                 <label class="form-label text-xs">Percentage</label>
                                                 <input type="number"
-                                                    wire:model.defer="salesCommArray.{{ $index }}.paid_percentage"
+                                                    wire:model="salesCommArray.{{ $index }}.paid_percentage"
                                                     placeholder="Percentage"
                                                     class="form-control @error('salesCommArray.' . $index . '.paid_percentage') !border-danger-500 @enderror">
                                                 @error('salesCommArray.' . $index . '.paid_percentage')
@@ -1859,7 +1859,7 @@
                                             <div class="w-1/2">
                                                 <label class="form-label text-xs">Amount</label>
                                                 <input type="number"
-                                                    wire:model.defer="salesCommArray.{{ $index }}.amount"
+                                                    wire:model="salesCommArray.{{ $index }}.amount"
                                                     placeholder="Amount"
                                                     class="form-control @error('salesCommArray.' . $index . '.amount') !border-danger-500 @enderror">
                                                 @error('salesCommArray.' . $index . '.amount')
@@ -1926,7 +1926,7 @@
                                 <div class="from-group">
                                     <label class="form-label">Amount</label>
                                     <input type="number" name="pymtAmount" class="form-control mt-2 w-full"
-                                        wire:model.defer="pymtAmount" min="0.01" step="0.01"
+                                        wire:model="pymtAmount" min="0.01" step="0.01"
                                         placeholder="Enter positive value (will be stored as negative)">
                                     @error('pymtAmount')
                                         <span
@@ -1937,7 +1937,7 @@
                             <div class="mb-4">
                                 <div class="from-group">
                                     <label class="form-label">Payment Type</label>
-                                    <select wire:model.defer="pymtType"
+                                    <select wire:model="pymtType"
                                         class="form-control w-full py-2 @error('pymtType') !border-danger-500 @enderror">
                                         <option value="">Select a payment type...</option>
                                         @foreach ($PYMT_TYPES as $PYMT_TYPE)
@@ -1953,7 +1953,7 @@
                             <div class="mb-4">
                                 <div class="from-group">
                                     <label class="form-label">Note</label>
-                                    <textarea wire:model.defer="pymtNote" rows="3"
+                                    <textarea wire:model="pymtNote" rows="3"
                                         class="form-control mt-2 w-full"></textarea>
                                 </div>
                             </div>
@@ -2105,7 +2105,7 @@
                                     <div class="relative">
                                         <input type="number" name="pymtAmount"
                                             class="form-control @error('pymtAmount') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtAmount">
+                                            wire:model="pymtAmount">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             EGP
@@ -2121,7 +2121,7 @@
                                     <label for="pymtType" class="form-label">Payment type</label>
                                     <select name="pymtType"
                                         class="form-control w-full mt-2 @error('pymtType') !border-danger-500 @enderror"
-                                        wire:model.defer="pymtType">
+                                        wire:model="pymtType">
                                         <option value="">None</option>
                                         @foreach ($PYMT_TYPES as $PYMT_TYPE)
                                             <option value="{{ $PYMT_TYPE }}">
@@ -2139,7 +2139,7 @@
                                     <div class="relative">
                                         <input type="text" name="pymtNote"
                                             class="form-control @error('pymtNote') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtNote">
+                                            wire:model="pymtNote">
                                     </div>
                                 </div>
                                 @error('pymtNote')
@@ -2203,7 +2203,7 @@
                                     <div class="relative">
                                         <input type="date" name="pymtPaidDate"
                                             class="form-control @error('pymtPaidDate') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtPaidDate">
+                                            wire:model="pymtPaidDate">
                                     </div>
                                 </div>
                                 @error('pymtPaidDate')
@@ -2217,7 +2217,7 @@
                                     <label for="pymtPaidPartialAmount" class="form-label">Partial amount</label>
                                     <input type="number" name="pymtPaidPartialAmount"
                                         class="form-control @error('pymtPaidPartialAmount') !border-danger-500 @enderror !pr-32"
-                                        wire:model.defer="pymtPaidPartialAmount">
+                                        wire:model="pymtPaidPartialAmount">
                                 </div>
                                 @error('pymtPaidPartialAmount')
                                     <span
@@ -2279,7 +2279,7 @@
                                     <div class="relative">
                                         <input type="date" name="pymtCancelledDate"
                                             class="form-control @error('pymtCancelledDate') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="pymtCancelledDate">
+                                            wire:model="pymtCancelledDate">
                                     </div>
                                 </div>
                                 @error('pymtCancelledDate')
@@ -2341,7 +2341,7 @@
                                     <div class="input-area mt-3 w-full">
                                         <label for="dayOfMonth" class="form-label">Day of month</label>
                                         <input id="dayOfMonth" type="number" class="form-control"
-                                            wire:model="dayOfMonth" @disabled($isEndOfMonth)>
+                                            wire:model.live="dayOfMonth" @disabled($isEndOfMonth)>
                                         @error('dayOfMonth')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2353,7 +2353,7 @@
                                         <div class="checkbox-area mt-2">
                                             <label class="inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" class="hidden row-checkbox"
-                                                    wire:model="isEndOfMonth">
+                                                    wire:model.live="isEndOfMonth">
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -2369,7 +2369,7 @@
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
                                     <input id="eachMonth" type="number" class="form-control"
-                                        wire:model="eachMonth">
+                                        wire:model.live="eachMonth">
                                 </div>
                                 @error('eachMonth')
                                     <span
@@ -2378,7 +2378,7 @@
 
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Next Run Date</label>
-                                    <input type="date" class="form-control" wire:model.defer="nextRunDate">
+                                    <input type="date" class="form-control" wire:model="nextRunDate">
                                 </div>
 
                                 <div class="input-area mt-3">
@@ -2386,7 +2386,7 @@
                                     <div class="relative">
                                         <input type="number" name="commPercentage"
                                             class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
+                                            wire:model="commPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2403,7 +2403,7 @@
                                     <div class="relative">
                                         <input type="number" name="renewalPercentage"
                                             class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="renewalPercentage">
+                                            wire:model="renewalPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2426,7 +2426,7 @@
                                     <div class="relative">
                                         <input type="number" name="salesOutPercentage"
                                             class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="salesOutPercentage">
+                                            wire:model="salesOutPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2447,7 +2447,7 @@
                                 <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
                                     <input id="premTarget" type="number" class="form-control"
-                                        wire:model="premTarget">
+                                        wire:model.live="premTarget">
                                     <small class=caption>For info only. Not used for calculations</small>
                                 </div>
                                 @error('premTarget')
@@ -2458,7 +2458,7 @@
                                 <div class="input-area mt-3">
                                     <label for="minIncomeTarget" class="form-label">Min Income Target</label>
                                     <input id="minIncomeTarget" type="number" class="form-control"
-                                        wire:model="minIncomeTarget">
+                                        wire:model.live="minIncomeTarget">
                                     <small class=caption>Used for calculations. Min. Target per 'Each Month'
                                         period</small>
                                 </div>
@@ -2470,7 +2470,7 @@
                                 <div class="input-area mt-3">
                                     <label for="maxIncomeTarget" class="form-label">Max Income Target</label>
                                     <input id="maxIncomeTarget" type="number" class="form-control"
-                                        wire:model="maxIncomeTarget">
+                                        wire:model.live="maxIncomeTarget">
                                     <small class=caption>Used for calculations. Max. Target per 'Each Month' period.
                                         Leave empty if there is no max limit</small>
                                 </div>
@@ -2482,7 +2482,7 @@
                                 <div class="input-area mt-3">
                                     <label for="basePayment" class="form-label">Base Payment</label>
                                     <input id="basePayment" type="number" class="form-control"
-                                        wire:model="basePayment">
+                                        wire:model.live="basePayment">
                                 </div>
                                 @error('basePayment')
                                     <span
@@ -2543,7 +2543,7 @@
                                     <div class="input-area mt-3 w-full">
                                         <label for="dayOfMonth" class="form-label">Day of month</label>
                                         <input id="dayOfMonth" type="number" class="form-control"
-                                            wire:model="dayOfMonth" @disabled($isEndOfMonth)>
+                                            wire:model.live="dayOfMonth" @disabled($isEndOfMonth)>
                                         @error('dayOfMonth')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2555,7 +2555,7 @@
                                         <div class="checkbox-area mt-2">
                                             <label class="inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" class="hidden row-checkbox"
-                                                    wire:model="isEndOfMonth">
+                                                    wire:model.live="isEndOfMonth">
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -2571,7 +2571,7 @@
                                 <div class="input-area mt-3">
                                     <label for="eachMonth" class="form-label">Each month</label>
                                     <input id="eachMonth" type="number" class="form-control"
-                                        wire:model="eachMonth">
+                                        wire:model.live="eachMonth">
                                 </div>
                                 @error('eachMonth')
                                     <span
@@ -2583,7 +2583,7 @@
                                     <div class="relative">
                                         <input type="number" name="commPercentage"
                                             class="form-control @error('commPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="commPercentage">
+                                            wire:model="commPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2602,7 +2602,7 @@
                                     <div class="relative">
                                         <input type="number" name="renewalPercentage"
                                             class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="renewalPercentage">
+                                            wire:model="renewalPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2625,7 +2625,7 @@
                                     <div class="relative">
                                         <input type="number" name="salesOutPercentage"
                                             class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="salesOutPercentage">
+                                            wire:model="salesOutPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2646,7 +2646,7 @@
                                 <div class="input-area mt-3">
                                     <label for="prem_target" class="form-label">Yearly Premium Target</label>
                                     <input id="premTarget" type="number" class="form-control"
-                                        wire:model="premTarget">
+                                        wire:model.live="premTarget">
                                     <small class=caption>For info only. Not used for calculations</small>
                                 </div>
                                 @error('premTarget')
@@ -2657,7 +2657,7 @@
                                 <div class="input-area mt-3">
                                     <label for="minIncomeTarget" class="form-label">Min Income Target</label>
                                     <input id="minIncomeTarget" type="number" class="form-control"
-                                        wire:model="minIncomeTarget">
+                                        wire:model.live="minIncomeTarget">
                                     <small class=caption>Used for calculations. Min. Target per 'Each Month'
                                         period</small>
                                 </div>
@@ -2669,7 +2669,7 @@
                                 <div class="input-area mt-3">
                                     <label for="maxIncomeTarget" class="form-label">Max Income Target</label>
                                     <input id="maxIncomeTarget" type="number" class="form-control"
-                                        wire:model="maxIncomeTarget">
+                                        wire:model.live="maxIncomeTarget">
                                     <small class=caption>Used for calculations. Max. Target per 'Each Month' period.
                                         Leave empty if there is no max limit</small>
                                 </div>
@@ -2681,7 +2681,7 @@
                                 <div class="input-area mt-3">
                                     <label for="basePayment" class="form-label">Base Payment</label>
                                     <input id="basePayment" type="number" class="form-control"
-                                        wire:model="basePayment">
+                                        wire:model.live="basePayment">
                                 </div>
                                 @error('basePayment')
                                     <span
@@ -2748,13 +2748,13 @@
                                     <div class="relative">
                                         <input type="number"
                                             class="form-control @error('percentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="percentage">
+                                            wire:model="percentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
-                                    {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
+                                    {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model="percentage"> --}}
                                 </div>
                                 @error('percentage')
                                     <span
@@ -2766,7 +2766,7 @@
                                     <div class="relative">
                                         <input type="number"
                                             class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="renewalPercentage">
+                                            wire:model="renewalPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2787,7 +2787,7 @@
                                     <div class="relative">
                                         <input type="number" name="salesOutPercentage"
                                             class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="salesOutPercentage">
+                                            wire:model="salesOutPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2808,7 +2808,7 @@
                                     <label for="from" class="form-label">From</label>
                                     <select name="from"
                                         class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror"
-                                        wire:model.defer="from">
+                                        wire:model="from">
                                         <option value="">None</option>
                                         @foreach ($FROMS as $FROM)
                                             <option value="{{ $FROM }}">
@@ -2825,7 +2825,7 @@
                                     <label for="line_of_business" class="form-label">Line of business</label>
                                     <select name="line_of_business"
                                         class="form-control w-full mt-2 @error('line_of_business') !border-danger-500 @enderror"
-                                        wire:model="line_of_business">
+                                        wire:model.live="line_of_business">
                                         <option value="">None</option>
                                         @foreach ($LOBs as $LOB)
                                             <option value="{{ $LOB }}">
@@ -2849,7 +2849,7 @@
                                         <div class="input-area mt-3">
                                             <label for="conditionType" class="form-label">Condition Type</label>
                                             <select name="conditionType" class="form-control w-full mt-2"
-                                                wire:model="conditionType">
+                                                wire:model.live="conditionType">
                                                 <option value="policy">Policy</option>
                                                 <option value="company">Company</option>
                                             </select>
@@ -2859,7 +2859,7 @@
                                             <label for="searchCon" class="form-label">Search
                                                 {{ $conditionType }}</label>
                                             <input id="searchCon" type="text" class="form-control"
-                                                wire:model="searchCon">
+                                                wire:model.live="searchCon">
                                         </div>
 
                                         <div class="text-sm">
@@ -2947,13 +2947,13 @@
                                     <div class="relative">
                                         <input type="number"
                                             class="form-control @error('percentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="percentage">
+                                            wire:model="percentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
                                         </span>
                                     </div>
-                                    {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model.defer="percentage"> --}}
+                                    {{-- <input id="percentage" type="number" class="form-control @error('percentage') !border-danger-500 @enderror" wire:model="percentage"> --}}
                                 </div>
                                 @error('percentage')
                                     <span
@@ -2965,7 +2965,7 @@
                                     <div class="relative">
                                         <input type="number"
                                             class="form-control @error('renewalPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="renewalPercentage">
+                                            wire:model="renewalPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -2986,7 +2986,7 @@
                                     <div class="relative">
                                         <input type="number" name="salesOutPercentage"
                                             class="form-control @error('salesOutPercentage') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="salesOutPercentage">
+                                            wire:model="salesOutPercentage">
                                         <span
                                             class="absolute right-0 top-1/2 px-3 -translate-y-1/2 h-full border-none flex items-center justify-center">
                                             %
@@ -3007,7 +3007,7 @@
                                     <label for="from" class="form-label">From</label>
                                     <select name="from"
                                         class="form-control w-full mt-2 @error('from') !border-danger-500 @enderror"
-                                        wire:model.defer="from">
+                                        wire:model="from">
                                         <option value="">None</option>
                                         @foreach ($FROMS as $FROM)
                                             <option value="{{ $FROM }}">
@@ -3077,7 +3077,7 @@
                                     <label for="updatedType" class="form-label">Type</label>
                                     <select name="updatedType"
                                         class="form-control w-full mt-2 @error('updatedType') !border-danger-500 @enderror"
-                                        wire:model.defer="updatedType">
+                                        wire:model="updatedType">
                                         <option>None</option>
                                         @foreach ($profileTypes as $type)
                                             <option value="{{ $type }}">
@@ -3094,7 +3094,7 @@
                                     <div class="flex items-center space-x-2">
                                         <label
                                             class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input wire:model="updatedPerPolicy" type="checkbox" value=""
+                                            <input wire:model.live="updatedPerPolicy" type="checkbox" value=""
                                                 class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
@@ -3107,7 +3107,7 @@
                                     <div class="flex items-center space-x-2 mt-3">
                                         <label
                                             class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                            <input wire:model="updatedSelectAvailable" type="checkbox"
+                                            <input wire:model.live="updatedSelectAvailable" type="checkbox"
                                                 value="" class="sr-only peer">
                                             <div
                                                 class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500">
@@ -3123,7 +3123,7 @@
                                     <label for="updatedUserId" class="form-label">Linked User</label>
                                     <select name="updatedUserId" id="updatedUserId"
                                         class="form-control w-full mt-2 @error('updatedUserId') !border-danger-500 @enderror"
-                                        wire:model="updatedUserId">
+                                        wire:model.live="updatedUserId">
                                         <option value="">None</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -3142,13 +3142,13 @@
                                     <label for="updatedTitle" class="form-label">Title</label>
                                     <input id="updatedTitle" type="text"
                                         class="form-control @error('updatedTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="updatedTitle">
+                                        wire:model="updatedTitle">
                                 </div>
 
                                 <div class="input-area mt-3">
                                     <label for="updatedAvailableForId" class="form-label">Available For User</label>
                                     <select name="updatedAvailableForId" class="form-control w-full mt-2 "
-                                        wire:model.defer="updatedAvailableForId">
+                                        wire:model="updatedAvailableForId">
                                         <option>None</option>
                                         @foreach ($users as $u)
                                             <option value="{{ $u->id }}">
@@ -3161,7 +3161,7 @@
                                     <label for="updatedAutomaticOverrideId" class="form-label">Automatic
                                         Override</label>
                                     <select name="updatedAutomaticOverrideId" class="form-control w-full mt-2 "
-                                        wire:model.defer="updatedAutomaticOverrideId">
+                                        wire:model="updatedAutomaticOverrideId">
                                         <option>None</option>
                                         @foreach ($overrides as $o)
                                             <option value="{{ $o->id }}">
@@ -3172,7 +3172,7 @@
 
                                 <div class="from-group mt-3">
                                     <label for="updatedDesc" class="form-label">Description</label>
-                                    <textarea class="form-control mt-2 w-full" wire:model.defer="updatedDesc"></textarea>
+                                    <textarea class="form-control mt-2 w-full" wire:model="updatedDesc"></textarea>
                                     @error('updatedDesc')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3184,7 +3184,7 @@
                                     @inject('helper', 'App\Helpers\Helpers')
                                     <select id="account"
                                         class="form-control @error('updatedAccountId') !border-danger-500 @enderror"
-                                        wire:model.defer="updatedAccountId">
+                                        wire:model="updatedAccountId">
                                         <option value="">Select Account</option>
                                         @php
                                             $printed_arr = [];
@@ -3450,7 +3450,7 @@
                                     <div class="relative">
                                         <input type="date" name="startTargetRunEndDate"
                                             class="form-control @error('startTargetRunEndDate') !border-danger-500 @enderror !pr-32"
-                                            wire:model.defer="startTargetRunEndDate">
+                                            wire:model="startTargetRunEndDate">
                                     </div>
                                 </div>
                                 @error('startTargetRunEndDate')
@@ -3571,7 +3571,7 @@
                                 <label for="commTitle" class="form-label">Title</label>
                                 <input type="text" name="commTitle"
                                     class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror"
-                                    wire:model.defer="commTitle">
+                                    wire:model="commTitle">
                                 @error('commTitle')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3581,7 +3581,7 @@
                             <div class="from-group">
                                 <label for="commFrom" class="form-label">From</label>
                                 <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
-                                    wire:model="commFrom">
+                                    wire:model.live="commFrom">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select option</option>
@@ -3598,7 +3598,7 @@
                                 <label for="commPer" class="form-label">Percentage</label>
                                 <input type="number" min="0" max="100" name="commPer"
                                     class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror"
-                                    wire:model.defer="commPer">
+                                    wire:model="commPer">
                                 @error('commPer')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3608,7 +3608,7 @@
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Sales Person</label>
                                 <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                    wire:model="commUser">
+                                    wire:model.live="commUser">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select user</option>
                                     @foreach ($users as $user)
@@ -3623,7 +3623,7 @@
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Note</label>
                                 <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
-                                    wire:model.defer="newcommNote"></textarea>
+                                    wire:model="newcommNote"></textarea>
                                 @error('newcommNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3677,13 +3677,13 @@
                                 <div class="input-area">
                                     <label for="entryTitleSearch" class="form-label">Search Entry Title</label>
                                     <input id="entryTitleSearch" type="text"
-                                        wire:model.debounce.300ms="entryTitleSearch" class="form-control"
+                                        wire:model.live.debounce.300ms="entryTitleSearch" class="form-control"
                                         placeholder="Search by ID or name">
                                 </div>
 
                                 <div class="input-area">
                                     <label for="selectedEntryTitleId" class="form-label">Entry Title</label>
-                                    <select id="selectedEntryTitleId" wire:model="selectedEntryTitleId"
+                                    <select id="selectedEntryTitleId" wire:model.live="selectedEntryTitleId"
                                         class="form-control">
                                         <option value="">-- Select Entry Title --</option>
                                         @foreach ($entryTitles as $entryTitle)
@@ -3755,13 +3755,13 @@
                                 <div class="input-area">
                                     <label for="entryTitleSearchSales" class="form-label">Search Entry Title</label>
                                     <input id="entryTitleSearchSales" type="text"
-                                        wire:model.debounce.300ms="entryTitleSearch" class="form-control"
+                                        wire:model.live.debounce.300ms="entryTitleSearch" class="form-control"
                                         placeholder="Search by ID or name">
                                 </div>
 
                                 <div class="input-area">
                                     <label for="selectedEntryTitleIdSales" class="form-label">Entry Title</label>
-                                    <select id="selectedEntryTitleIdSales" wire:model="selectedEntryTitleId"
+                                    <select id="selectedEntryTitleIdSales" wire:model.live="selectedEntryTitleId"
                                         class="form-control">
                                         <option value="">-- Select Entry Title --</option>
                                         @foreach ($entryTitles as $entryTitle)

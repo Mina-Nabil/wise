@@ -981,7 +981,7 @@ class Offer extends Model
             $birth_date = Carbon::parse($client->birth_date);
             $activeSheet->getCell('B' . $i)->setValue($birth_date->format('Y-m-d'));
             $activeSheet->getCell('C' . $i)->setValue($client->relation);
-            $age = Carbon::now()->diffInYears($birth_date);
+            $age = (int) Carbon::now()->diffInYears($birth_date, true);
             $cond = $policy->getConditionByAge($age);
             $activeSheet->getCell('D' . $i)->setValue($cond->rate);
             $totalPrem += $cond->rate;

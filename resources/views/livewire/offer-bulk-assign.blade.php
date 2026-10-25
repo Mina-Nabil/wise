@@ -22,7 +22,7 @@
                 <div class="md:col-span-7 from-group">
                     <label class="form-label">Assign selected offers to</label>
                     <select class="form-control w-full mt-2 @error('assignTo') !border-danger-500 @enderror"
-                        wire:model="assignTo">
+                        wire:model.live="assignTo">
                         <option value="">Select user...</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">
@@ -183,7 +183,7 @@
         </div>
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="all" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="all" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
@@ -191,7 +191,7 @@
         </div>
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="isRenewal" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="isRenewal" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">Renewal</span>
@@ -199,21 +199,21 @@
         </div>
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="notRenewal" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="notRenewal" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">New Business</span>
             </label>
         </div>
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
-            id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
+            id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model.live="dateRange">
     </div>
 
     <div class="card mt-5 pt-5">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search using client name, email or phone number" wire:model="search">
+                placeholder="Search using client name, email or phone number" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -271,7 +271,7 @@
                                         class="hover:bg-slate-200 dark:hover:bg-slate-700 {{ in_array($offer->id, $selectedOffers) ? 'bg-primary-500 bg-opacity-10' : '' }}">
                                         <td class="table-td " wire:click.stop>
                                             <input type="checkbox" class="cursor-pointer"
-                                                value="{{ $offer->id }}" wire:model="selectedOffers">
+                                                value="{{ $offer->id }}" wire:model.live="selectedOffers">
                                         </td>
                                         <td class="table-td cursor-pointer"
                                             wire:click="redirectToShowPage({{ $offer->id }})">

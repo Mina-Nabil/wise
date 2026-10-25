@@ -69,7 +69,7 @@
             <div class="flex items-center gap-2">
                 <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 select-none">
                     <div class="relative">
-                        <input type="checkbox" wire:model="includeChildren" class="sr-only peer">
+                        <input type="checkbox" wire:model.live="includeChildren" class="sr-only peer">
                         <div class="w-9 h-5 bg-slate-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
                     </div>
                     Include Children
@@ -77,7 +77,7 @@
                 @if ($includeChildren)
                 <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600 dark:text-slate-300 select-none">
                     <div class="relative">
-                        <input type="checkbox" wire:model="sameSheet" class="sr-only peer">
+                        <input type="checkbox" wire:model.live="sameSheet" class="sr-only peer">
                         <div class="w-9 h-5 bg-slate-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
                     </div>
                     Same Sheet
@@ -97,7 +97,7 @@
             <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg"
                     icon="line-md:loading-twotone-loop"></iconify-icon>
                 <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..."
-                    wire:model="searchText">
+                    wire:model.live="searchText">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -267,7 +267,7 @@
                                     للتأكيد، اكتب اسم الحساب: <b>{{ $account->name }}</b>
                                 </label>
                                 <input type="text" id="deleteConfirmation"
-                                    class="form-control mt-2 w-full text-right" wire:model.defer="deleteConfirmation"
+                                    class="form-control mt-2 w-full text-right" wire:model="deleteConfirmation"
                                     placeholder="اكتب اسم الحساب هنا">
                             </div>
                         </div>
@@ -354,7 +354,7 @@
                                         </button>
                                     </div>
                                     <input type="text" class="form-control mt-3 w-full text-right"
-                                        wire:model.debounce.400ms="moveSearchText"
+                                        wire:model.live.debounce.400ms="moveSearchText"
                                         placeholder="اسم الحساب أو الكود">
                                     @error('moveParentId')
                                         <span
@@ -480,7 +480,7 @@
                                     </div>
                                 @else
                                     <input type="text" id="mergeSearchText" class="form-control mt-2 w-full text-right"
-                                        wire:model.debounce.400ms="mergeSearchText" placeholder="اسم الحساب أو الكود">
+                                        wire:model.live.debounce.400ms="mergeSearchText" placeholder="اسم الحساب أو الكود">
                                     @error('mergeTargetId')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -667,7 +667,7 @@
                                 <label for="openingBalance" class="form-label">Balance (EGP)</label>
                                 <input type="number" step="0.01" id="openingBalance"
                                     class="form-control mt-2 w-full {{ $errors->has('openingBalance') ? '!border-danger-500' : '' }}"
-                                    wire:model="openingBalance" placeholder="Enter opening balance">
+                                    wire:model.live="openingBalance" placeholder="Enter opening balance">
                                 @error('openingBalance')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -677,7 +677,7 @@
                                 <label for="openingForeignBalance" class="form-label">Foreign Balance (Optional)</label>
                                 <input type="number" step="0.01" id="openingForeignBalance"
                                     class="form-control mt-2 w-full {{ $errors->has('openingForeignBalance') ? '!border-danger-500' : '' }}"
-                                    wire:model="openingForeignBalance" placeholder="Enter foreign balance">
+                                    wire:model.live="openingForeignBalance" placeholder="Enter foreign balance">
                                 @error('openingForeignBalance')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

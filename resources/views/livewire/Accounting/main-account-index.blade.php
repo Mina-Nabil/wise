@@ -18,7 +18,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="searchText">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="searchText">
         </header>
 
         <div class="tab-content mt-6" id="pills-tabContent">
@@ -169,14 +169,14 @@
                             <div class="from-group">
                                 <div class="from-group mb-5">
                                     <label for="account_name" class="form-label">Name</label>
-                                    <input type="text" name="account_name" class="form-control mt-2 w-full" wire:model.defer="account_name" max=100>
+                                    <input type="text" name="account_name" class="form-control mt-2 w-full" wire:model="account_name" max=100>
                                     @error('account_name')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="from-group mb-5">
                                     <label for="account_type" class="form-label">Description</label>
-                                    <select wire:model.defer='account_type' name="account_type" class="form-control w-full mt-2 py-2">
+                                    <select wire:model='account_type' name="account_type" class="form-control w-full mt-2 py-2">
                                         <option class=" inline-block font-Inter font-normal text-sm text-slate-600">Select type</option>
                                         @foreach ($ACC_TYPES as $type)
                                             <option value="{{ $type }}" class=" inline-block font-Inter font-normal text-sm text-slate-600">{{ ucwords($type) }}</option>
@@ -188,7 +188,7 @@
                                 </div>
                                 <div class="from-group">
                                     <label for="account_desc" class="form-label">Description</label>
-                                    <textarea name="account_desc" class="form-control mt-2 w-full" wire:model.defer="account_desc"></textarea>
+                                    <textarea name="account_desc" class="form-control mt-2 w-full" wire:model="account_desc"></textarea>
                                     @error('account_desc')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror

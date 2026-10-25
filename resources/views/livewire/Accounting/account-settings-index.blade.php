@@ -185,7 +185,7 @@
                                     {{ count($selectedAccounts) > 0 ? 'Add Another Account' : 'Search Account' }}
                                 </label>
                                 <div class="relative">
-                                    <input wire:model.debounce.300ms="searchAccount" type="text"
+                                    <input wire:model.live.debounce.300ms="searchAccount" type="text"
                                         class="form-control py-2" placeholder="Search by code or name...">
                                 </div>
                                 

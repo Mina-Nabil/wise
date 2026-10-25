@@ -173,7 +173,7 @@ class Policy extends Model
                 $net_value = 0;
                 $gross_value = 0;
                 foreach ($offer->medical_offer_clients as $client) {
-                    $age = Carbon::now()->diffInYears(Carbon::parse($client->birth_date));
+                    $age = (int) Carbon::now()->diffInYears(Carbon::parse($client->birth_date), true);
                     Log::info("Age: " . $age);
                     $cond = $pol->getConditionByAge($age);
                     if ($cond) {

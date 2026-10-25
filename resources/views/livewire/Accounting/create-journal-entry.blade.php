@@ -24,7 +24,7 @@
                                 </div>
                             @else
                                 <div class="input-area">
-                                    <input placeholder="Search title..." type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="title" maxlength="100">
+                                    <input placeholder="Search title..." type="text" id="title" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('title') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.live="title" maxlength="100">
                                     @error('title')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
@@ -69,7 +69,7 @@
                                                         <input type="text" autocomplete="off" wire:ignore
                                                             class="form-control mt-1 block w-full p-2 border border-gray-300 rounded-md account-search"
                                                             placeholder="Search debit account...">
-                                                        <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="debit_accounts.{{ $index }}.account_id">
+                                                        <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('debit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="debit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Debit Account</option>
                                                             @foreach ($debit_accounts_list as $account)
                                                                 {{ $helper->printAccountChildren('', $account, $debit_printed_arr, true) }}
@@ -80,12 +80,12 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-3">
                                                         <!-- Amount -->
                                                         <div class="input-area">
-                                                            <input type="number" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.amount') !border-danger-500 @enderror" wire:model="debit_accounts.{{ $index }}.amount" placeholder="Amount">
+                                                            <input type="number" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.amount') !border-danger-500 @enderror" wire:model.live="debit_accounts.{{ $index }}.amount" placeholder="Amount">
                                                         </div>
 
                                                         <!-- Currency -->
                                                         <div class="input-area">
-                                                            <select class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency') !border-danger-500 @enderror" wire:model="debit_accounts.{{ $index }}.currency">
+                                                            <select class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency') !border-danger-500 @enderror" wire:model.live="debit_accounts.{{ $index }}.currency">
                                                                 @foreach ($CURRENCIES as $CURRENCY)
                                                                     <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
                                                                 @endforeach
@@ -96,12 +96,12 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                                         <!-- Currency Amount -->
                                                         <div class="input-area">
-                                                            <input type="number" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency_amount') !border-danger-500 @enderror" wire:model="debit_accounts.{{ $index }}.currency_amount" placeholder="Currency Amount">
+                                                            <input type="number" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency_amount') !border-danger-500 @enderror" wire:model.live="debit_accounts.{{ $index }}.currency_amount" placeholder="Currency Amount">
                                                         </div>
 
                                                         <!-- Currency Rate -->
                                                         <div class="input-area">
-                                                            <input type="number" step="0.01" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency_rate') !border-danger-500 @enderror" wire:model="debit_accounts.{{ $index }}.currency_rate"
+                                                            <input type="number" step="0.01" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.currency_rate') !border-danger-500 @enderror" wire:model.live="debit_accounts.{{ $index }}.currency_rate"
                                                                 placeholder="Currency Rate">
                                                         </div>
                                                     </div>
@@ -109,7 +109,7 @@
                                                     <div class="flex items-center gap-2 w-full">
                                                         <!-- Document URL -->
                                                         <div class="flex-1">
-                                                            <input type="file" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.doc_url') !border-danger-500 @enderror" wire:model="debit_accounts.{{ $index }}.doc_url" placeholder="Document URL">
+                                                            <input type="file" class="form-control w-full mt-2 @error('debit_accounts.' . $index . '.doc_url') !border-danger-500 @enderror" wire:model.live="debit_accounts.{{ $index }}.doc_url" placeholder="Document URL">
                                                         </div>
 
 
@@ -145,7 +145,7 @@
                                                         <input type="text" autocomplete="off" wire:ignore
                                                             class="form-control mt-1 block w-full p-2 border border-gray-300 rounded-md account-search"
                                                             placeholder="Search credit account...">
-                                                        <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="credit_accounts.{{ $index }}.account_id">
+                                                        <select class="form-control mt-1 block w-full p-2 border rounded-md {{ $errors->has('credit_accounts.' . $index . '.account_id') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="credit_accounts.{{ $index }}.account_id">
                                                             <option value="">Select Credit Account</option>
                                                             @foreach ($credit_accounts_list as $account)
                                                                 {{ $helper->printAccountChildren('', $account, $credit_printed_arr, true) }}
@@ -156,12 +156,12 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-3">
                                                         <!-- Amount -->
                                                         <div class="input-area">
-                                                            <input type="number" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.amount') !border-danger-500 @enderror" wire:model="credit_accounts.{{ $index }}.amount" placeholder="Amount">
+                                                            <input type="number" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.amount') !border-danger-500 @enderror" wire:model.live="credit_accounts.{{ $index }}.amount" placeholder="Amount">
                                                         </div>
 
                                                         <!-- Currency -->
                                                         <div class="input-area">
-                                                            <select class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency') !border-danger-500 @enderror" wire:model="credit_accounts.{{ $index }}.currency">
+                                                            <select class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency') !border-danger-500 @enderror" wire:model.live="credit_accounts.{{ $index }}.currency">
                                                                 @foreach ($CURRENCIES as $CURRENCY)
                                                                     <option value="{{ $CURRENCY }}">{{ ucwords($CURRENCY) }}</option>
                                                                 @endforeach
@@ -173,12 +173,12 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 ">
                                                         <!-- Currency Amount -->
                                                         <div class="input-area">
-                                                            <input type="number" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency_amount') !border-danger-500 @enderror" wire:model="credit_accounts.{{ $index }}.currency_amount" placeholder="Currency Amount">
+                                                            <input type="number" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency_amount') !border-danger-500 @enderror" wire:model.live="credit_accounts.{{ $index }}.currency_amount" placeholder="Currency Amount">
                                                         </div>
 
                                                         <!-- Currency Rate -->
                                                         <div class="input-area">
-                                                            <input type="number" step="0.01" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency_rate') !border-danger-500 @enderror" wire:model="credit_accounts.{{ $index }}.currency_rate"
+                                                            <input type="number" step="0.01" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.currency_rate') !border-danger-500 @enderror" wire:model.live="credit_accounts.{{ $index }}.currency_rate"
                                                                 placeholder="Currency Rate">
                                                         </div>
                                                     </div>
@@ -186,7 +186,7 @@
                                                     <div class="flex items-center gap-2 w-full">
                                                         <!-- Document URL -->
                                                         <div class="flex-1">
-                                                            <input type="file" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.doc_url') !border-danger-500 @enderror" wire:model="credit_accounts.{{ $index }}.doc_url" placeholder="Document URL">
+                                                            <input type="file" class="form-control w-full mt-2 @error('credit_accounts.' . $index . '.doc_url') !border-danger-500 @enderror" wire:model.live="credit_accounts.{{ $index }}.doc_url" placeholder="Document URL">
                                                         </div>
 
 
@@ -219,7 +219,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                         <div class="input-area">
                             <label for="cash_entry_type" class="form-label">Cash entry type</label>
-                            <select id="cash_entry_type" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('cash_entry_type') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="cash_entry_type">
+                            <select id="cash_entry_type" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('cash_entry_type') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.live="cash_entry_type">
                                 <option value="">N/A</option>
                                 @foreach ($CASH_ENTRY_TYPES as $CASH_ENTRY_TYPE)
                                     <option value="{{ $CASH_ENTRY_TYPE }}">{{ ucwords($CASH_ENTRY_TYPE) }}</option>
@@ -233,7 +233,7 @@
                         <div class="flex justify-between items-end space-x-6">
                             <div class="input-area w-full">
                                 <label for="receiver_name" class="form-label">Receiver name</label>
-                                <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="receiver_name"
+                                <input type="text" id="receiver_name" @if (!$cash_entry_type) disabled @endif class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('receiver_name') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="receiver_name"
                                     step="0.01">
                                 @error('receiver_name')
                                     <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -246,7 +246,7 @@
                     <div class="from-group mt-5">
                         <div class="mb-4">
                             <label for="notes" class="block text-gray-700 dark:text-gray-300">Notes</label>
-                            <textarea id="notes" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('notes') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="notes" rows="6"></textarea>
+                            <textarea id="notes" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('notes') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="notes" rows="6"></textarea>
                             @error('notes')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -257,7 +257,7 @@
                     <div class="from-group mt-5">
                         <div class="mb-4">
                             <label for="extra_note" class="block text-gray-700 dark:text-gray-300">Extra Note</label>
-                            <textarea id="extra_note" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('extra_note') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="extra_note" rows="6"></textarea>
+                            <textarea id="extra_note" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('extra_note') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="extra_note" rows="6"></textarea>
                             @error('extra_note')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -267,7 +267,7 @@
                     <div class="from-group mt-5">
                         <div class="mb-4">
                             <label for="entryDate" class="block text-gray-700 dark:text-gray-300">Entry Date <span class="text-slate-400 text-sm font-normal">(leave blank for today)</span></label>
-                            <input type="date" id="entryDate" max="{{ date('Y-m-d') }}" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('entryDate') ? '!border-danger-500' : 'border-gray-300' }}" wire:model.defer="entryDate">
+                            <input type="date" id="entryDate" max="{{ date('Y-m-d') }}" class="mt-1 block w-full p-2 border rounded-md {{ $errors->has('entryDate') ? '!border-danger-500' : 'border-gray-300' }}" wire:model="entryDate">
                             @error('entryDate')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -329,7 +329,7 @@
             if (window.Livewire) {
                 bindLivewireHook();
             } else {
-                document.addEventListener('livewire:load', bindLivewireHook);
+                document.addEventListener('livewire:init', bindLivewireHook);
             }
         }
     </script>

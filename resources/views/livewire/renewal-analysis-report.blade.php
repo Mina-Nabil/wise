@@ -12,7 +12,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<div>
 					<label class="form-label">Year <span class="text-red-500">*</span></label>
-					<select class="form-control" wire:model="selectedYear">
+					<select class="form-control" wire:model.live="selectedYear">
 						<option value="">Select year</option>
 						@foreach($years as $year)
 							<option value="{{ $year }}">{{ $year }}</option>
@@ -24,7 +24,7 @@
 				</div>
 				<div>
 					<label class="form-label">Month </label>
-					<select class="form-control" wire:model="selectedMonth">
+					<select class="form-control" wire:model.live="selectedMonth">
 						<option value="-1">Select month</option>
 						@foreach($months as $month)
 							<option value="{{ $month['value'] }}">{{ $month['label'] }}</option>
@@ -36,7 +36,7 @@
 				</div>
 				<div>
 					<label class="form-label">User (optional)</label>
-					<select class="form-control" wire:model="selectedUserId">
+					<select class="form-control" wire:model.live="selectedUserId">
 						<option value="-1">All users</option>
 						@foreach($users as $usr)
 							<option value="{{ $usr['id'] }}">{{ $usr['title'] }}</option>

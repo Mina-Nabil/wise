@@ -30,7 +30,7 @@
                 // console.log('Start date: ' + start.format('YYYY-MM-DD'));
                 // console.log('End date: ' + end.format('YYYY-MM-DD'));
 
-                Livewire.emit('dateRangeSelected', start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+                Livewire.dispatch('dateRangeSelected', { startDate: start.format('YYYY-MM-DD'), endDate: end.format('YYYY-MM-DD') });
             }
 
             $('#reportrange').daterangepicker({

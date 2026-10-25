@@ -18,7 +18,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="searchText">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="searchText">
         </header>
 
         <div class="tab-content mt-6" id="pills-tabContent">
@@ -141,14 +141,14 @@
                         <div class="from-group">
                             <div class="from-group mb-5">
                                 <label for="Type_name" class="form-label">Name</label>
-                                <input type="text" name="Type_name" class="form-control mt-2 w-full" wire:model.defer="Type_name" max=100>
+                                <input type="text" name="Type_name" class="form-control mt-2 w-full" wire:model="Type_name" max=100>
                                 @error('Type_name')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="from-group">
                                 <label for="Type_desc" class="form-label">Description</label>
-                                <textarea name="Type_desc" class="form-control mt-2 w-full" wire:model.defer="Type_desc"></textarea>
+                                <textarea name="Type_desc" class="form-control mt-2 w-full" wire:model="Type_desc"></textarea>
                                 @error('Type_desc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror

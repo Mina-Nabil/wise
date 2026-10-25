@@ -344,7 +344,7 @@
             {{-- Customers Tab --}}
             @if ($section === 'customers')
                 <div class="mb-5">
-                    <input type="text" wire:model.debounce.400ms="customerSearch"
+                    <input type="text" wire:model.live.debounce.400ms="customerSearch"
                         class="form-control max-w-xs"
                         placeholder="Search customers...">
                 </div>
@@ -435,7 +435,7 @@
             {{-- Corporates Tab --}}
             @if ($section === 'corporates')
                 <div class="mb-5">
-                    <input type="text" wire:model.debounce.400ms="corporateSearch"
+                    <input type="text" wire:model.live.debounce.400ms="corporateSearch"
                         class="form-control max-w-xs"
                         placeholder="Search corporates...">
                 </div>
@@ -505,7 +505,7 @@
             {{-- Sold Policies Tab --}}
             @if ($section === 'sold_policies')
                 <div class="mb-5">
-                    <input type="text" wire:model.debounce.400ms="soldPoliciesSearch"
+                    <input type="text" wire:model.live.debounce.400ms="soldPoliciesSearch"
                         class="form-control max-w-xs"
                         placeholder="Search by policy number...">
                 </div>
@@ -608,7 +608,7 @@
             {{-- Offers Tab --}}
             @if ($section === 'offers')
                 <div class="mb-5">
-                    <input type="text" wire:model.debounce.400ms="offersSearch"
+                    <input type="text" wire:model.live.debounce.400ms="offersSearch"
                         class="form-control max-w-xs"
                         placeholder="Search by item title...">
                 </div>

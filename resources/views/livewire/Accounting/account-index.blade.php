@@ -74,7 +74,7 @@
     <div class="mb-5">
         <iconify-icon wire:loading wire:target="searchText" class="loading-icon text-lg"
             icon="line-md:loading-twotone-loop"></iconify-icon>
-        <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..." wire:model="searchText">
+        <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..." wire:model.live="searchText">
     </div>
 
     <div class="card">
@@ -183,7 +183,7 @@
                         <div class="p-6 space-y-4">
                             {{-- <div class="form-group mb-5">
                                 <label for="acc_code" class="form-label">Code</label>
-                                <input type="text" id="acc_code" class="form-control mt-2 w-full {{ $errors->has('acc_code') ? '!border-danger-500' : '' }}" wire:model.defer="acc_code" max="100">
+                                <input type="text" id="acc_code" class="form-control mt-2 w-full {{ $errors->has('acc_code') ? '!border-danger-500' : '' }}" wire:model="acc_code" max="100">
                                 @error('acc_code')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -192,7 +192,7 @@
                                 <label for="acc_name" class="form-label">Name</label>
                                 <input type="text" id="acc_name"
                                     class="form-control mt-2 w-full {{ $errors->has('acc_name') ? '!border-danger-500' : '' }}"
-                                    wire:model.defer="acc_name" max="100">
+                                    wire:model="acc_name" max="100">
                                 @error('acc_name')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -201,7 +201,7 @@
                             <div class="form-group mb-5">
                                 <label for="acc_desc" class="form-label">Description</label>
                                 <textarea id="acc_desc" class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}"
-                                    wire:model.defer="acc_desc"></textarea>
+                                    wire:model="acc_desc"></textarea>
                                 @error('acc_desc')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -211,7 +211,7 @@
                                 <label for="nature" class="form-label">Nature</label>
                                 <select id="nature"
                                     class="form-control mt-2 w-full {{ $errors->has('nature') ? '!border-danger-500' : '' }}"
-                                    wire:model.defer="nature">
+                                    wire:model="nature">
                                     <option value="">Select Nature</option>
                                     @foreach ($natures as $nature)
                                         <option value="{{ $nature }}">{{ ucwords($nature) }}</option>
@@ -226,7 +226,7 @@
                                 <label for="mainAccountId" class="form-label">Main Account</label>
                                 <select id="mainAccountId"
                                     class="form-control mt-2 w-full {{ $errors->has('mainAccountId') ? '!border-danger-500' : '' }}"
-                                    wire:model="mainAccountId">
+                                    wire:model.live="mainAccountId">
                                     <option value="">Select Type</option>
                                     @foreach ($main_accounts as $main_account)
                                         <option value="{{ $main_account->id }}">
@@ -248,7 +248,7 @@
                                     <label for="parent_account_id" class="form-label">Parent Account</label>
                                     <select
                                         class="form-control mt-2 w-full {{ $errors->has('parent_account_id') ? '!border-danger-500' : '' }}"
-                                        wire:model.defer="parent_account_id">
+                                        wire:model="parent_account_id">
                                         <option value="">Select Type</option>
                                         {{-- @foreach ($filteredAccounts as $filteredAccount)
                                             <option value="{{ $filteredAccount->id }}">{{ ucwords($filteredAccount->name) . ucwords($filteredAccount->desc ? ' • ' . $filteredAccount->desc : '') }}</option>
@@ -268,7 +268,7 @@
                             <div class="mb-4">
                                 <label for="defaultCurrency" class="block text-sm font-medium text-gray-700">Default
                                     Currency</label>
-                                <select id="defaultCurrency" wire:model="defaultCurrency" class="form-control">
+                                <select id="defaultCurrency" wire:model.live="defaultCurrency" class="form-control">
                                     @foreach ($CURRENCIES as $currency)
                                         <option value="{{ $currency }}">{{ $currency }}</option>
                                     @endforeach
@@ -280,7 +280,7 @@
                             <div class="form-group mb-5">
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden" wire:model="is_show_dashboard">
+                                        <input type="checkbox" class="hidden" wire:model.live="is_show_dashboard">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative
                                         {{ $is_show_dashboard ? 'bg-slate-900 dark:bg-slate-700' : 'bg-slate-100 dark:bg-slate-600' }}">
@@ -302,7 +302,7 @@
                                 <label for="acc_desc" class="form-label">Desciption</label>
                                 <input type="number" id="acc_desc"
                                     class="form-control mt-2 w-full {{ $errors->has('acc_desc') ? '!border-danger-500' : '' }}"
-                                    wire:model.defer="acc_desc" step="0.01">
+                                    wire:model="acc_desc" step="0.01">
                                 @error('acc_desc')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -370,7 +370,7 @@
                                 <label for="exportMode" class="form-label">Export Mode</label>
                                 <select id="exportMode"
                                     class="form-control mt-2 w-full {{ $errors->has('exportMode') ? '!border-danger-500' : '' }}"
-                                    wire:model="exportMode">
+                                    wire:model.live="exportMode">
                                     <option value="balance">Balance Only</option>
                                     <option value="entries">With Entries</option>
                                 </select>
@@ -384,7 +384,7 @@
                                 <label for="exportFromDate" class="form-label">Included Levels</label>
                                 <input type="number" id="exportFromDate"
                                     class="form-control mt-2 w-full {{ $errors->has('exportIncludedLevels') ? '!border-danger-500' : '' }}"
-                                    wire:model="exportIncludedLevels" @disabled($exportMode == 'entries')>
+                                    wire:model.live="exportIncludedLevels" @disabled($exportMode == 'entries')>
                                 @error('exportIncludedLevels')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -397,7 +397,7 @@
                                     <label for="exportFromDate" class="form-label">From Date</label>
                                     <input type="date" id="exportFromDate"
                                         class="form-control mt-2 w-full {{ $errors->has('exportFromDate') ? '!border-danger-500' : '' }}"
-                                        wire:model="exportFromDate" @disabled($exportMode == 'balance')>
+                                        wire:model.live="exportFromDate" @disabled($exportMode == 'balance')>
                                     @error('exportFromDate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -407,7 +407,7 @@
                                     <label for="exportToDate" class="form-label">To Date</label>
                                     <input type="date" id="exportToDate"
                                         class="form-control mt-2 w-full {{ $errors->has('exportToDate') ? '!border-danger-500' : '' }}"
-                                        wire:model="exportToDate">
+                                        wire:model.live="exportToDate">
                                     @error('exportToDate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -419,7 +419,7 @@
                             <div class="form-group mb-5">
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden" wire:model="exportMainAccountsOnly">
+                                        <input type="checkbox" class="hidden" wire:model.live="exportMainAccountsOnly">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative
                                         {{ $exportMainAccountsOnly ? 'bg-slate-900 dark:bg-slate-700' : 'bg-slate-100 dark:bg-slate-600' }}">
@@ -437,7 +437,7 @@
                             <div class="form-group mb-5">
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden" wire:model="exportShowZeroBalances">
+                                        <input type="checkbox" class="hidden" wire:model.live="exportShowZeroBalances">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative
                                         {{ $exportShowZeroBalances ? 'bg-slate-900 dark:bg-slate-700' : 'bg-slate-100 dark:bg-slate-600' }}">
@@ -507,7 +507,7 @@
                                 <label for="openingBalanceYear" class="form-label">Year</label>
                                 <input type="number" id="openingBalanceYear"
                                     class="form-control mt-2 w-full {{ $errors->has('openingBalanceYear') ? '!border-danger-500' : '' }}"
-                                    wire:model="openingBalanceYear" min="2000"
+                                    wire:model.live="openingBalanceYear" min="2000"
                                     max="{{ \Carbon\Carbon::now()->year + 10 }}"
                                     placeholder="Enter year (e.g., {{ \Carbon\Carbon::now()->year }})">
                                 @error('openingBalanceYear')
@@ -521,7 +521,7 @@
                             <div class="form-group mb-5">
                                 <div class="checkbox-area">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="hidden" wire:model="openingBalanceShowZero">
+                                        <input type="checkbox" class="hidden" wire:model.live="openingBalanceShowZero">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative
                                         {{ $openingBalanceShowZero ? 'bg-slate-900 dark:bg-slate-700' : 'bg-slate-100 dark:bg-slate-600' }}">
@@ -608,7 +608,7 @@
                                 <label for="archiveDate" class="form-label">Archive Date</label>
                                 <input type="date" id="archiveDate"
                                     class="form-control mt-2 w-full {{ $errors->has('archiveDate') ? '!border-danger-500' : '' }}"
-                                    wire:model="archiveDate" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                                    wire:model.live="archiveDate" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                                 @error('archiveDate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -673,7 +673,7 @@
                                     <label for="downloadArchivedFromDate" class="form-label">From Date</label>
                                     <input type="date" id="downloadArchivedFromDate"
                                         class="form-control mt-2 w-full {{ $errors->has('downloadArchivedFromDate') ? '!border-danger-500' : '' }}"
-                                        wire:model="downloadArchivedFromDate">
+                                        wire:model.live="downloadArchivedFromDate">
                                     @error('downloadArchivedFromDate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -683,7 +683,7 @@
                                     <label for="downloadArchivedToDate" class="form-label">To Date</label>
                                     <input type="date" id="downloadArchivedToDate"
                                         class="form-control mt-2 w-full {{ $errors->has('downloadArchivedToDate') ? '!border-danger-500' : '' }}"
-                                        wire:model="downloadArchivedToDate">
+                                        wire:model.live="downloadArchivedToDate">
                                     @error('downloadArchivedToDate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

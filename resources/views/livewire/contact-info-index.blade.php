@@ -19,7 +19,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search by name, email or phone number" wire:model="search">
+                placeholder="Search by name, email or phone number" wire:model.live="search">
         </header>
 
 
@@ -350,7 +350,7 @@
                                         <label for="first_name" class="form-label">First name</label>
                                         <input id="first_name" type="text"
                                             class="form-control @error('first_name') !border-danger-500 @enderror"
-                                            wire:model.defer="first_name">
+                                            wire:model="first_name">
                                         @error('first_name')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
@@ -360,7 +360,7 @@
                                         <label for="last_name" class="form-label">Last name</label>
                                         <input id="last_name" type="text"
                                             class="form-control @error('last_name') !border-danger-500 @enderror"
-                                            wire:model.defer="last_name">
+                                            wire:model="last_name">
                                         @error('last_name')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
@@ -372,7 +372,7 @@
                                         <label for="job_title" class="form-label">Job title</label>
                                         <input id="job_title" type="text"
                                             class="form-control @error('job_title') !border-danger-500 @enderror"
-                                            wire:model.defer="job_title">
+                                            wire:model="job_title">
                                         @error('job_title')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -382,7 +382,7 @@
                                         <label for="company" class="form-label">Company</label>
                                         <input id="company" type="text"
                                             class="form-control @error('company') !border-danger-500 @enderror"
-                                            wire:model.defer="company">
+                                            wire:model="company">
                                         @error('company')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -394,7 +394,7 @@
                                     <label for="email" class="form-label">Email</label>
                                     <input id="email" type="text"
                                         class="form-control @error('email') !border-danger-500 @enderror"
-                                        wire:model.defer="email">
+                                        wire:model="email">
                                     @error('email')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -407,7 +407,7 @@
                                         <label for="mob_number1" class="form-label">Mobile 1</label>
                                         <input id="mob_number1" type="text"
                                             class="form-control @error('mob_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="mob_number1">
+                                            wire:model="mob_number1">
                                         @error('mob_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -418,7 +418,7 @@
                                         <label for="mob_number2" class="form-label">Mobile 2</label>
                                         <input id="mob_number2" type="text"
                                             class="form-control @error('mob_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="mob_number2">
+                                            wire:model="mob_number2">
                                         @error('mob_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -432,7 +432,7 @@
                                         <label for="home_number1" class="form-label">Home number 1</label>
                                         <input id="home_number1" type="text"
                                             class="form-control @error('home_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="home_number1">
+                                            wire:model="home_number1">
                                         @error('home_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -443,7 +443,7 @@
                                         <label for="home_number2" class="form-label">Hotline</label>
                                         <input id="home_number2" type="text"
                                             class="form-control @error('home_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="home_number2">
+                                            wire:model="home_number2">
                                         @error('home_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -457,7 +457,7 @@
                                         <label for="work_number1" class="form-label">Work number 1</label>
                                         <input id="work_number1" type="text"
                                             class="form-control @error('work_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="work_number1">
+                                            wire:model="work_number1">
                                         @error('work_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -468,7 +468,7 @@
                                         <label for="work_number2" class="form-label">Work number 2</label>
                                         <input id="work_number2" type="text"
                                             class="form-control @error('work_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="work_number2">
+                                            wire:model="work_number2">
                                         @error('work_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -481,7 +481,7 @@
                                     <label for="address_street" class="form-label">Address street</label>
                                     <input id="address_street" type="text"
                                         class="form-control @error('address_street') !border-danger-500 @enderror"
-                                        wire:model.defer="address_street">
+                                        wire:model="address_street">
                                     @error('address_street')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -493,7 +493,7 @@
                                         <label for="address_district" class="form-label">District</label>
                                         <input id="address_district" type="text"
                                             class="form-control @error('address_district') !border-danger-500 @enderror"
-                                            wire:model.defer="address_district">
+                                            wire:model="address_district">
                                         @error('address_district')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -504,7 +504,7 @@
                                         <label for="address_governate" class="form-label">Governerate</label>
                                         <input id="address_governate" type="text"
                                             class="form-control @error('address_governate') !border-danger-500 @enderror"
-                                            wire:model.defer="address_governate">
+                                            wire:model="address_governate">
                                         @error('address_governate')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -515,7 +515,7 @@
                                         <label for="address_country" class="form-label">Country</label>
                                         <input id="address_country" type="text"
                                             class="form-control @error('address_country') !border-danger-500 @enderror"
-                                            wire:model.defer="address_country">
+                                            wire:model="address_country">
                                         @error('address_country')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -528,7 +528,7 @@
                                     <label for="url" class="form-label">Url</label>
                                     <input id="url" type="text"
                                         class="form-control @error('url') !border-danger-500 @enderror"
-                                        wire:model.defer="url">
+                                        wire:model="url">
                                     @error('url')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -540,7 +540,7 @@
                                     <label for="image" class="form-label">Image</label>
                                     <input id="image" type="file"
                                         class="form-control @error('image') !border-danger-500 @enderror"
-                                        wire:model.defer="image">
+                                        wire:model="image">
                                     @error('image')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -601,7 +601,7 @@
                                         <label for="first_name" class="form-label">First name</label>
                                         <input id="first_name" type="text"
                                             class="form-control @error('first_name') !border-danger-500 @enderror"
-                                            wire:model.defer="first_name">
+                                            wire:model="first_name">
                                         @error('first_name')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
@@ -611,7 +611,7 @@
                                         <label for="last_name" class="form-label">Last name</label>
                                         <input id="last_name" type="text"
                                             class="form-control @error('last_name') !border-danger-500 @enderror"
-                                            wire:model.defer="last_name">
+                                            wire:model="last_name">
                                         @error('last_name')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 inline-block">{{ $message }}</span>
@@ -624,7 +624,7 @@
                                         <label for="job_title" class="form-label">Job title</label>
                                         <input id="job_title" type="text"
                                             class="form-control @error('job_title') !border-danger-500 @enderror"
-                                            wire:model.defer="job_title">
+                                            wire:model="job_title">
                                         @error('job_title')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -634,7 +634,7 @@
                                         <label for="company" class="form-label">Company</label>
                                         <input id="company" type="text"
                                             class="form-control @error('company') !border-danger-500 @enderror"
-                                            wire:model.defer="company">
+                                            wire:model="company">
                                         @error('company')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -646,7 +646,7 @@
                                     <label for="email" class="form-label">Email</label>
                                     <input id="email" type="text"
                                         class="form-control @error('email') !border-danger-500 @enderror"
-                                        wire:model.defer="email">
+                                        wire:model="email">
                                     @error('email')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -659,7 +659,7 @@
                                         <label for="mob_number1" class="form-label">Mobile 1</label>
                                         <input id="mob_number1" type="text"
                                             class="form-control @error('mob_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="mob_number1">
+                                            wire:model="mob_number1">
                                         @error('mob_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -670,7 +670,7 @@
                                         <label for="mob_number2" class="form-label">Mobile 2</label>
                                         <input id="mob_number2" type="text"
                                             class="form-control @error('mob_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="mob_number2">
+                                            wire:model="mob_number2">
                                         @error('mob_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -684,7 +684,7 @@
                                         <label for="home_number1" class="form-label">Home number 1</label>
                                         <input id="home_number1" type="text"
                                             class="form-control @error('home_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="home_number1">
+                                            wire:model="home_number1">
                                         @error('home_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -695,7 +695,7 @@
                                         <label for="home_number2" class="form-label">Hotline</label>
                                         <input id="home_number2" type="text"
                                             class="form-control @error('home_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="home_number2">
+                                            wire:model="home_number2">
                                         @error('home_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -709,7 +709,7 @@
                                         <label for="work_number1" class="form-label">Work number 1</label>
                                         <input id="work_number1" type="text"
                                             class="form-control @error('work_number1') !border-danger-500 @enderror"
-                                            wire:model.defer="work_number1">
+                                            wire:model="work_number1">
                                         @error('work_number1')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -720,7 +720,7 @@
                                         <label for="work_number2" class="form-label">Work number 2</label>
                                         <input id="work_number2" type="text"
                                             class="form-control @error('work_number2') !border-danger-500 @enderror"
-                                            wire:model.defer="work_number2">
+                                            wire:model="work_number2">
                                         @error('work_number2')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -733,7 +733,7 @@
                                     <label for="address_street" class="form-label">Address street</label>
                                     <input id="address_street" type="text"
                                         class="form-control @error('address_street') !border-danger-500 @enderror"
-                                        wire:model.defer="address_street">
+                                        wire:model="address_street">
                                     @error('address_street')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -745,7 +745,7 @@
                                         <label for="address_district" class="form-label">District</label>
                                         <input id="address_district" type="text"
                                             class="form-control @error('address_district') !border-danger-500 @enderror"
-                                            wire:model.defer="address_district">
+                                            wire:model="address_district">
                                         @error('address_district')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -756,7 +756,7 @@
                                         <label for="address_governate" class="form-label">Governerate</label>
                                         <input id="address_governate" type="text"
                                             class="form-control @error('address_governate') !border-danger-500 @enderror"
-                                            wire:model.defer="address_governate">
+                                            wire:model="address_governate">
                                         @error('address_governate')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -767,7 +767,7 @@
                                         <label for="address_country" class="form-label">Country</label>
                                         <input id="address_country" type="text"
                                             class="form-control @error('address_country') !border-danger-500 @enderror"
-                                            wire:model.defer="address_country">
+                                            wire:model="address_country">
                                         @error('address_country')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -780,7 +780,7 @@
                                     <label for="url" class="form-label">Url</label>
                                     <input id="url" type="text"
                                         class="form-control @error('url') !border-danger-500 @enderror"
-                                        wire:model.defer="url">
+                                        wire:model="url">
                                     @error('url')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -790,7 +790,7 @@
                                 <div class="input-area mt-3">
                                     <label for="firstName" class="form-label">Image</label>
                                     @if (!$image)
-                                        <input wire:model="image" type="file" class="form-control w-full "
+                                        <input wire:model.live="image" type="file" class="form-control w-full "
                                             name="basic" />
                                     @else
                                         <span class="block min-w-[140px] text-left">
@@ -818,7 +818,7 @@
 
                                 {{-- <div class="input-area mt-3">
                                     <label for="image" class="form-label">Image</label>
-                                    <input id="image" type="file" class="form-control @error('image') !border-danger-500 @enderror" wire:model.defer="image">
+                                    <input id="image" type="file" class="form-control @error('image') !border-danger-500 @enderror" wire:model="image">
                                     @error('image')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror

@@ -22,7 +22,7 @@
                                             <li class="inline-block relative text-sm top-[3px] text-slate-500 font-Inter dark:text-white">
                                                 @if ($editCarField)
                                                     <div class="relative">
-                                                        <input type="text" class="form-control !pr-9 @error('editCarName') !border-danger-500 @enderror" wire:model="editCarName">
+                                                        <input type="text" class="form-control !pr-9 @error('editCarName') !border-danger-500 @enderror" wire:model.live="editCarName">
                                                         <button wire:click="saveCarName" class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                                             <iconify-icon icon="material-symbols:save"></iconify-icon>
                                                         </button>
@@ -41,7 +41,7 @@
                                         @enderror
                                         @if ($editCarField)
                                             <div class="mt-2">
-                                                <select wire:model="editEngineType" class="form-control @error('editEngineType') !border-danger-500 @enderror">
+                                                <select wire:model.live="editEngineType" class="form-control @error('editEngineType') !border-danger-500 @enderror">
                                                     <option value="">Engine type</option>
                                                     @foreach (\App\Models\Cars\Car::ENGINE_TYPES as $engineType)
                                                         <option value="{{ $engineType }}">{{ $engineType }}</option>
@@ -135,7 +135,7 @@
                                                         </td>
                                                     @elseif($updateThisPriceId === $price->id)
                                                         <td class="table-td" style="padding: 5px;">
-                                                            <select class="form-control  @error('updatedYear') !border-danger-500 @enderror" name="model_year" wire:model="updatedYear">
+                                                            <select class="form-control  @error('updatedYear') !border-danger-500 @enderror" name="model_year" wire:model.live="updatedYear">
                                                                 @php
                                                                     $currentYear = date('Y');
                                                                 @endphp
@@ -150,7 +150,7 @@
 
                                                         </td>
                                                         <td class="table-td text-success-500">
-                                                            <input type="number" class="form-control @error('updatedPrice') !border-danger-500 @enderror" name="price" placeholder="{{ $price->price }}" wire:model="updatedPrice">
+                                                            <input type="number" class="form-control @error('updatedPrice') !border-danger-500 @enderror" name="price" placeholder="{{ $price->price }}" wire:model.live="updatedPrice">
                                                         </td>
                                                         <input type="hidden" name="card_id" value="{{ $carPriceListId }}">
                                                         <td class="table-td ">
@@ -197,7 +197,7 @@
                                                 <form>
                                                     <tr>
                                                         <td class="table-td" style="padding: 5px;">
-                                                            <select id="select" class="form-control @error('newPriceYear') !border-danger-500 @enderror" wire:model="newPriceYear" name="model_year">
+                                                            <select id="select" class="form-control @error('newPriceYear') !border-danger-500 @enderror" wire:model.live="newPriceYear" name="model_year">
                                                                 @php
                                                                     $currentYear = date('Y');
                                                                 @endphp
@@ -212,7 +212,7 @@
 
                                                         </td>
                                                         <td class="table-td text-success-500">
-                                                            <input id="number" type="number" class="form-control @error('newPrice') !border-danger-500 @enderror" placeholder="Enter Price" wire:model="newPrice" name="price">
+                                                            <input id="number" type="number" class="form-control @error('newPrice') !border-danger-500 @enderror" placeholder="Enter Price" wire:model.live="newPrice" name="price">
                                                         </td>
                                                         <input type="hidden" name="card_id" value="{{ $carPriceListId }}">
                                                         <td class="table-td ">
@@ -359,7 +359,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="search">
             {{-- <div data-select2-id="select2-data-17-14zv py-1 text-sm" class="d-none">
                 <select name="select2basic" id="select2basic"
                     class="select2 form-control w-full mt-2 py-2 select2-hidden-accessible"
@@ -537,7 +537,7 @@
                             <h3 class="text-xl font-medium text-white dark:text-white capitalize">
                                 @if ($editBrandField)
                                     <div class="relative">
-                                        <input type="text" class="form-control !pr-9 @error('editBrandName') !border-danger-500 @enderror" wire:model="editBrandName">
+                                        <input type="text" class="form-control !pr-9 @error('editBrandName') !border-danger-500 @enderror" wire:model.live="editBrandName">
                                         <button wire:click="saveBrandName" class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                             <iconify-icon icon="material-symbols:save"></iconify-icon>
                                         </button>
@@ -671,7 +671,7 @@
                                     <li class="inline-block relative top-[3px] text-base font-Inter ">
                                         @if ($editModelField)
                                             <div class="relative">
-                                                <input type="text" class="form-control !pr-9 @error('editModelName') !border-danger-500 @enderror" wire:model="editModelName">
+                                                <input type="text" class="form-control !pr-9 @error('editModelName') !border-danger-500 @enderror" wire:model.live="editModelName">
                                                 <button wire:click="saveModelName" class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center text-slate-600 dark:text-slate-300">
                                                     <iconify-icon icon="material-symbols:save"></iconify-icon>
                                                 </button>
@@ -766,7 +766,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Cars File (Excel format)</label>
-                                <input wire:model="carsFile" type="file" class="form-control w-full "
+                                <input wire:model.live="carsFile" type="file" class="form-control w-full "
                                     name="basic" accept=".xls,.xlsx" />
                                 @error('carsFile')
                                     <span

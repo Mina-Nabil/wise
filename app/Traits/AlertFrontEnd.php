@@ -9,10 +9,7 @@ trait AlertFrontEnd
 
     public function alert($type, $message)
     {
-        $this->dispatchBrowserEvent('toastalert', [
-            'message' => $message,
-            'type' => $type, // or 'failed' or 'info'
-        ]);
+        $this->dispatch('toastalert', message: $message, type: $type);
     }
 
     public function throwError($property, $message)

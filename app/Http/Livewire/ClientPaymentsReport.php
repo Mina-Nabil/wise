@@ -141,7 +141,7 @@ class ClientPaymentsReport extends Component
 
     public function redirectToShowPage($id)
     {
-        $this->dispatchBrowserEvent('openNewTab', ['url' => route('sold.policy.show', ['id' => $id])]);
+        $this->dispatch('openNewTab', url: route('sold.policy.show', ['id' => $id]));
     }
 
     public function filterByStatus($status)

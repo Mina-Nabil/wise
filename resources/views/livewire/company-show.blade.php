@@ -529,7 +529,7 @@
                             @endif --}}
                             <div class="input-area">
                                 <label for="firstName" class="form-label">Serial</label>
-                                <input type="number" step="0.01" wire:model="serial"
+                                <input type="number" step="0.01" wire:model.live="serial"
                                     class="form-control @error('serial') !border-danger-500 @enderror">
                                 @error('serial')
                                     <span
@@ -539,7 +539,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3">
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Gross Total</label>
-                                    <input type="number" step="0.01" wire:model="gross_total"
+                                    <input type="number" step="0.01" wire:model.live="gross_total"
                                         class="form-control @error('gross_total') !border-danger-500 @enderror"
                                         disabled>
                                     @error('gross_total')
@@ -549,7 +549,7 @@
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Tax</label>
-                                    <input wire:model="tax_total" disabled type="number" class="form-control">
+                                    <input wire:model.live="tax_total" disabled type="number" class="form-control">
                                     <!-- Hint message -->
                                     <small class="form-text text-muted">
                                         Tax is 5% of the gross total.
@@ -557,7 +557,7 @@
                                 </div>
                                 <div class="input-area">
                                     <label for="firstName" class="form-label">Net Total</label>
-                                    <input wire:model="net_total" disabled type="number" class="form-control">
+                                    <input wire:model.live="net_total" disabled type="number" class="form-control">
                                     <!-- Hint message -->
                                     <small class="form-text text-muted">
                                         Perm is 95% of the gross total.
@@ -567,7 +567,7 @@
 
                             <div class="input-area mt-3">
                                 <label for="invoice_payment_date" class="form-label">Payment date</label>
-                                <input type="date" id="invoice_payment_date" wire:model="invoice_payment_date"
+                                <input type="date" id="invoice_payment_date" wire:model.live="invoice_payment_date"
                                     class="form-control @error('invoice_payment_date') !border-danger-500 @enderror">
                                 @error('invoice_payment_date')
                                     <span
@@ -577,7 +577,7 @@
 
                             <div class="input-area mt-3">
                                 <label for="is_declare_debit" class="form-label">إشعار</label>
-                                <select id="is_declare_debit" wire:model="is_declare_debit"
+                                <select id="is_declare_debit" wire:model.live="is_declare_debit"
                                     class="form-control @error('is_declare_debit') !border-danger-500 @enderror">
                                     <option value="">N/A</option>
                                     <option value="0">اشعار دائن</option>
@@ -601,7 +601,7 @@
                                                     <div class="basicRadio">
                                                         <label class="flex items-center cursor-pointer">
                                                             <input type="radio" class="hidden" name="basicradios"
-                                                                wire:model="availableSoldPolicies_isNotPaid"
+                                                                wire:model.live="availableSoldPolicies_isNotPaid"
                                                                 value="0" checked="checked">
                                                             <span
                                                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -612,7 +612,7 @@
                                                     <div class="basicRadio">
                                                         <label class="flex items-center cursor-pointer">
                                                             <input type="radio" class="hidden" name="basicradios"
-                                                                wire:model="availableSoldPolicies_isNotPaid"
+                                                                wire:model.live="availableSoldPolicies_isNotPaid"
                                                                 value="1">
                                                             <span
                                                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -627,7 +627,7 @@
 
 
 
-                                            <input type="text" wire:model="seachAvailablePoliciesText"
+                                            <input type="text" wire:model.live="seachAvailablePoliciesText"
                                                 placeholder="Search sold policies by policy number"
                                                 class="form-control">
                                             <table
@@ -793,7 +793,7 @@
                                                 <div class="input-area">
                                                     <label for="firstName" class="form-label">Amount</label>
                                                     <input type="number" step="0.01" wire:change="updateTotal"
-                                                        wire:model.defer="sold_policies_entries.{{ $index }}.amount"
+                                                        wire:model="sold_policies_entries.{{ $index }}.amount"
                                                         class="form-control @error('sold_policies_entries.' . $index . '.amount') !border-danger-500 @enderror">
 
                                                     @error('sold_policies_entries.' . $index . '.amount')
@@ -804,7 +804,7 @@
                                                 <div class="input-area">
                                                     <label for="firstName" class="form-label">اذن صرف عموله</label>
                                                     <input type="number" step="0.01"
-                                                        wire:model.defer="sold_policies_entries.{{ $index }}.pymnt_perm"
+                                                        wire:model="sold_policies_entries.{{ $index }}.pymnt_perm"
                                                         class="form-control @error('sold_policies_entries.' . $index . '.pymnt_perm') !border-danger-500 @enderror">
 
                                                     @error('sold_policies_entries.' . $index . '.pymnt_perm')
@@ -871,7 +871,7 @@
                                             @foreach ($unlinkedExtras as $extra)
                                                 <tr class="even:bg-slate-50 dark:even:bg-slate-700">
                                                     <td class="table-td text-center">
-                                                        <input type="checkbox" wire:model="selectedExtras"
+                                                        <input type="checkbox" wire:model.live="selectedExtras"
                                                             value="{{ $extra->id }}"
                                                             class="form-checkbox h-5 w-5 text-primary-500 rounded">
                                                     </td>
@@ -942,7 +942,7 @@
                                 <label for="name" class="form-label">Company Name*</label>
                                 <input id="name" type="text"
                                     class="form-control @error('companyInfoName') !border-danger-500 @enderror"
-                                    placeholder="Company Name" wire:model.defer="companyInfoName">
+                                    placeholder="Company Name" wire:model="companyInfoName">
                                 @error('companyInfoName')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -952,7 +952,7 @@
                             <div class="input-area">
                                 <label for="name" class="form-label">Note</label>
                                 <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror"
-                                    placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
+                                    placeholder="Leave a note..." wire:model="companyInfoNote"></textarea>
                                 @error('companyInfoNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -964,7 +964,7 @@
                                 @inject('helper', 'App\Helpers\Helpers')
                                 <select id="account"
                                     class="form-control @error('companyInfoAccountId') !border-danger-500 @enderror"
-                                    wire:model.defer="companyInfoAccountId">
+                                    wire:model="companyInfoAccountId">
                                     <option value="">Select Account</option>
                                     @php
                                         $printed_arr = [];
@@ -1019,7 +1019,7 @@
                         <div class="p-6 space-y-4">
                             <div class="input-area">
                                 <label for="type" class="form-label">Type</label>
-                                <select wire:model="type"
+                                <select wire:model.live="type"
                                     class="form-control @error('type') !border-danger-500 @enderror">
                                     <option value="" disabled>Select type</option>
                                     @foreach ($Emailtypes as $typeOption)
@@ -1033,7 +1033,7 @@
                             </div>
                             <div class="input-area">
                                 <label for="job_title" class="form-label">Job Title</label>
-                                <input type="text" wire:model="job_title"
+                                <input type="text" wire:model.live="job_title"
                                     class="form-control @error('job_title') !border-danger-500 @enderror">
                                 @error('job_title')
                                     <span
@@ -1042,7 +1042,7 @@
                             </div>
                             <div class="input-area">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" wire:model="email"
+                                <input type="email" wire:model.live="email"
                                     class="form-control @error('email') !border-danger-500 @enderror">
                                 @error('email')
                                     <span
@@ -1051,7 +1051,7 @@
                             </div>
                             <div class="input-area">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="text" wire:model="phone"
+                                <input type="text" wire:model.live="phone"
                                     class="form-control @error('phone') !border-danger-500 @enderror">
                                 @error('phone')
                                     <span
@@ -1060,11 +1060,11 @@
                             </div>
                             <div class="input-area">
                                 <label for="is_primary" class="form-label">Primary</label>
-                                <input type="checkbox" wire:model="is_primary" class="form-checkbox">
+                                <input type="checkbox" wire:model.live="is_primary" class="form-checkbox">
                             </div>
                             <div class="input-area">
                                 <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" wire:model="first_name"
+                                <input type="text" wire:model.live="first_name"
                                     class="form-control @error('first_name') !border-danger-500 @enderror">
                                 @error('first_name')
                                     <span
@@ -1073,7 +1073,7 @@
                             </div>
                             <div class="input-area">
                                 <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" wire:model="last_name"
+                                <input type="text" wire:model.live="last_name"
                                     class="form-control @error('last_name') !border-danger-500 @enderror">
                                 @error('last_name')
                                     <span
@@ -1083,7 +1083,7 @@
 
                             <div class="input-area">
                                 <label for="note" class="form-label">Note</label>
-                                <textarea wire:model="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
+                                <textarea wire:model.live="note" class="form-control @error('note') !border-danger-500 @enderror"></textarea>
                                 @error('note')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1143,7 +1143,7 @@
                                 <label for="confirmDate" class="form-label">Date*</label>
                                 <input id="confirmDate" type="date"
                                     class="form-control @error('confirmDate') !border-danger-500 @enderror"
-                                    wire:model.defer="confirmDate">
+                                    wire:model="confirmDate">
                                 @error('confirmDate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1191,7 +1191,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="extraTitle" class="form-label">Title</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="extraTitle">
+                                <input type="text" class="form-control mt-2 w-full" wire:model="extraTitle">
                                 @error('extraTitle')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1200,7 +1200,7 @@
                             <div class="from-group">
                                 <label for="extraAmount" class="form-label">Amount</label>
                                 <input type="number" step="0.01" class="form-control mt-2 w-full"
-                                    wire:model.defer="extraAmount">
+                                    wire:model="extraAmount">
                                 @error('extraAmount')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1208,7 +1208,7 @@
                             </div>
                             <div class="from-group">
                                 <label for="extraNote" class="form-label">Note (Optional)</label>
-                                <textarea class="form-control mt-2 w-full" wire:model.defer="extraNote" rows="3"></textarea>
+                                <textarea class="form-control mt-2 w-full" wire:model="extraNote" rows="3"></textarea>
                                 @error('extraNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1264,7 +1264,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="extraTitle" class="form-label">Title</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model.defer="extraTitle">
+                                <input type="text" class="form-control mt-2 w-full" wire:model="extraTitle">
                                 @error('extraTitle')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1273,7 +1273,7 @@
                             <div class="from-group">
                                 <label for="extraAmount" class="form-label">Amount</label>
                                 <input type="number" step="0.01" class="form-control mt-2 w-full"
-                                    wire:model.defer="extraAmount">
+                                    wire:model="extraAmount">
                                 @error('extraAmount')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1281,7 +1281,7 @@
                             </div>
                             <div class="from-group">
                                 <label for="extraNote" class="form-label">Note (Optional)</label>
-                                <textarea class="form-control mt-2 w-full" wire:model.defer="extraNote" rows="3"></textarea>
+                                <textarea class="form-control mt-2 w-full" wire:model="extraNote" rows="3"></textarea>
                                 @error('extraNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -1397,7 +1397,7 @@
                         @inject('helper', 'App\Helpers\Helpers')
                         <select id="account"
                             class="form-control @error('bankAccountId') !border-danger-500 @enderror"
-                            wire:model.defer="bankAccountId">
+                            wire:model="bankAccountId">
                             <option value="">Select Account</option>
                             @php
                                 $printed_arr = [];
@@ -1413,7 +1413,7 @@
 
                     <div>
                         <label class="font-medium block">Transaction Fees</label>
-                        <input type="number" step="0.01" wire:model.defer="transFees"
+                        <input type="number" step="0.01" wire:model="transFees"
                             class="block bg-gray-200 w-full h-10 rounded-lg px-4 border border-transparent focus:border-blue-300 focus:ring-0">
                         @error('transFees')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
@@ -1422,7 +1422,7 @@
 
                     <div>
                         <label class="font-medium block">Transaction Fees Notes</label>
-                        <textarea wire:model.defer="transFeesNotes" rows="3"
+                        <textarea wire:model="transFeesNotes" rows="3"
                             class="block bg-gray-200 w-full rounded-lg px-4 py-2 border border-transparent focus:border-blue-300 focus:ring-0"
                             placeholder="Optional notes about transaction fees"></textarea>
                         @error('transFeesNotes')

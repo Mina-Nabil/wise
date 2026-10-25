@@ -20,7 +20,7 @@
             @endif --}}
             <div class="checkbox-area">
                 <label class="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" class="hidden" name="checkbox" checked="checked" wire:model="addNewBrand">
+                    <input type="checkbox" class="hidden" name="checkbox" checked="checked" wire:model.live="addNewBrand">
                     <span
                         class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                         <img src="assets/images/icon/ck-white.svg" alt=""
@@ -34,7 +34,7 @@
 
             @if (!$addNewBrand)
                 <label for="brandSelect" class="form-label">Brand</label>
-                <select name="brand_id" wire:model="brandId" id="brandSelect" class="form-control w-full mt-2">
+                <select name="brand_id" wire:model.live="brandId" id="brandSelect" class="form-control w-full mt-2">
                     <option value="" selected>Select an option</option>
                     @foreach ($brands as $brand)
                         <option value="{{ $brand->id }}">{{ $brand->name }}</option>
@@ -45,7 +45,7 @@
                     <label for="name" class="form-label">Brand</label>
                     <input name="brand_name" id="name" type="text"
                         class="form-control @if ($errors->has('brandName')) !border-danger-500 !pr-9 @endif"
-                        placeholder="Enter" wire:model="brandName">
+                        placeholder="Enter" wire:model.live="brandName">
                     @if ($errors->has('brandName'))
                         <span
                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('brandName') }}</span>
@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <label for="carModelSelect" class="form-label">Country</label>
-                    <select name="country_id" wire:model="country" id="carModelSelect"
+                    <select name="country_id" wire:model.live="country" id="carModelSelect"
                         class="form-control w-full mt-2 @if ($errors->has('country')) !border-danger-500 !pr-9 @endif">
                         <option value="" selected>Select an option</option>
                         @foreach ($countries as $country)
@@ -69,7 +69,7 @@
                     <label for="name" class="form-label">Model</label>
                     <input name="model_name" id="name" type="text"
                         class="form-control @if ($errors->has('modelName')) !border-danger-500 !pr-9 @endif"
-                        placeholder="Enter" wire:model="modelName">
+                        placeholder="Enter" wire:model.live="modelName">
                     @if ($errors->has('modelName'))
                         <span
                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('modelName') }}</span>
@@ -79,7 +79,7 @@
                     <label for="name" class="form-label">Category</label>
                     <input id="category_name" type="text"
                         class="form-control @if ($errors->has('categoryName')) !border-danger-500 !pr-9 @endif"
-                        placeholder="Enter" wire:model="categoryName">
+                        placeholder="Enter" wire:model.live="categoryName">
                     @if ($errors->has('categoryName'))
                         <span
                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('categoryName') }}</span>
@@ -92,7 +92,7 @@
         @if ($brandId)
             <div class="checkbox-area">
                 <label class="inline-flex items-center cursor-pointer ">
-                    <input type="checkbox" class="hidden" name="checkbox" checked="checked" wire:model="addNewModel">
+                    <input type="checkbox" class="hidden" name="checkbox" checked="checked" wire:model.live="addNewModel">
                     <span
                         class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                         <img src="assets/images/icon/ck-white.svg" alt=""
@@ -106,7 +106,7 @@
                     <label for="model_name" class="form-label">Model</label>
                     <input name="model_name" id="model_name" type="text"
                         class="form-control @if ($errors->has('modelName')) !border-danger-500 !pr-9 @endif"
-                        placeholder="Enter model name" wire:model="modelName">
+                        placeholder="Enter model name" wire:model.live="modelName">
                     @if ($errors->has('modelName'))
                         <span
                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('modelName') }}</span>
@@ -116,7 +116,7 @@
                     <label for="category" class="form-label">Category</label>
                     <input name="category_name" id="category" type="text"
                         class="form-control @if ($errors->has('categoryName')) !border-danger-500 !pr-9 @endif"
-                        placeholder="Enter category" wire:model="categoryName">
+                        placeholder="Enter category" wire:model.live="categoryName">
                     @if ($errors->has('categoryName'))
                         <span
                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('categoryName') }}</span>
@@ -125,7 +125,7 @@
             @else
                 <div>
                     <label for="carModelSelect" class="form-label">Model</label>
-                    <select name="model_id" wire:model="selectedCarModel" id="carModelSelect"
+                    <select name="model_id" wire:model.live="selectedCarModel" id="carModelSelect"
                         class="form-control w-full mt-2 @if ($errors->has('selectedCarModel')) !border-danger-500 !pr-9 @endif">
                         <option value="" selected>Select an option</option>
                         @foreach ($carModels as $carModel)
@@ -144,7 +144,7 @@
 
         <div class="input-area">
             <label for="engine_type" class="form-label">Engine type</label>
-            <select id="engine_type" wire:model="engineType"
+            <select id="engine_type" wire:model.live="engineType"
                 class="form-control w-full mt-2 @if ($errors->has('engineType')) !border-danger-500 @endif">
                 <option value="">Select an option</option>
                 @foreach (\App\Models\Cars\Car::ENGINE_TYPES as $engineType)
@@ -161,7 +161,7 @@
                 <label for="name" class="form-label">Category</label>
                 <input name="category_name" id="name" type="text"
                     class="form-control @if ($errors->has('categoryName')) !border-danger-500 !pr-9 @endif"
-                    placeholder="Enter" wire:model="categoryName">
+                    placeholder="Enter" wire:model.live="categoryName">
                 @if ($errors->has('categoryName'))
                     <span
                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $errors->first('categoryName') }}</span>

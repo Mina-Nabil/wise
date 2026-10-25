@@ -19,7 +19,7 @@
             <div class="flex gap-5">
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" class="hidden" value="all" wire:model="outstandingType">
+                        <input type="radio" class="hidden" value="all" wire:model.live="outstandingType">
                         <span
                             class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                         <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
@@ -28,7 +28,7 @@
 
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" class="hidden" value="policy" wire:model="outstandingType">
+                        <input type="radio" class="hidden" value="policy" wire:model.live="outstandingType">
                         <span
                             class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                         <span class="text-secondary-500 text-sm leading-6 capitalize">Client Payment Outstanding</span>
@@ -37,7 +37,7 @@
                 @can('viewCommission', App\Models\Business\SoldPolicy::class)
                     <div class="secondary-radio">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" class="hidden" value="commission" wire:model="outstandingType">
+                            <input type="radio" class="hidden" value="commission" wire:model.live="outstandingType">
                             <span
                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                             <span class="text-secondary-500 text-sm leading-6 capitalize">Commission Outstanding</span>
@@ -46,7 +46,7 @@
 
                     <div class="secondary-radio">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" class="hidden" value="invoice" wire:model="outstandingType">
+                            <input type="radio" class="hidden" value="invoice" wire:model.live="outstandingType">
                             <span
                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                             <span class="text-secondary-500 text-sm leading-6 capitalize">Invoice Outstanding</span>
@@ -141,7 +141,7 @@
                         <iconify-icon wire:loading class="loading-icon text-lg"
                             icon="line-md:loading-twotone-loop"></iconify-icon>
                         <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                            wire:model="search">
+                            wire:model.live="search">
                     </header>
                     <header class="card-header cust-card-header noborder justify-start gap-2">
 
@@ -537,7 +537,7 @@
                                                                             class="form-label">Start from</label>
                                                                         <input name="Estart_from" type="date"
                                                                             class="form-control mt-2 w-full @error('Estart_from') !border-danger-500 @enderror"
-                                                                            wire:model.defer="Estart_from">
+                                                                            wire:model="Estart_from">
                                                                         @error('Estart_from')
                                                                             <span
                                                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -548,7 +548,7 @@
                                                                             class="form-label">Start to</label>
                                                                         <input name="Estart_to" type="date"
                                                                             class="form-control mt-2 w-full @error('Estart_to') !border-danger-500 @enderror"
-                                                                            wire:model.defer="Estart_to">
+                                                                            wire:model="Estart_to">
                                                                         @error('Estart_to')
                                                                             <span
                                                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -649,7 +649,7 @@
                                                                             Company</label>
                                                                         <input name="searchCompany" type="text"
                                                                             class="form-control mt-2 w-full"
-                                                                            wire:model="searchCompany">
+                                                                            wire:model.live="searchCompany">
                                                                     </div>
                                                                     <table
                                                                         class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
@@ -680,7 +680,7 @@
                                                                                                 class="inline-flex items-center cursor-pointer">
                                                                                                 <input type="checkbox"
                                                                                                     class="hidden"
-                                                                                                    wire:model="Ecompany_ids"
+                                                                                                    wire:model.live="Ecompany_ids"
                                                                                                     value="{{ $company->id }}">
                                                                                                 <span
                                                                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150"></span>
@@ -756,13 +756,13 @@
                                                                             <label class="form-label">From
                                                                                 Date</label>
                                                                             <input type="date" class="form-control"
-                                                                                wire:model="Epayment_from">
+                                                                                wire:model.live="Epayment_from">
                                                                         </div>
                                                                         <div>
                                                                             <label class="form-label">To
                                                                                 Date</label>
                                                                             <input type="date" class="form-control"
-                                                                                wire:model="Epayment_to">
+                                                                                wire:model.live="Epayment_to">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -818,13 +818,13 @@
                                                                             <label class="form-label">From
                                                                                 Date</label>
                                                                             <input type="date" class="form-control"
-                                                                                wire:model="Einvoice_payment_from">
+                                                                                wire:model.live="Einvoice_payment_from">
                                                                         </div>
                                                                         <div>
                                                                             <label class="form-label">To
                                                                                 Date</label>
                                                                             <input type="date" class="form-control"
-                                                                                wire:model="Einvoice_payment_to">
+                                                                                wire:model.live="Einvoice_payment_to">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -880,7 +880,7 @@
                                                                             <div class="checkbox-area">
                                                                                 <label class="inline-flex items-center cursor-pointer">
                                                                                     <input type="checkbox" class="hidden" value="{{ $STATUS }}"
-                                                                                        name="checkbox" wire:model="Estatuses">
+                                                                                        name="checkbox" wire:model.live="Estatuses">
                                                                                     <span
                                                                                         class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                                                         <img src="{{ asset('assets/images/icon/ck-white.svg') }}"

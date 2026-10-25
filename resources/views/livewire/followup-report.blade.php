@@ -360,7 +360,7 @@
                             <div class="from-group">
                                 <label for="EcalledType" class="form-label">Client type</label>
                                 <select name="EcalledType" id="EcalledType" class="form-control w-full mt-2"
-                                    wire:model="EcalledType">
+                                    wire:model.live="EcalledType">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="customer">Customer</option>
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
@@ -372,7 +372,7 @@
 
                             <div class="from-group">
                                 <input name="EcallTime_from" placeholder="Search client..." type="text"
-                                    class="form-control mt-2 w-full" wire:model="searchClientText">
+                                    class="form-control mt-2 w-full" wire:model.live="searchClientText">
                             </div>
 
                             <div class="overflow-hidden ">
@@ -459,7 +459,7 @@
                             <div class="from-group">
                                 <label for="ESalesId" class="form-label">Sales</label>
                                 <select name="ESalesId" id="ESalesId" class="form-control w-full mt-2"
-                                    wire:model.defer="ESalesId">
+                                    wire:model="ESalesId">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -522,7 +522,7 @@
                             <div class="from-group">
                                 <label for="Eline_of_business" class="form-label">Line of business</label>
                                 <select name="Eline_of_business" id="Eline_of_business"
-                                    class="form-control w-full mt-2" wire:model.defer="Eline_of_business">
+                                    class="form-control w-full mt-2" wire:model="Eline_of_business">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select LOB </option>
@@ -586,7 +586,7 @@
                                 <label for="EcallTime_from" class="form-label">From</label>
                                 <input name="EcallTime_from" type="date"
                                     class="form-control mt-2 w-full @error('EcallTime_from') !border-danger-500 @enderror"
-                                    wire:model.defer="EcallTime_from">
+                                    wire:model="EcallTime_from">
                                 @error('EcallTime_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -596,7 +596,7 @@
                                 <label for="EcallTime_to" class="form-label">To</label>
                                 <input name="EcallTime_to" type="date"
                                     class="form-control mt-2 w-full @error('EcallTime_to') !border-danger-500 @enderror"
-                                    wire:model.defer="EcallTime_to">
+                                    wire:model="EcallTime_to">
                                 @error('EcallTime_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

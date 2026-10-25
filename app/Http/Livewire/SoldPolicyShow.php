@@ -1197,7 +1197,7 @@ class SoldPolicyShow extends Component
             $this->mount($this->soldPolicy->id);
             $this->toggleGenerateRenewalOfferSec();
             $this->alert('success', 'document deleted');
-            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers' . '/' . $res->id]);
+            $this->dispatch('openNewTab', url: '/offers' . '/' . $res->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -1241,7 +1241,7 @@ class SoldPolicyShow extends Component
             $this->mount($this->soldPolicy->id);
             $this->closeSetRenewalOfferSec();
             $this->alert('success', 'Renewal offer linked successfully!');
-            $this->dispatchBrowserEvent('openNewTab', ['url' => '/offers' . '/' . $res->id]);
+            $this->dispatch('openNewTab', url: '/offers' . '/' . $res->id);
         } else {
             $this->alert('failed', 'server error');
         }
@@ -1952,7 +1952,7 @@ class SoldPolicyShow extends Component
         $url = Storage::disk('s3')->url($doc->url);
         $url = str_replace('docs//', 'docs/', $url);
 
-        $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
+        $this->dispatch('openNewTab', url: $url);
     }
 
     // Penalty modal methods

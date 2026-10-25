@@ -36,7 +36,7 @@
                                     <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         Username
                                     </div>
-                                    <input id="name" type="text" class="form-control @error('username') !border-danger-500 @enderror" wire:model="username">
+                                    <input id="name" type="text" class="form-control @error('username') !border-danger-500 @enderror" wire:model.live="username">
                                     @error('username')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -50,7 +50,7 @@
                                     <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         First Name
                                     </div>
-                                    <input id="first_name" type="text" class="form-control @error('firstName') !border-danger-500 @enderror" wire:model="firstName">
+                                    <input id="first_name" type="text" class="form-control @error('firstName') !border-danger-500 @enderror" wire:model.live="firstName">
                                     @error('firstName')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -59,7 +59,7 @@
                                     <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         Last Name
                                     </div>
-                                    <input id="last_name" type="text" class="form-control @error('lastName') !border-danger-500 @enderror" wire:model="lastName">
+                                    <input id="last_name" type="text" class="form-control @error('lastName') !border-danger-500 @enderror" wire:model.live="lastName">
                                     @error('lastName')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -74,7 +74,7 @@
                                     <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         PHONE
                                     </div>
-                                    <input id="name" type="text" class="form-control @error('phone') !border-danger-500 @enderror" wire:model="phone">
+                                    <input id="name" type="text" class="form-control @error('phone') !border-danger-500 @enderror" wire:model.live="phone">
                                     @error('phone')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -89,7 +89,7 @@
                                     <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         Email
                                     </div>
-                                    <input id="email" type="email" class="form-control @error('email') !border-danger-500 @enderror" wire:model="email">
+                                    <input id="email" type="email" class="form-control @error('email') !border-danger-500 @enderror" wire:model.live="email">
                                     @error('email')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -116,7 +116,7 @@
                                         <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                             Current Password
                                         </div>
-                                        <input id="name" type="password" class="form-control @error('currentPassword') !border-danger-500 @enderror" wire:model="currentPassword">
+                                        <input id="name" type="password" class="form-control @error('currentPassword') !border-danger-500 @enderror" wire:model.live="currentPassword">
                                         @error('currentPassword')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
@@ -130,7 +130,7 @@
                                         <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                             New Password
                                         </div>
-                                        <input id="first_name" type="password" class="form-control @error('newPassword') !border-danger-500 @enderror" wire:model="newPassword">
+                                        <input id="first_name" type="password" class="form-control @error('newPassword') !border-danger-500 @enderror" wire:model.live="newPassword">
                                         @error('newPassword')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
@@ -145,7 +145,7 @@
                                         <div class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                             Confirm Password
                                         </div>
-                                        <input id="name" type="password" class="form-control" wire:model="password_confirmation">
+                                        <input id="name" type="password" class="form-control" wire:model.live="password_confirmation">
                                     </div>
                                 </li> --}}
                                 <!-- end single list -->

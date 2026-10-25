@@ -80,7 +80,7 @@
                                             <label for="name" class="form-label">Policy Name</label>
                                             <input type="text"
                                                 class="form-control @error('policyName') !border-danger-500 @enderror"
-                                                wire:model.defer="policyName">
+                                                wire:model="policyName">
                                             @error('policyName')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -90,7 +90,7 @@
                                             <label for="name" class="form-label">Business</label>
                                             <select name="business"
                                                 class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror"
-                                                wire:model="policyBusiness">
+                                                wire:model.live="policyBusiness">
                                                 <option
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                                     selected>
@@ -112,7 +112,7 @@
                                             <label for="name" class="form-label">Company</label>
                                             <select name="business"
                                                 class="form-control w-full mt-2  @error('company') !border-danger-500 @enderror"
-                                                wire:model.defer="company">
+                                                wire:model="company">
                                                 <option
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                                     selected>
@@ -137,7 +137,7 @@
                                                 <input type="number"
                                                     class="form-control 
                                                     @error('medMinLimit') !border-danger-500 @enderror"
-                                                    wire:model.defer="medMinLimit">
+                                                    wire:model="medMinLimit">
                                                 @error('medMinLimit')
                                                     <span
                                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -148,7 +148,7 @@
                                                 <input type="number"
                                                     class="form-control 
                                                     @error('medMaxLimit') !border-danger-500 @enderror"
-                                                    wire:model.defer="medMaxLimit">
+                                                    wire:model="medMaxLimit">
                                                 @error('medMaxLimit')
                                                     <span
                                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -158,7 +158,7 @@
 
                                         <div class="input-area mb-3">
                                             <label for="name" class="form-label">Note</label>
-                                            <textarea class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note"
+                                            <textarea class="form-control @error('note') !border-danger-500 @enderror" wire:model="note"
                                                 placeholder="Leave a note" name="note"></textarea>
                                             @error('note')
                                                 <span
@@ -210,7 +210,7 @@
                                 <div class="p-6 space-y-4">
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Policies File</label>
-                                        <input wire:model="policiesFile" type="file" class="form-control w-full "
+                                        <input wire:model.live="policiesFile" type="file" class="form-control w-full "
                                             name="basic" />
                                         @error('policiesFile')
                                             <span
@@ -262,7 +262,7 @@
                                 <div class="p-6 space-y-4">
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Configurations File</label>
-                                        <input wire:model="policiesConfFile" type="file"
+                                        <input wire:model.live="policiesConfFile" type="file"
                                             class="form-control w-full " name="basic" />
                                         @error('policiesConfFile')
                                             <span
@@ -314,7 +314,7 @@
                                 <div class="p-6 space-y-4">
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Conditions File</label>
-                                        <input wire:model="policiesCondFile" type="file"
+                                        <input wire:model.live="policiesCondFile" type="file"
                                             class="form-control w-full " name="basic" />
                                         @error('policiesCondFile')
                                             <span
@@ -343,7 +343,7 @@
                     <iconify-icon wire:loading class="loading-icon text-lg pt-2"
                         icon="line-md:loading-twotone-loop"></iconify-icon>
                     <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                        wire:model="search">
+                        wire:model.live="search">
                 </div>
             </div>
         </div>

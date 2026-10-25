@@ -32,7 +32,7 @@
                 <div class="card-body p-5">
                     <div class="flex items-center justify-between mb-3">
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" wire:model="selectedIds" value="{{ $cid }}"
+                            <input type="checkbox" wire:model.live="selectedIds" value="{{ $cid }}"
                                 class="form-checkbox h-4 w-4">
                             <span class="ml-2 text-sm">Include in merge</span>
                         </label>
@@ -99,7 +99,7 @@
     <div class="card mb-6">
         <div class="card-body p-5">
             <label class="form-label" for="ownerId">Who can access the merged profile (owner)</label>
-            <select wire:model="ownerId" id="ownerId" class="form-control">
+            <select wire:model.live="ownerId" id="ownerId" class="form-control">
                 <option value="">-- Select owner --</option>
                 @foreach ($ownerOptions as $opt)
                     <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>

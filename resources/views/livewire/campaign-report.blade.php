@@ -59,7 +59,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search by campaign name, channels or target audience" wire:model="search">
+                placeholder="Search by campaign name, channels or target audience" wire:model.live="search">
         </header>
 
         <header class="card-header cust-card-header noborder" style="display: block;">
@@ -304,7 +304,7 @@
                                 <label for="Estart_from" class="form-label">Start Date from</label>
                                 <input name="Estart_from" type="date"
                                     class="form-control mt-2 w-full @error('Estart_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Estart_from">
+                                    wire:model="Estart_from">
                                 @error('Estart_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -314,7 +314,7 @@
                                 <label for="Estart_to" class="form-label">Start Date to</label>
                                 <input name="Estart_to" type="date"
                                     class="form-control mt-2 w-full @error('Estart_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Estart_to">
+                                    wire:model="Estart_to">
                                 @error('Estart_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -371,7 +371,7 @@
                                 <label for="Eend_from" class="form-label">End Date from</label>
                                 <input name="Eend_from" type="date"
                                     class="form-control mt-2 w-full @error('Eend_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Eend_from">
+                                    wire:model="Eend_from">
                                 @error('Eend_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -381,7 +381,7 @@
                                 <label for="Eend_to" class="form-label">End Date to</label>
                                 <input name="Eend_to" type="date"
                                     class="form-control mt-2 w-full @error('Eend_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Eend_to">
+                                    wire:model="Eend_to">
                                 @error('Eend_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -438,7 +438,7 @@
                                 <label for="Ebudget_from" class="form-label">Budget from</label>
                                 <input name="Ebudget_from" type="number"
                                     class="form-control mt-2 w-full @error('Ebudget_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Ebudget_from">
+                                    wire:model="Ebudget_from">
                                 @error('Ebudget_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -448,7 +448,7 @@
                                 <label for="Ebudget_to" class="form-label">Budget to</label>
                                 <input name="Ebudget_to" type="number"
                                     class="form-control mt-2 w-full @error('Ebudget_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Ebudget_to">
+                                    wire:model="Ebudget_to">
                                 @error('Ebudget_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -503,7 +503,7 @@
                             <div class="from-group">
                                 <label for="Ehandler_id" class="form-label">Handler</label>
                                 <select name="Ehandler_id" id="Ehandler_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Ehandler_id">
+                                    wire:model="Ehandler_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>

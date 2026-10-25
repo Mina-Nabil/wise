@@ -62,15 +62,15 @@
 
 
         </div>
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title & description">
+        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model.live="searchText" placeholder="Search by title & description">
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-            wire:model="dateRange">
+            wire:model.live="dateRange">
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" checked class="sr-only peer" wire:model="myTasks">
+                <input type="checkbox" checked class="sr-only peer" wire:model.live="myTasks">
                 <div
                     class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
@@ -86,7 +86,7 @@
             <label class="text-xs dark:text-white font-Inter font-normal opacity-100 ">Show Watchers</label>
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" class="sr-only peer" wire:model="watcherTasks">
+                <input type="checkbox" class="sr-only peer" wire:model.live="watcherTasks">
                 <div
                     class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
@@ -160,8 +160,8 @@
                                             $currentDate = now();
                                             $startDate = $task->created_at;
                                             $dueDate = $task->due;
-                                            $totalDuration = $startDate->diffInSeconds($dueDate);
-                                            $elapsedDuration = $startDate->diffInSeconds($currentDate);
+                                            $totalDuration = $startDate->diffInSeconds($dueDate, true);
+                                            $elapsedDuration = $startDate->diffInSeconds($currentDate, true);
                                             $percentagePassed = $totalDuration ? ($elapsedDuration / $totalDuration) * 100 : 0;
                                         @endphp
 
@@ -304,7 +304,7 @@
                                         <label for="firstName" class="form-label">Title</label>
                                         <input type="text"
                                             class="form-control @error('taskTitle') !border-danger-500 @enderror"
-                                            value="Bill" placeholder="Title" wire:model.defer="taskTitle">
+                                            value="Bill" placeholder="Title" wire:model="taskTitle">
                                         @error('taskTitle')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -317,7 +317,7 @@
 
                                             <select name="basicSelect" id="basicSelect"
                                                 class="form-control w-full mt-2 @error('assignedTo') !border-danger-500 @enderror"
-                                                wire:model.defer="assignedTo">
+                                                wire:model="assignedTo">
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}"
                                                         {{ $assignedTo == $user->id ? 'selected' : '' }}>
@@ -344,7 +344,7 @@
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Description</label>
                                 <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description"
-                                    wire:model.defer="desc"></textarea>
+                                    wire:model="desc"></textarea>
                                 @error('desc')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -357,7 +357,7 @@
                                     <label for="time-date-picker" class="form-label">Due Date</label>
                                     <input
                                         class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror"
-                                        id="default-picker" value="" type="text" wire:model.defer="dueDate"
+                                        id="default-picker" value="" type="text" wire:model="dueDate"
                                         autocomplete="off">
                                     @error('dueDate')
                                         <span
@@ -369,8 +369,8 @@
                                     <input type="time"
                                         class="form-control  @error('dueTime') !border-danger-500 @enderror"
                                         id="appt" name="appt" min="09:00" max="18:00"
-                                        wire:model.defer="dueTime" autocomplete="off" />
-                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                        wire:model="dueTime" autocomplete="off" />
+                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model="dueTime" autocomplete="off"> --}}
                                     @error('dueTime')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -387,7 +387,7 @@
                                         <label>
                                             <label for="time-date-picker" class="form-label">Upload Files</label>
                                             <input type="file" class="w-full hidden " name="basic"
-                                                multiple="multiple" wire:model.defer="files" />
+                                                multiple="multiple" wire:model="files" />
                                             <span
                                                 class="w-full h-[40px] file-control flex items-center custom-class  @error('files') !border-danger-500 @enderror">
                                                 <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -412,7 +412,7 @@
                                         @if ($addWatchersSection)
                                             <label for="multiSelect" class="form-label">Select Watchers</label>
                                             <div class="w-full">
-                                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple
+                                                <select wire:model="setWatchersList" id="multiSelect" multiple
                                                     aria-label="multiple select example"
                                                     class="select2 form-control w-full mt-2 py-2   @error('setWatchersList') !border-danger-500 @enderror"
                                                     multiple="multiple" style="height: 250px">
@@ -451,7 +451,7 @@
     </div>
 
     <script>
-        document.addEventListener('livewire:load', function() {
+        document.addEventListener('livewire:init', function() {
             $('#demo').daterangepicker({
                 "singleDatePicker": true,
                 "timePicker": true,

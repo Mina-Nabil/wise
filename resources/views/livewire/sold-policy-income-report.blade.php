@@ -160,7 +160,7 @@
                             <iconify-icon wire:loading class="loading-icon text-lg"
                                 icon="line-md:loading-twotone-loop"></iconify-icon>
                             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                                wire:model="search">
+                                wire:model.live="search">
                         </header>
 
                         <header class="card-header cust-card-header noborder" style="display: block;">
@@ -670,7 +670,7 @@
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox" class="hidden"
                                                 value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
-                                                name="checkbox" wire:model.defer="Eprofiles">
+                                                name="checkbox" wire:model="Eprofiles">
                                             <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                 <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
                                             </span>
@@ -708,11 +708,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Start from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Estart_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Start to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Estart_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Estart_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -743,11 +743,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Expiry from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eexpiry_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Eexpiry_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Expiry to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eexpiry_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Eexpiry_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -778,11 +778,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Paid from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Epaid_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Epaid_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Paid to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Epaid_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Epaid_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -813,11 +813,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Issued from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eissued_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Eissued_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Issued to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Eissued_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Eissued_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -848,11 +848,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Cancel time from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ecancel_time_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Ecancel_time_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Cancel time to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ecancel_time_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Ecancel_time_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -883,11 +883,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Bank Payment from</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ebank_payment_time_from">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Ebank_payment_time_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Bank Payment to</label>
-                                <input type="date" class="form-control mt-2 w-full" wire:model.defer="Ebank_payment_time_to">
+                                <input type="date" class="form-control mt-2 w-full" wire:model="Ebank_payment_time_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -919,7 +919,7 @@
                             <div>
                                 <div class="from-group">
                                     <label class="form-label">User</label>
-                                    <select class="form-control w-full mt-2" wire:model="selectAUser">
+                                    <select class="form-control w-full mt-2" wire:model.live="selectAUser">
                                         <option value="">Select user</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name . ' ' . $user->last_name }}</option>
@@ -928,7 +928,7 @@
                                 </div>
                                 <div class="checkbox-area mt-2">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input wire:model.defer='isAddCommProfiles' type="checkbox" class="hidden" name="checkbox">
+                                        <input wire:model='isAddCommProfiles' type="checkbox" class="hidden" name="checkbox">
                                         <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                             <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt="" class="h-[10px] w-[10px] block m-auto opacity-0">
                                         </span>
@@ -983,7 +983,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Main Sales</label>
-                                <select class="form-control w-full mt-2" wire:model.defer="Emain_sales_id">
+                                <select class="form-control w-full mt-2" wire:model="Emain_sales_id">
                                     <option value="">Select user</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->first_name . ' ' . $user->last_name }}</option>
@@ -1069,11 +1069,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Value from</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Evalue_from">
+                                <input type="number" class="form-control mt-2 w-full" wire:model="Evalue_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Value to</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Evalue_to">
+                                <input type="number" class="form-control mt-2 w-full" wire:model="Evalue_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1104,11 +1104,11 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label class="form-label">Net Premium from</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Enet_premium_from">
+                                <input type="number" class="form-control mt-2 w-full" wire:model="Enet_premium_from">
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Net Premium to</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="Enet_premium_to">
+                                <input type="number" class="form-control mt-2 w-full" wire:model="Enet_premium_to">
                             </div>
                         </div>
                         <div class="flex items-center justify-end p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
@@ -1145,7 +1145,7 @@
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Search Brand</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model="searchBrand">
+                                <input type="text" class="form-control mt-2 w-full" wire:model.live="searchBrand">
                             </div>
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                 <thead class="bg-slate-200 dark:bg-slate-700">
@@ -1202,7 +1202,7 @@
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Search Company</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model="searchCompany">
+                                <input type="text" class="form-control mt-2 w-full" wire:model.live="searchCompany">
                             </div>
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                 <thead class="bg-slate-200 dark:bg-slate-700">
@@ -1257,7 +1257,7 @@
                             </div>
                             <div class="from-group">
                                 <label class="form-label">Search Policy</label>
-                                <input type="text" class="form-control mt-2 w-full" wire:model="searchPolicy">
+                                <input type="text" class="form-control mt-2 w-full" wire:model.live="searchPolicy">
                             </div>
                             <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                 <thead class="bg-slate-200 dark:bg-slate-700">

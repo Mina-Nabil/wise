@@ -82,31 +82,31 @@
         </div>
 
         <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text"
-            wire:model="searchText" placeholder="Search by policy number">
+            wire:model.live="searchText" placeholder="Search by policy number">
 
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:240px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-            wire:model="dateRange" placeholder="Policy start range">
+            wire:model.live="dateRange" placeholder="Policy start range">
 
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:240px"
             id="due-range-picker" data-mode="range" value="" type="text" readonly="readonly"
-            wire:model="dueRange" placeholder="Due range">
+            wire:model.live="dueRange" placeholder="Due range">
 
-        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="companyFilter">
+        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model.live="companyFilter">
             <option value="">All Companies</option>
             @foreach ($companies as $company)
                 <option value="{{ $company->id }}">{{ $company->name }}</option>
             @endforeach
         </select>
 
-        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model="commProfileFilter">
+        <select class="form-control py-2 w-auto ml-5" style="width:200px" wire:model.live="commProfileFilter">
             <option value="">All Comm Profiles</option>
             @foreach ($commProfiles as $commProfile)
                 <option value="{{ $commProfile->id }}">{{ $commProfile->title }}</option>
             @endforeach
         </select>
 
-        <select class="form-control py-2 w-auto ml-5" style="width:160px" wire:model="checkedFilter">
+        <select class="form-control py-2 w-auto ml-5" style="width:160px" wire:model.live="checkedFilter">
             <option value="all">All ✅/❌</option>
             <option value="checked">Checked ✅</option>
             <option value="unchecked">Not Checked</option>
@@ -115,7 +115,7 @@
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" checked class="sr-only peer" wire:model="myPayments">
+                <input type="checkbox" checked class="sr-only peer" wire:model.live="myPayments">
                 <div
                     class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
@@ -335,7 +335,7 @@
 
 
     <script>
-        document.addEventListener('livewire:load', function() {
+        document.addEventListener('livewire:init', function() {
             $('#demo').daterangepicker({
                 "singleDatePicker": true,
                 "timePicker": true,

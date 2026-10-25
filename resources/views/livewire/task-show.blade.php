@@ -23,7 +23,7 @@
                                     </div>
                                     <input type="text"
                                         class="form-control @error('taskTitle') !border-danger-500 @enderror"
-                                        value="Bill" placeholder="Title" wire:model="taskTitle">
+                                        value="Bill" placeholder="Title" wire:model.live="taskTitle">
                                     @error('taskTitle')
                                         <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
                                             {{ $message }}</span>
@@ -31,7 +31,7 @@
                                     <div class="input-area mb-3">
                                         <label for="name" class="form-label">Description</label>
                                         <textarea class="form-control @error('desc') !border-danger-500 @enderror" placeholder="Write Description"
-                                            wire:model="desc" style="min-height: 150px"></textarea>
+                                            wire:model.live="desc" style="min-height: 150px"></textarea>
                                         @error('desc')
                                             <span class="font-Inter text-danger-500 pt-2 inline-block text-xs">*
                                                 {{ $message }}</span>
@@ -111,19 +111,19 @@
                                     <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
                                         <div class="input-area">
                                             <label for="firstName" class="form-label">Due Date</label>
-                                            <input type="date" class="form-control" wire:model="dueDate">
+                                            <input type="date" class="form-control" wire:model.live="dueDate">
                                         </div>
 
-                                        {{-- <input type="checkbox" wire:model="noDueTime"> --}}
+                                        {{-- <input type="checkbox" wire:model.live="noDueTime"> --}}
                                         @if ($haveDueTime)
                                             <div class="input-area">
                                                 <label for="lastName" class="form-label">Time</label>
-                                                <input type="time" class="form-control" wire:model="dueTime">
+                                                <input type="time" class="form-control" wire:model.live="dueTime">
                                             </div>
                                         @endif
                                         <div class="checkbox-area">
                                             <label for="checkbox" class="form-label">Add time</label>
-                                            <input type="checkbox" name="checkbox" wire:model="haveDueTime">
+                                            <input type="checkbox" name="checkbox" wire:model.live="haveDueTime">
                                         </div>
 
                                         <div class="flex justify-between items-end space-x-6">
@@ -154,7 +154,7 @@
                                 <div class="mt-2">
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                            <input wire:model.live="editedStatus" type="radio" class="hidden"
                                                 name="basicradios" value="assigned"
                                                 @if ($task->status === 'assigned') checked="checked" @endif>
                                             <span
@@ -166,7 +166,7 @@
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                            <input wire:model.live="editedStatus" type="radio" class="hidden"
                                                 name="basicradios"
                                                 value="in_progress"@if ($task->status === 'in_progress') checked="checked" @endif>
                                             <span
@@ -178,7 +178,7 @@
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                            <input wire:model.live="editedStatus" type="radio" class="hidden"
                                                 name="basicradios" value="pending"
                                                 @if ($task->status === 'pending') checked="checked" @endif>
                                             <span
@@ -190,7 +190,7 @@
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                            <input wire:model.live="editedStatus" type="radio" class="hidden"
                                                 name="basicradios" value="completed"
                                                 @if ($task->status === 'completed') checked="checked" @endif>
                                             <span
@@ -202,7 +202,7 @@
                                     </div>
                                     <div class="basicRadio">
                                         <label class="flex items-center cursor-pointer">
-                                            <input wire:model="editedStatus" type="radio" class="hidden"
+                                            <input wire:model.live="editedStatus" type="radio" class="hidden"
                                                 name="basicradios" value="closed"
                                                 @if ($task->status === 'closed') checked="checked" @endif>
                                             <span
@@ -215,7 +215,7 @@
                                     @if ($task->is_claim)
                                         <div class="mt-3">
                                             <label class="form-label text-sm">Sub-status</label>
-                                            <select wire:model="editedSubStatus" class="form-control w-full mt-1">
+                                            <select wire:model.live="editedSubStatus" class="form-control w-full mt-1">
                                                 <option value="">None</option>
                                                 @foreach (\App\Models\Tasks\Task::CLAIM_SUB_STATUSES as $value => $label)
                                                     <option value="{{ $value }}">{{ $label }}</option>
@@ -224,7 +224,7 @@
                                         </div>
                                     @endif
 
-                                    <input type="text" wire:model="statusComment" placeholder="Leave a note..."
+                                    <input type="text" wire:model.live="statusComment" placeholder="Leave a note..."
                                         class="form-control w-full mt-2">
 
                                     <button wire:click="saveStatuses"
@@ -297,7 +297,7 @@
                                                     class="@if ($field->id !== $fieldId) table-td hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer @endif border border-slate-100 dark:bg-slate-800 dark:border-slate-700 ">
                                                     @if ($field->id === $fieldId)
                                                         @if ($field->title === \App\Models\Tasks\TaskField::TITLE_ACCIDENT_DESC)
-                                                            <textarea wire:model="editedFieldValue"
+                                                            <textarea wire:model.live="editedFieldValue"
                                                                 @class([
                                                                     'form-control',
                                                                     'w-full',
@@ -305,7 +305,7 @@
                                                                     'border-slate-300' => !$errors->has('editedFieldValue'),
                                                                 ]) rows="4"></textarea>
                                                         @else
-                                                            <input type="text" wire:model="editedFieldValue"
+                                                            <input type="text" wire:model.live="editedFieldValue"
                                                                 @class([
                                                                     'form-control',
                                                                     'w-full',
@@ -399,7 +399,7 @@
                                                                     class="text-lg"></iconify-icon>
                                                             </button>
                                                             <button
-                                                                wire:click="$emit('showConfirmation', 'Are you sure you want to delete this action?','danger','deleteAction', {{ $action->id }})"
+                                                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to delete this action?', color: 'danger', action: 'deleteAction', reviewId: {{ $action->id }} })"
                                                                 class="btn inline-flex justify-center btn-danger light btn-sm"
                                                                 title="Delete Action">
                                                                 <iconify-icon icon="material-symbols:delete-outline"
@@ -462,7 +462,7 @@
                             </span>
                         </label>
                         <input type="file" id="myFile" name="filename[]" multiple style="display: none;"
-                            wire:model="uploadedFiles"><br>
+                            wire:model.live="uploadedFiles"><br>
                     </header>
                     <div class="loader" wire:loading wire:target="downloadFile">
                         <div class="loaderBar"></div>
@@ -654,7 +654,7 @@
                             @if ($changeAsignee)
                                 <select name="basicSelect" id="basicSelect"
                                     class="form-control w-full mt-2 @error('assignedTo') !border-danger-500 @enderror"
-                                    wire:model.defer="assignedTo">
+                                    wire:model="assignedTo">
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
                                             {{ $assignedTo == $user->id ? 'selected' : '' }}>
@@ -668,7 +668,7 @@
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
 
-                                <input type="text" wire:model="assignedToComment" placeholder="Leave a note..."
+                                <input type="text" wire:model.live="assignedToComment" placeholder="Leave a note..."
                                     class="form-control w-full mt-2">
                             @else
                                 @if ($task->assigned_to_id)
@@ -688,7 +688,7 @@
                         </div>
                         <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
                             <div class="w-full">
-                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple
+                                <select wire:model="setWatchersList" id="multiSelect" multiple
                                     aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2"
                                     multiple="multiple" style="height: 250px">
                                     @foreach ($users as $user)
@@ -750,7 +750,7 @@
                                 <label for="name" class="form-label">Set end date</label>
                                 <input type="date"
                                     class="form-control  @error('TempAssignDate') !border-danger-500 @enderror"
-                                    wire:model="TempAssignDate">
+                                    wire:model.live="TempAssignDate">
                                 @error('TempAssignDate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -758,7 +758,7 @@
                                 <label for="name" class="form-label mt-2">Note</label>
                                 <input type="text"
                                     class="form-control  @error('TempAssignNote') !border-danger-500 @enderror"
-                                    value="Bill" placeholder="Leave a note..." wire:model="TempAssignNote">
+                                    value="Bill" placeholder="Leave a note..." wire:model.live="TempAssignNote">
                                 @error('TempAssignNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -788,7 +788,7 @@
 
                                     <select name="basicSelect" id="basicSelect"
                                         class="form-control w-full mt-2 !border-success-500 @error('TempAssignUser') !border-danger-500 @enderror"
-                                        wire:model.defer="TempAssignUser">
+                                        wire:model="TempAssignUser">
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}"
                                                 {{ $assignedTo == $user->id ? 'selected' : '' }}>
@@ -807,7 +807,7 @@
                                     <label for="name" class="form-label">Set end date</label>
                                     <input type="date"
                                         class="form-control !border-success-500  @error('TempAssignDate') !border-danger-500 @enderror"
-                                        wire:model="TempAssignDate">
+                                        wire:model.live="TempAssignDate">
                                     @error('TempAssignDate')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -815,7 +815,7 @@
                                     <br>
 
                                     <label for="name" class="form-label">Note</label>
-                                    <input type="text" wire:model="TempAssignNote" placeholder="Leave a note..."
+                                    <input type="text" wire:model.live="TempAssignNote" placeholder="Leave a note..."
                                         class="form-control w-full mt-2   @error('TempAssignNote') !border-danger-500 @enderror">
                                     @error('TempAssignNote')
                                         <span
@@ -875,7 +875,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <input type="text" class="form-control border-0"
-                                            placeholder="Leave a comment..." wire:model="newComment"
+                                            placeholder="Leave a comment..." wire:model.live="newComment"
                                             wire:keydown.enter="addComment"
                                             style="border: none; box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);">
                                     </div>
@@ -1036,7 +1036,7 @@
                                 <div class="input-area mb-3">
                                     <label class="form-label">Field Title</label>
                                     <select class="form-control py-2 @error('newTitle') !border-danger-500 @enderror"
-                                        id="default-picker" type="text" wire:model.defer="newTitle">
+                                        id="default-picker" type="text" wire:model="newTitle">
                                         <option>None</option>
                                         @foreach ($fieldTitles as $atitle)
                                             @if (!in_array($atitle, $task->fields->pluck('title')->toArray()))
@@ -1054,11 +1054,11 @@
                                     @if ($newTitle === \App\Models\Tasks\TaskField::TITLE_ACCIDENT_DESC)
                                         <textarea
                                             class="form-control @error('newValue') !border-danger-500 @enderror"
-                                            wire:model.defer="newValue" rows="4"></textarea>
+                                            wire:model="newValue" rows="4"></textarea>
                                     @else
                                         <input type="text"
                                             class="form-control  @error('newValue') !border-danger-500 @enderror"
-                                            wire:model.defer="newValue" autocomplete="off" list="claim_fields" />
+                                            wire:model="newValue" autocomplete="off" list="claim_fields" />
                                         <datalist id="claim_fields">
                                             <option>Yes</option>
                                             <option>No</option>
@@ -1129,7 +1129,7 @@
                                                     <label class="inline-flex items-center cursor-pointer">
                                                         <input type="checkbox" class="hidden" name="checkbox" checked
                                                             value="{{ $action->id }}"
-                                                            wire:model.defer="actionsIds">
+                                                            wire:model="actionsIds">
                                                         <span
                                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                             <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -1202,7 +1202,7 @@
                                 <label class="form-label">Column Name</label>
                                 <select
                                     class="form-control py-2 @error('newActionColumn') !border-danger-500 @enderror"
-                                    id="action-column-picker" type="text" wire:model.defer="newActionColumn">
+                                    id="action-column-picker" type="text" wire:model="newActionColumn">
                                     <option value="">Select Column</option>
                                     @foreach ($actionColumns as $column)
                                         @php
@@ -1224,7 +1224,7 @@
                                 <label class="form-label">Value</label>
                                 <input type="text"
                                     class="form-control @error('newActionValue') !border-danger-500 @enderror"
-                                    wire:model.defer="newActionValue" autocomplete="off"
+                                    wire:model="newActionValue" autocomplete="off"
                                     placeholder="Enter new value" />
                                 @error('newActionValue')
                                     <span
@@ -1290,7 +1290,7 @@
                                     <label class="form-label">Value</label>
                                     <input type="text"
                                         class="form-control @error('editActionValue') !border-danger-500 @enderror"
-                                        wire:model.defer="editActionValue" autocomplete="off"
+                                        wire:model="editActionValue" autocomplete="off"
                                         placeholder="Enter new value" />
                                     @error('editActionValue')
                                         <span

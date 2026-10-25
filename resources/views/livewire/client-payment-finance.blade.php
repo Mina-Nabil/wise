@@ -99,7 +99,7 @@
                 class="dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none max-h-80 overflow-y-auto">
                 <li class="px-4 py-2" onclick="event.stopPropagation()">
                     <input type="text" class="form-control form-control-sm" placeholder="Search policies..."
-                        wire:model="searchPolicy">
+                        wire:model.live="searchPolicy">
                 </li>
                 <li wire:click="filterByPolicy(null)">
                     <a href="#"
@@ -208,17 +208,17 @@
             </ul>
         </div>
 
-        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchText"
+        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model.live="searchText"
             placeholder="Search by policy number">
-        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model="searchConfiguration"
+        <input class="form-control py-2 w-auto ml-5" style="width:250px" type="text" wire:model.live="searchConfiguration"
             placeholder="Search by configuration title">
-        <input class="form-control py-2 w-auto ml-5" style="width:100px" type="number" wire:model="dueDays"
+        <input class="form-control py-2 w-auto ml-5" style="width:100px" type="number" wire:model.live="dueDays"
             placeholder="Days">
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" checked class="sr-only peer" wire:model="isDuePassed">
+                <input type="checkbox" checked class="sr-only peer" wire:model.live="isDuePassed">
                 <div
                     class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
@@ -413,7 +413,7 @@
                                         {{ \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0)->format('d/m/Y') }}
                                     </td>
                                     <td class="table-td">
-                                        {{ \Carbon\Carbon::now()->diffInDays(
+                                        {{ (int) \Carbon\Carbon::now()->diffInDays(
                                             \Carbon\Carbon::parse($payment->policy_payment_due)->addDays($payment->due_penalty ?? 0),
                                             false,
                                         ) }}
@@ -537,7 +537,7 @@
     @endif
 
     <script>
-        document.addEventListener('livewire:load', function() {
+        document.addEventListener('livewire:init', function() {
             $('#demo').daterangepicker({
                 "singleDatePicker": true,
                 "timePicker": true,

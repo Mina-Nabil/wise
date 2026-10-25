@@ -82,7 +82,7 @@ class ContactInfoIndex extends Component
     public function generateQR($id)
     {
         $res = ContactInfo::find($id)->generateQRCode();
-        $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
+        $this->dispatch('openNewTab', url: $res);
     }
 
     public function downloadVcard($id)

@@ -29,7 +29,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     <div class="col-span-2">
                                         <label for="basicSelect" class="form-label">Lead Type</label>
-                                        <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model="leadType">
+                                        <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2" wire:model.live="leadType">
                                             <option value="customer" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Customer</option>
                                             <option value="corporate" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">Corporate</option>
                                         </select>
@@ -39,15 +39,15 @@
                                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                                                 <div class="input-area">
                                                     <label for="leadFirstName" class="form-label">First Name</label>
-                                                    <input id="leadFirstName" type="text" class="form-control @error('leadFirstName') !border-danger-500 @enderror" wire:model.defer="leadFirstName">
+                                                    <input id="leadFirstName" type="text" class="form-control @error('leadFirstName') !border-danger-500 @enderror" wire:model="leadFirstName">
                                                 </div>
                                                 <div class="input-area">
                                                     <label for="firstName" class="form-label">Middle Name</label>
-                                                    <input id="firstName" type="text" class="form-control @error('leadMiddleName') !border-danger-500 @enderror" wire:model.defer="leadMiddleName">
+                                                    <input id="firstName" type="text" class="form-control @error('leadMiddleName') !border-danger-500 @enderror" wire:model="leadMiddleName">
                                                 </div>
                                                 <div class="input-area">
                                                     <label for="firstName" class="form-label">Last Name</label>
-                                                    <input id="firstName" type="text" class="form-control @error('leadLastName') !border-danger-500 @enderror" wire:model.defer="leadLastName">
+                                                    <input id="firstName" type="text" class="form-control @error('leadLastName') !border-danger-500 @enderror" wire:model="leadLastName">
                                                 </div>
                                             </div>
                                             @error('leadFirstName')
@@ -64,7 +64,7 @@
                                         @elseif($leadType === 'corporate')
                                             <div class="input-area">
                                                 <label for="corporateName" class="form-label">Corporate Name</label>
-                                                <input id="corporateName" type="text" class="form-control @error('corporateName') !border-danger-500 @enderror" wire:model.defer="corporateName">
+                                                <input id="corporateName" type="text" class="form-control @error('corporateName') !border-danger-500 @enderror" wire:model="corporateName">
                                             </div>
                                             @error('corporateName')
                                                 <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -73,7 +73,7 @@
                                     </div>
                                     <div class="input-area col-span-2 mb-3">
                                         <label for="phone" class="form-label">Phone</label>
-                                        <input id="phone" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model.defer="LeadPhone">
+                                        <input id="phone" type="text" class="form-control @error('LeadPhone') !border-danger-500 @enderror" wire:model="LeadPhone">
                                     </div>
                                 </div>
                                 @error('LeadPhone')
@@ -81,14 +81,14 @@
                                 @enderror
                                 <div class="input-area">
                                     <label for="email" class="form-label">Email</label>
-                                    <input id="email" type="email" class="form-control @error('LeadEmail') !border-danger-500 @enderror" wire:model.defer="LeadEmail">
+                                    <input id="email" type="email" class="form-control @error('LeadEmail') !border-danger-500 @enderror" wire:model="LeadEmail">
                                     @error('LeadEmail')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="input-area">
                                     <label for="note" class="form-label">Note</label>
-                                    <input id="note" type="email" class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note">
+                                    <input id="note" type="email" class="form-control @error('note') !border-danger-500 @enderror" wire:model="note">
                                     @error('note')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -98,7 +98,7 @@
                                     <label for="campaignId" class="form-label">Campaign</label>
                                     <select name="campaignId" id="campaignId"
                                         class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
-                                        wire:model.defer="campaignId">
+                                        wire:model="campaignId">
                                         <option value="">None</option>
                                         @foreach ($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
@@ -114,7 +114,7 @@
                                     <label for="channel" class="form-label">Channel</label>
                                     <input id="channel" type="text"
                                         class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
-                                        wire:model.defer="channel" placeholder="Enter channel">
+                                        wire:model="channel" placeholder="Enter channel">
                                 </div>
                                 @error('channel')
                                     <span
@@ -127,7 +127,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-3">
                                         <div class="input-area">
                                             <label for="followupCallDateTime" class="form-label">Call Date Time</label>
-                                            <input id="followupCallDateTime" type="datetime-local" class="form-control @error('followupCallDateTime') !border-danger-500 @enderror" wire:model.defer="followupCallDateTime">
+                                            <input id="followupCallDateTime" type="datetime-local" class="form-control @error('followupCallDateTime') !border-danger-500 @enderror" wire:model="followupCallDateTime">
                                         </div>
                                         @error('followupCallDateTime')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -137,7 +137,7 @@
                                     <div class="checkbox-area black-checkbox mr-2 sm:mr-4 mt-2">
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox" class="hidden" name="checkbox"
-                                                wire:model="followup_is_meeting">
+                                                wire:model.live="followup_is_meeting">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                 <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""

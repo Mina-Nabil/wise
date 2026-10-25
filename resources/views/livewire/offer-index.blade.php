@@ -91,7 +91,7 @@
         </div>
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="all" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="all" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                           duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -101,7 +101,7 @@
 
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="isRenewal" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="isRenewal" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                           duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -111,7 +111,7 @@
 
         <div class="secondary-radio">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="notRenewal" wire:model="isRenewalCB">
+                <input type="radio" class="hidden" value="notRenewal" wire:model.live="isRenewalCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all
                                           duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
@@ -122,7 +122,7 @@
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label
                 class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" checked class="sr-only peer" wire:model="myOffers">
+                <input type="checkbox" checked class="sr-only peer" wire:model.live="myOffers">
                 <div
                     class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
@@ -135,7 +135,7 @@
         </div>
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px"
             id="range-picker" data-mode="range" value="" type="text" readonly="readonly"
-            wire:model="dateRange">
+            wire:model.live="dateRange">
     </div>
 
 
@@ -143,7 +143,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search using client name, email or phone number" wire:model="search">
+                placeholder="Search using client name, email or phone number" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -395,7 +395,7 @@
                                         @else
                                             <select
                                                 class="form-control w-full mt-2 @error('clientType') !border-danger-500 @enderror"
-                                                wire:model="clientType">
+                                                wire:model.live="clientType">
                                                 <option value="Customer"
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     Customer</option>
@@ -421,7 +421,7 @@
                                             {{ $selectedClientName }}
                                         @else
                                             <input placeholder="Search..." type="text" class="form-control"
-                                                wire:model="searchClient">
+                                                wire:model.live="searchClient">
                                         @endif
 
                                     </div>
@@ -455,7 +455,7 @@
                                 <label for="lastName" class="form-label">Offer Type</label>
                                 <select name="basicSelect"
                                     class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror"
-                                    wire:model="type">
+                                    wire:model.live="type">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
                                     @if ($clientType === 'Customer')
@@ -487,7 +487,7 @@
                                             <label for="lastName" class="form-label">Select Client Car</label>
                                             <select name="basicSelect"
                                                 class="form-control w-full mt-2 @error('item') !border-danger-500 @enderror"
-                                                wire:model="item">
+                                                wire:model.live="item">
                                                 <option
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     Select an option</option>
@@ -511,7 +511,7 @@
                                             <div class="input-area">
                                                 <label for="firstName" class="form-label">Car Brand</label>
                                                 <select name="basicSelect" class="form-control w-full mt-2"
-                                                    wire:model="carBrand">
+                                                    wire:model.live="carBrand">
                                                     <option value=''>Select an Option</option>
                                                     @foreach ($brands as $brand)
                                                         <option value="{{ $brand->id }}"
@@ -525,7 +525,7 @@
                                                     <label for="lastName" class="form-label">Car Model</label>
 
                                                     <select name="basicSelect" class="form-control w-full mt-2"
-                                                        wire:model="carModel">
+                                                        wire:model.live="carModel">
                                                         <option value=''>Select an Option</option>
                                                         @foreach ($models as $model)
                                                             <option value="{{ $model->id }}"
@@ -541,7 +541,7 @@
                                                     <label for="lastName" class="form-label">Car Category</label>
                                                     <select name="basicSelect"
                                                         class="form-control w-full mt-2 @error('CarCategory') !border-danger-500 @enderror"
-                                                        wire:model="CarCategory">
+                                                        wire:model.live="CarCategory">
                                                         <option selected>Select an Option</option>
                                                         @foreach ($cars as $car)
                                                             <option value="{{ $car->id }}"
@@ -568,7 +568,7 @@
                                         <label for="lastName" class="form-label">Model Year</label>
                                         <select name="basicSelect"
                                             class="form-control w-full mt-2 @error('carPrice') !border-danger-500 @enderror text-dark"
-                                            wire:model="carPrice">
+                                            wire:model.live="carPrice">
                                             <option selected>Select an Option</option>
                                             @foreach ($CarPrices as $price)
                                                 <option value="{{ $price }}" class="">
@@ -584,13 +584,13 @@
                                             <label for="firstName" class="form-label">Birth Date</label>
                                             <input type="date"
                                                 class="form-control @error('bdate') !border-danger-500 @enderror"
-                                                wire:model="bdate">
+                                                wire:model.live="bdate">
                                         </div>
                                         <div class="input-area">
                                             <label for="lastName" class="form-label">Gender</label>
                                             <select name="basicSelect"
                                                 class="form-control w-full mt-2 @error('gender') !border-danger-500 @enderror"
-                                                wire:model="gender">
+                                                wire:model.live="gender">
                                                 @foreach ($GENDERS as $gender)
                                                     <option value="{{ $gender }}"
                                                         class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
@@ -625,19 +625,19 @@
                                                     <div class="input-area col-span-3">
                                                         <input
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.name') !border-danger-500 @enderror"
-                                                            wire:model="relatives.{{ $index }}.name"
+                                                            wire:model.live="relatives.{{ $index }}.name"
                                                             type="text" placeholder="Relative name">
                                                     </div>
                                                     <div class="input-area col-span-3">
                                                         <input
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.phone') !border-danger-500 @enderror"
-                                                            wire:model="relatives.{{ $index }}.phone"
+                                                            wire:model.live="relatives.{{ $index }}.phone"
                                                             type="number" placeholder="Relative phone">
                                                     </div>
                                                     <div class="input-area col-span-2">
                                                         <select name="basicSelect"
                                                             class="form-control w-full mt-2  @error('relatives.' . $index . '.relation') !border-danger-500 @enderror"
-                                                            wire:model="relatives.{{ $index }}.relation">
+                                                            wire:model.live="relatives.{{ $index }}.relation">
                                                             <option
                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                 Select Relation...</option>
@@ -651,7 +651,7 @@
                                                     <div class="input-area col-span-2">
                                                         <select name="basicSelect"
                                                             class="form-control w-full mt-2   @error('relatives.' . $index . '.gender') !border-danger-500 @enderror"
-                                                            wire:model="relatives.{{ $index }}.gender">
+                                                            wire:model.live="relatives.{{ $index }}.gender">
                                                             <option
                                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                 Select Gender...</option>
@@ -665,7 +665,7 @@
                                                     <div class="input-area col-span-1">
                                                         <input
                                                             class="form-control w-full mt-2   @error('relatives.' . $index . '.birth_date') !border-danger-500 @enderror"
-                                                            wire:model="relatives.{{ $index }}.birth_date"
+                                                            wire:model.live="relatives.{{ $index }}.birth_date"
                                                             type="date" placeholder="birth_date">
                                                     </div>
                                                     <div class="col-span-1 flex items-center">
@@ -693,7 +693,7 @@
                                     <div class="from-group">
                                         <label for="lastName" class="form-label">Item title</label>
                                         <input type="text" class="form-control mt-2 w-full"
-                                            wire:model.defer="item_title">
+                                            wire:model="item_title">
                                         @error('item_title')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -706,7 +706,7 @@
                                         <label
                                             class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
                                             <input type="checkbox" checked class="sr-only peer"
-                                                wire:model="isRenewal">
+                                                wire:model.live="isRenewal">
                                             <div
                                                 class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                                             </div>
@@ -741,7 +741,7 @@
                                                 class="cursor-pointer text-primary-500">clear</Span></p>
                                         @else
                                             <input placeholder="Search policy..." type="text" class="form-control"
-                                                wire:model="searchPolicyText">
+                                                wire:model.live="searchPolicyText">
                                         @endif
 
                                     </div>
@@ -771,7 +771,7 @@
 
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item value</label>
-                                <input type="number" class="form-control mt-2 w-full" wire:model.defer="item_value">
+                                <input type="number" class="form-control mt-2 w-full" wire:model="item_value">
                                 @error('item_value')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -779,7 +779,7 @@
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Item Description</label>
-                                <textarea class="form-control mt-2 w-full" wire:model.defer="item_desc"></textarea>
+                                <textarea class="form-control mt-2 w-full" wire:model="item_desc"></textarea>
                                 @error('item_desc')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -787,7 +787,7 @@
                             </div>
                             <div class="from-group">
                                 <label for="lastName" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full" wire:model.defer="note"></textarea>
+                                <textarea class="form-control mt-2 w-full" wire:model="note"></textarea>
                                 @error('note')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -797,7 +797,7 @@
                                 <label for="inFavorTo" class="form-label">In Favor To</label>
                                 <input name="inFavorTo"
                                     class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('inFavorTo') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="inFavorTo"
+                                    id="default-picker" type="text" wire:model="inFavorTo"
                                     autocomplete="off">
                                 @error('inFavorTo')
                                     <span
@@ -809,7 +809,7 @@
                                     <label for="time-date-picker" class="form-label">Due Date</label>
                                     <input
                                         class="form-control py-2 flatpickr cursor-pointer flatpickr-input active @error('dueDate') !border-danger-500 @enderror"
-                                        id="default-picker" value="" type="date" wire:model.defer="dueDate"
+                                        id="default-picker" value="" type="date" wire:model="dueDate"
                                         autocomplete="off">
                                     @error('dueDate')
                                         <span
@@ -821,8 +821,8 @@
                                     <input type="time"
                                         class="form-control  @error('dueTime') !border-danger-500 @enderror"
                                         id="appt" name="appt" min="09:00" max="18:00"
-                                        wire:model.defer="dueTime" autocomplete="off" />
-                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model.defer="dueTime" autocomplete="off"> --}}
+                                        wire:model="dueTime" autocomplete="off" />
+                                    {{-- <input class="form-control cursor-pointer py-2 flatpickr time flatpickr-input active @error('dueTime') !border-danger-500 @enderror" id="time-picker" data-enable-time="true" value="" type="text" wire:model="dueTime" autocomplete="off"> --}}
                                     @error('dueTime')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

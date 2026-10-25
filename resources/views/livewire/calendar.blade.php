@@ -59,7 +59,7 @@
                                         <label for="title" class="form-label">Title</label>
                                         <input id="title" type="text"
                                             class="form-control @error('title') !border-danger-500 @enderror"
-                                            wire:model.defer="title">
+                                            wire:model="title">
                                         @error('title')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -71,13 +71,13 @@
                                             <label for="start_time" class="form-label">Start Time</label>
                                             <input id="start_time" type="datetime-local"
                                                 class="form-control @error('start_time') !border-danger-500 @enderror"
-                                                wire:model.defer="start_time">
+                                                wire:model="start_time">
                                         </div>
                                         <div class="input-area">
                                             <label for="end_time" class="form-label">End Time</label>
                                             <input id="end_time" type="datetime-local"
                                                 class="form-control @error('end_time') !border-danger-500 @enderror"
-                                                wire:model.defer="end_time">
+                                                wire:model="end_time">
                                         </div>
                                     </div>
                                     @error('start_time')
@@ -95,13 +95,13 @@
                                             <label for="all_day" class="form-label">All Day</label>
                                             <input id="all_day" type="checkbox"
                                                 class="form-control @error('all_day') !border-danger-500 @enderror"
-                                                wire:model.defer="all_day">
+                                                wire:model="all_day">
                                         </div>
                                         <div class="input-area">
                                             <label for="all_user" class="form-label">All User</label>
                                             <input id="all_user" type="checkbox"
                                                 class="form-control @error('all_user') !border-danger-500 @enderror"
-                                                wire:model.defer="all_user">
+                                                wire:model="all_user">
                                         </div>
                                     </div>
 
@@ -109,7 +109,7 @@
                                         <label for="location" class="form-label">Location</label>
                                         <input id="location" type="text"
                                             class="form-control @error('location') !border-danger-500 @enderror"
-                                            wire:model.defer="location">
+                                            wire:model="location">
                                         @error('location')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -118,7 +118,7 @@
 
                                     <div class="input-area">
                                         <label for="note" class="form-label">Note</label>
-                                        <textarea id="note" class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note"></textarea>
+                                        <textarea id="note" class="form-control @error('note') !border-danger-500 @enderror" wire:model="note"></textarea>
                                         @error('note')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -136,7 +136,7 @@
                                                         <select name="users_array[{{ $index }}][tag]"
                                                             id="user_tag_{{ $index }}"
                                                             class="form-control w-full mt-2 @error('users_array.' . $index . '.tag') !border-danger-500 @enderror"
-                                                            wire:model="users_array.{{ $index }}.tag">
+                                                            wire:model.live="users_array.{{ $index }}.tag">
                                                             <option>None</option>
                                                             @foreach ($USER_TAGS as $USER_TAG)
                                                                 <option value="{{ $USER_TAG }}">
@@ -151,7 +151,7 @@
                                                                 class="form-label">Guest Name</label>
                                                             <input id="guest_name_{{ $index }}" type="text"
                                                                 class="form-control w-full mt-2 @error('users_array.' . $index . '.guest_name') !border-danger-500 @enderror"
-                                                                wire:model.defer="users_array.{{ $index }}.guest_name"
+                                                                wire:model="users_array.{{ $index }}.guest_name"
                                                                 placeholder="Guest Name">
                                                         </div>
                                                     @else
@@ -161,7 +161,7 @@
                                                             <select name="users_array[{{ $index }}][user_id]"
                                                                 id="userId_{{ $index }}"
                                                                 class="form-control w-full mt-2 @error('users_array.' . $index . '.user_id') !border-danger-500 @enderror"
-                                                                wire:model.defer="users_array.{{ $index }}.user_id">
+                                                                wire:model="users_array.{{ $index }}.user_id">
                                                                 <option>Select user...</option>
                                                                 @foreach ($USERS as $USER)
                                                                     <option value="{{ $USER->id }}">
@@ -249,7 +249,7 @@
                                         <label for="title" class="form-label">Title</label>
                                         <input id="title" type="text"
                                             class="form-control @error('title') !border-danger-500 @enderror"
-                                            wire:model.defer="title">
+                                            wire:model="title">
                                         @error('title')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -261,13 +261,13 @@
                                             <label for="start_time" class="form-label">Start Time</label>
                                             <input id="start_time" type="datetime-local"
                                                 class="form-control @error('start_time') !border-danger-500 @enderror"
-                                                wire:model.defer="start_time">
+                                                wire:model="start_time">
                                         </div>
                                         <div class="input-area">
                                             <label for="end_time" class="form-label">End Time</label>
                                             <input id="end_time" type="datetime-local"
                                                 class="form-control @error('end_time') !border-danger-500 @enderror"
-                                                wire:model.defer="end_time">
+                                                wire:model="end_time">
                                         </div>
                                     </div>
                                     @error('start_time')
@@ -285,13 +285,13 @@
                                             <label for="all_day" class="form-label">All Day</label>
                                             <input id="all_day" type="checkbox"
                                                 class="form-control @error('all_day') !border-danger-500 @enderror"
-                                                wire:model.defer="all_day">
+                                                wire:model="all_day">
                                         </div>
                                         <div class="input-area">
                                             <label for="all_user" class="form-label">All User</label>
                                             <input id="all_user" type="checkbox"
                                                 class="form-control @error('all_user') !border-danger-500 @enderror"
-                                                wire:model.defer="all_user">
+                                                wire:model="all_user">
                                         </div>
                                     </div>
 
@@ -299,7 +299,7 @@
                                         <label for="location" class="form-label">Location</label>
                                         <input id="location" type="text"
                                             class="form-control @error('location') !border-danger-500 @enderror"
-                                            wire:model.defer="location">
+                                            wire:model="location">
                                         @error('location')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -308,7 +308,7 @@
 
                                     <div class="input-area">
                                         <label for="note" class="form-label">Note</label>
-                                        <textarea id="note" class="form-control @error('note') !border-danger-500 @enderror" wire:model.defer="note"></textarea>
+                                        <textarea id="note" class="form-control @error('note') !border-danger-500 @enderror" wire:model="note"></textarea>
                                         @error('note')
                                             <span
                                                 class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -415,7 +415,7 @@
                     // Check if the event is a CalendarEvent and trigger the Livewire method
                     if (info.event.id.startsWith('event')) {
                         let eventId = info.event.id.replace('event', '');
-                        Livewire.emit('showEvent', eventId);
+                        Livewire.dispatch('showEvent', { id: eventId });
                     } else if (info.event.url) {
                         window.open(info.event.url);
                     }
@@ -429,8 +429,10 @@
         });
 
         // Listen for Livewire updates to refresh calendar
-        document.addEventListener('livewire:update', function() {
-            initializeCalendar();
+        document.addEventListener('livewire:init', function() {
+            Livewire.hook('commit', ({ succeed }) => {
+                succeed(() => initializeCalendar());
+            });
         });
     </script>
 

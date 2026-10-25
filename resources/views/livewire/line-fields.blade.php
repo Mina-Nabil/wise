@@ -145,7 +145,7 @@
                                 <label for="fieldName" class="form-label">Field</label>
                                 <input name="fieldName"
                                     class="form-control  @error('fieldName') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="fieldName" autocomplete="off">
+                                    id="default-picker" type="text" wire:model="fieldName" autocomplete="off">
                                 @error('fieldName')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -153,7 +153,7 @@
 
                                 <div class="checkbox-area mt-2">
                                     <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" wire:model.defer="fieldIsMandatory" class="hidden" name="checkbox">
+                                        <input type="checkbox" wire:model="fieldIsMandatory" class="hidden" name="checkbox">
                                         <span
                                             class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                             <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""
@@ -209,7 +209,7 @@
                                 <label for="fieldName" class="form-label">Field</label>
                                 <input name="fieldName"
                                     class="form-control @error('fieldName') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="fieldName"
+                                    id="default-picker" type="text" wire:model="fieldName"
                                     autocomplete="off">
                                 @error('fieldName')
                                     <span
@@ -219,7 +219,7 @@
 
                             <div class="checkbox-area mt-2">
                                 <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" wire:model.defer="fieldIsMandatory" class="hidden" name="checkbox">
+                                    <input type="checkbox" wire:model="fieldIsMandatory" class="hidden" name="checkbox">
                                     <span
                                         class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                         <img src="{{ asset('assets/images/icon/ck-white.svg') }}" alt=""

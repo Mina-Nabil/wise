@@ -78,13 +78,13 @@
             Line of Business
         </button>
 
-        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model="searchText" placeholder="Search by title & description">
-        <input class="form-control py-2 w-auto ml-5" style="width:220px" value="" type="text" wire:model.debounce.500ms="workshop" placeholder="مكان الاصلاح">
-        <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px" id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
+        <input class="form-control py-2 w-auto ml-5" style="width:300px" value="" type="text" wire:model.live="searchText" placeholder="Search by title & description">
+        <input class="form-control py-2 w-auto ml-5" style="width:220px" value="" type="text" wire:model.live.debounce.500ms="workshop" placeholder="مكان الاصلاح">
+        <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5" style="width:300px" id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model.live="dateRange">
 
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" checked class="sr-only peer" wire:model="myTasks">
+                <input type="checkbox" checked class="sr-only peer" wire:model.live="myTasks">
                 <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
                 <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100">Me</span>
@@ -96,7 +96,7 @@
         <div class="flex items-center mr-2 sm:mr-4 mt-2 space-x-2 justify-end ml-5 pb-2">
             <label class="text-xs dark:text-white font-Inter font-normal opacity-100 ">Show Watchers</label>
             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                <input type="checkbox" class="sr-only peer" wire:model="watcherTasks">
+                <input type="checkbox" class="sr-only peer" wire:model.live="watcherTasks">
                 <div class="w-14 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:z-10 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-500">
                 </div>
                 <span class="absolute left-1 z-20 text-xs text-white font-Inter font-normal opacity-0 peer-checked:opacity-100"></span>
@@ -181,8 +181,8 @@
                                             $currentDate = now();
                                             $startDate = $task->created_at;
                                             $dueDate = $task->due;
-                                            $totalDuration = $startDate->diffInSeconds($dueDate);
-                                            $elapsedDuration = $startDate->diffInSeconds($currentDate);
+                                            $totalDuration = $startDate->diffInSeconds($dueDate, true);
+                                            $elapsedDuration = $startDate->diffInSeconds($currentDate, true);
                                             $percentagePassed = $totalDuration ? ($elapsedDuration / $totalDuration) * 100 : 0;
                                         @endphp
 
@@ -285,7 +285,7 @@
     @include('livewire.partials.lob-filter-modal')
 
     <script>
-        document.addEventListener('livewire:load', function() {
+        document.addEventListener('livewire:init', function() {
             $('#demo').daterangepicker({
                 "singleDatePicker": true,
                 "timePicker": true,

@@ -73,7 +73,7 @@
                     <header class="card-header cust-card-header noborder">
                         <iconify-icon wire:loading class="loading-icon text-lg"
                             icon="line-md:loading-twotone-loop"></iconify-icon>
-                        <input class="form-control py-2 w-auto" type="text" wire:model="searchText"
+                        <input class="form-control py-2 w-auto" type="text" wire:model.live="searchText"
                             style="padding-left: 35px" placeholder="Search..." />
                     </header>
 
@@ -304,7 +304,7 @@
                                 <label for="Ecreation_from" class="form-label">Creation from</label>
                                 <input name="Ecreation_from" type="date"
                                     class="form-control mt-2 w-full @error('Ecreation_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Ecreation_from">
+                                    wire:model="Ecreation_from">
                                 @error('Ecreation_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -314,7 +314,7 @@
                                 <label for="Ecreation_to" class="form-label">Creation to</label>
                                 <input name="Ecreation_to" type="date"
                                     class="form-control mt-2 w-full @error('Ecreation_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Ecreation_to">
+                                    wire:model="Ecreation_to">
                                 @error('Ecreation_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -374,7 +374,7 @@
                                     <div class="checkbox-area">
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox" class="hidden" value="{{ $one_lob }}"
-                                                name="checkbox" wire:model="Elobs">
+                                                name="checkbox" wire:model.live="Elobs">
                                             <span
                                                 class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                 <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -436,7 +436,7 @@
                             <div class="from-group">
                                 <label for="Ecreator_id" class="form-label">Creator</label>
                                 <select name="Ecreator_id" id="Ecreator_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Ecreator_id">
+                                    wire:model="Ecreator_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select user</option>
@@ -499,7 +499,7 @@
                             <div class="from-group">
                                 <label for="Ecampaign_id" class="form-label">Campaign</label>
                                 <select name="Ecampaign_id" id="Ecampaign_id" class="form-control w-full mt-2"
-                                    wire:model.defer="Ecampaign_id">
+                                    wire:model="Ecampaign_id">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                         value="">
                                         Select campaign</option>

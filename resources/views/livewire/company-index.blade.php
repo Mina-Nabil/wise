@@ -39,7 +39,7 @@
 
                                     <div class="input-area">
                                         <label for="name" class="form-label">Company Name*</label>
-                                        <input id="name" type="text" class="form-control @error('newName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="newName">
+                                        <input id="name" type="text" class="form-control @error('newName') !border-danger-500 @enderror" placeholder="Company Name" wire:model="newName">
                                         @error('newName')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
@@ -47,7 +47,7 @@
 
                                     <div class="input-area">
                                         <label for="name" class="form-label">Note</label>
-                                        <textarea id="name" type="text" class="form-control @error('newNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="newNote"></textarea>
+                                        <textarea id="name" type="text" class="form-control @error('newNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model="newNote"></textarea>
                                         @error('newNote')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror
@@ -71,7 +71,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -230,7 +230,7 @@
                         <div class="p-6 space-y-4">
                             <div class="input-area">
                                 <label for="name" class="form-label">Company Name*</label>
-                                <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model.defer="companyInfoName">
+                                <input id="name" type="text" class="form-control @error('companyInfoName') !border-danger-500 @enderror" placeholder="Company Name" wire:model="companyInfoName">
                                 @error('companyInfoName')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -238,7 +238,7 @@
 
                             <div class="input-area">
                                 <label for="name" class="form-label">Note</label>
-                                <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model.defer="companyInfoNote"></textarea>
+                                <textarea id="name" type="text" class="form-control @error('companyInfoNote') !border-danger-500 @enderror" placeholder="Leave a note..." wire:model="companyInfoNote"></textarea>
                                 @error('companyInfoNote')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                 @enderror
@@ -295,7 +295,7 @@
                                                                 @if ($email->id === $editableEmailId)
                                                                     <tr>
                                                                         <td class="table-td" style="padding-left: 1px;padding-right: 1px;">
-                                                                            <select name="basicSelect" class="form-control w-full @error('editableEmailType') !border-danger-500 @enderror" wire:model.defer="editableEmailType">
+                                                                            <select name="basicSelect" class="form-control w-full @error('editableEmailType') !border-danger-500 @enderror" wire:model="editableEmailType">
                                                                                 <option selected="Selected" disabled="disabled" value="none" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                                                     Select
                                                                                     Type</option>
@@ -304,17 +304,17 @@
                                                                                         {{ $type }}</option>
                                                                                 @endforeach
                                                                             </select>
-                                                                            <input type="text" class="form-control mt-2 @error('editableEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model.defer="editableEmailJobTitle">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model="editableEmailJobTitle">
                                                                         </td>
 
                                                                         <td class="table-td" style="padding-left: 1px;padding-right: 1px;">
-                                                                            <input type="text" class="form-control @error('editableEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="editableEmail">
-                                                                            <input type="text" class="form-control mt-2 @error('editableEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model.defer="editableEmailPhone">
+                                                                            <input type="text" class="form-control @error('editableEmail') !border-danger-500 @enderror" placeholder="Email" wire:model="editableEmail">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model="editableEmailPhone">
                                                                         </td>
 
                                                                         <td class="table-td flex justify-center" style="padding-left: 1px;padding-right: 1px;">
-                                                                            <input type="text" class="form-control @error('editableEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model.defer="editableEmailFname">
-                                                                            <input type="text" class="form-control mt-2 @error('editableEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model.defer="editableEmailLname">
+                                                                            <input type="text" class="form-control @error('editableEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model="editableEmailFname">
+                                                                            <input type="text" class="form-control mt-2 @error('editableEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model="editableEmailLname">
 
                                                                         </td>
 
@@ -322,7 +322,7 @@
                                                                             <div class=" flex justify-center">
                                                                                 <div class="checkbox-area primary-checkbox mr-2 sm:mr-4 mt-2">
                                                                                     <label class="inline-flex items-center cursor-pointer">
-                                                                                        <input type="checkbox" class="hidden" name="checkbox" wire:model.defer="editableEmailIsPrim">
+                                                                                        <input type="checkbox" class="hidden" name="checkbox" wire:model="editableEmailIsPrim">
                                                                                         <span class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                                                             <img src="assets/images/icon/ck-white.svg" alt="" class="h-[10px] w-[10px] block m-auto opacity-0"></span>
                                                                                         <span class="text-primary-500 dark:text-slate-400 text-sm leading-6 capitalize">primary</span>
@@ -420,7 +420,7 @@
 
                                         <div>
                                             <label for="name" class="form-label">Type</label>
-                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('newEmailType') !border-danger-500 @enderror" wire:model.defer="newEmailType">
+                                            <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2 @error('newEmailType') !border-danger-500 @enderror" wire:model="newEmailType">
                                                 <option selected="Selected" disabled="disabled" value="none" class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     Select
                                                     Type</option>
@@ -435,14 +435,14 @@
                                         </div>
                                         <div>
                                             <label for="name" class="form-label">Email</label>
-                                            <input type="text" class="form-control @error('newEmail') !border-danger-500 @enderror" placeholder="Email" wire:model.defer="newEmail">
+                                            <input type="text" class="form-control @error('newEmail') !border-danger-500 @enderror" placeholder="Email" wire:model="newEmail">
                                             @error('newEmail')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div>
                                             <label for="phone" class="form-label">Phone</label>
-                                            <input type="text" class="form-control @error('newEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model.defer="newEmailPhone">
+                                            <input type="text" class="form-control @error('newEmailPhone') !border-danger-500 @enderror" placeholder="Phone" wire:model="newEmailPhone">
                                             @error('newEmailPhone')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror
@@ -450,7 +450,7 @@
 
                                         <div>
                                             <label for="name" class="form-label">First Name</label>
-                                            <input type="text" class="form-control @error('newEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model.defer="newEmailFname">
+                                            <input type="text" class="form-control @error('newEmailFname') !border-danger-500 @enderror" placeholder="First Name" wire:model="newEmailFname">
                                             @error('newEmailFname')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror
@@ -458,7 +458,7 @@
 
                                         <div>
                                             <label for="name" class="form-label">Last Name</label>
-                                            <input type="text" class="form-control @error('newEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model.defer="newEmailLname">
+                                            <input type="text" class="form-control @error('newEmailLname') !border-danger-500 @enderror" placeholder="Last Name" wire:model="newEmailLname">
                                             @error('newEmailLname')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror
@@ -466,7 +466,7 @@
 
                                         <div>
                                             <label for="job_title" class="form-label">Job Title</label>
-                                            <input type="text" class="form-control @error('newEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model.defer="newEmailJobTitle">
+                                            <input type="text" class="form-control @error('newEmailJobTitle') !border-danger-500 @enderror" placeholder="Job Title" wire:model="newEmailJobTitle">
                                             @error('newEmailJobTitle')
                                                 <span class="font-Inter text-sm text-danger-500 pt-1 inline-block mb-3">{{ $message }}</span>
                                             @enderror

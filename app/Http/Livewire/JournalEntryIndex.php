@@ -386,7 +386,7 @@ class JournalEntryIndex extends Component
 
     public function redirectToAccount($id)
     {
-        $this->dispatchBrowserEvent('openNewTab', ['url' => route('accounts.show', $id)]);
+        $this->dispatch('openNewTab', url: route('accounts.show', $id));
     }
 
     public function unsetMainSelectedJournalEntry()

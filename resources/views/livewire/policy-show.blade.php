@@ -46,7 +46,7 @@
                                 <label for="name" class="form-label">Policy Name</label>
                                 <input type="text"
                                     class="form-control @error('policyName') !border-danger-500 @enderror"
-                                    wire:model="policyName">
+                                    wire:model.live="policyName">
                                 @error('policyName')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -56,7 +56,7 @@
                                 <label for="name" class="form-label">Business</label>
                                 <select name="business"
                                     class="form-control w-full mt-2  @error('policyBusiness') !border-danger-500 @enderror"
-                                    wire:model="policyBusiness">
+                                    wire:model.live="policyBusiness">
                                     @foreach ($linesOfBusiness as $line)
                                         <option {{ $line === $policy_business ? 'selected' : '' }}
                                             value="{{ $line }}"
@@ -76,7 +76,7 @@
                                     <input type="number"
                                         class="form-control 
                                     @error('medMinLimit') !border-danger-500 @enderror"
-                                        wire:model.defer="medMinLimit">
+                                        wire:model="medMinLimit">
                                     @error('medMinLimit')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -87,7 +87,7 @@
                                     <input type="number"
                                         class="form-control 
                                     @error('medMaxLimit') !border-danger-500 @enderror"
-                                        wire:model.defer="medMaxLimit">
+                                        wire:model="medMaxLimit">
                                     @error('medMaxLimit')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -98,7 +98,7 @@
 
                             <div class="input-area mb-3">
                                 <label for="name" class="form-label">Note</label>
-                                <textarea class="form-control @error('policyNote') !border-danger-500 @enderror" wire:model="policyNote"
+                                <textarea class="form-control @error('policyNote') !border-danger-500 @enderror" wire:model.live="policyNote"
                                     placeholder="Leave a note" name="note"></textarea>
                                 @error('policyNote')
                                     <span
@@ -236,7 +236,7 @@
                                                         @else
                                                             <tr wire:key="condition-edit-{{ $condition->id }}">
                                                                 <td class="p-1">
-                                                                    <select name="scope" wire:model="editedScope"
+                                                                    <select name="scope" wire:model.live="editedScope"
                                                                         class="form-control w-full text-center @error('editedScope') !border-danger-500 @else !border-success-500 @enderror">
                                                                         @foreach ($scopes as $scope)
                                                                             <option value="{{ $scope }}"
@@ -249,7 +249,7 @@
                                                                 </td>
 
                                                                 <td class="p-1">
-                                                                    <select name="scope" wire:model="editedOperator"
+                                                                    <select name="scope" wire:model.live="editedOperator"
                                                                         class="form-control w-full text-center @error('editedOperator') !border-danger-500 @else !border-success-500 @enderror">
                                                                         @foreach ($operators as $operator)
                                                                             <option value="{{ $operator }}"
@@ -276,7 +276,7 @@
 
                                                                 <td class="p-1">
                                                                     @if ($editedScope === 'car_model')
-                                                                        <select wire:model="editedValue"
+                                                                        <select wire:model.live="editedValue"
                                                                             class="select2  @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($models as $model)
                                                                                 <option
@@ -288,7 +288,7 @@
                                                                             @endforeach
                                                                         </select>
                                                                     @elseif($editedScope === 'brand')
-                                                                        <select wire:model="editedValue"
+                                                                        <select wire:model.live="editedValue"
                                                                             class="select2  @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($brands as $brand)
                                                                                 <option
@@ -300,7 +300,7 @@
                                                                             @endforeach
                                                                         </select>
                                                                     @elseif($editedScope === 'engine_type')
-                                                                        <select wire:model="editedValue"
+                                                                        <select wire:model.live="editedValue"
                                                                             class="form-control w-full text-center @error('editedValue') !border-danger-500 @else !border-success-500 @enderror">
                                                                             @foreach ($engineTypes as $engineType)
                                                                                 <option value="{{ $engineType }}">
@@ -309,7 +309,7 @@
                                                                             @endforeach
                                                                         </select>
                                                                     @elseif($editedScope === 'country')
-                                                                        <select wire:model="editedValue"
+                                                                        <select wire:model.live="editedValue"
                                                                             class="select2 @error('editedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($countries as $country)
                                                                                 <option
@@ -321,26 +321,26 @@
                                                                             @endforeach
                                                                         </select>
                                                                     @else
-                                                                        <input type="number" wire:model="editedValue"
+                                                                        <input type="number" wire:model.live="editedValue"
                                                                             class="form-control text-center @error('editedValue') !border-danger-500 @else !border-success-500 @enderror"
                                                                             value="{{ $condition->value }}">
                                                                     @endif
                                                                 </td>
 
                                                                 <td class="p-1">
-                                                                    <input type="number" wire:model="editedRate"
+                                                                    <input type="number" wire:model.live="editedRate"
                                                                         class="form-control text-center @error('editedRate') !border-danger-500 @else !border-success-500 @enderror"
                                                                         value="{{ $condition->rate }}">
                                                                 </td>
 
                                                                 <td class="p-1">
-                                                                    <input type="number" wire:model="editedGrossRate"
+                                                                    <input type="number" wire:model.live="editedGrossRate"
                                                                         class="form-control text-center @error('editedGrossRate') !border-danger-500 @else !border-success-500 @enderror"
                                                                         value="{{ $condition->gross_rate }}">
                                                                 </td>
 
                                                                 <td class="table-td p-1" style="max-width: 50px;">
-                                                                    <input type="text" wire:model="editedNote"
+                                                                    <input type="text" wire:model.live="editedNote"
                                                                         class="form-control text-center"
                                                                         value="{{ $condition->note }}">
                                                                 </td>
@@ -386,7 +386,7 @@
                                                     @else
                                                         <tr>
                                                             <td class="p-1">
-                                                                <select name="scope" wire:model="addedScope"
+                                                                <select name="scope" wire:model.live="addedScope"
                                                                     class="@error('addedScope') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                     @foreach ($scopes as $scope)
                                                                         <option value="{{ $scope }}"
@@ -400,10 +400,10 @@
                                                             <td class="p-1 text-center">
                                                                 @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country' || $addedScope === 'engine_type')
                                                                     <input type="hidden" value="="
-                                                                        wire:model="addedOperator" />
+                                                                        wire:model.live="addedOperator" />
                                                                     =
                                                                 @else
-                                                                    <select name="scope" wire:model="addedOperator"
+                                                                    <select name="scope" wire:model.live="addedOperator"
                                                                         class="@error('addedOperator') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                         @foreach ($operators as $operator)
                                                                             <option value="{{ $operator }}"
@@ -427,7 +427,7 @@
                                                             <td class="p-1">
                                                                 @if ($addedScope === 'car_model' || $addedScope === 'brand' || $addedScope === 'country' || $addedScope === 'engine_type')
                                                                     @if ($addedScope === 'engine_type')
-                                                                        <select wire:model="addedValue"
+                                                                        <select wire:model.live="addedValue"
                                                                             class="form-control w-full text-center @error('addedValue') !border-danger-500 @else !border-success-500 @enderror">
                                                                             @foreach ($engineTypes as $engineType)
                                                                                 <option value="{{ $engineType }}">
@@ -437,7 +437,7 @@
                                                                         </select>
                                                                     @elseif($addedScope === 'car_model')
                                                                         <select name="select2basic"
-                                                                            wire:model="addedValue"
+                                                                            wire:model.live="addedValue"
                                                                             class="select2 @error('addedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($models as $model)
                                                                                 <option
@@ -449,7 +449,7 @@
                                                                         </select>
                                                                     @elseif($addedScope === 'brand')
                                                                         <select name="select2basic"
-                                                                            wire:model="addedValue"
+                                                                            wire:model.live="addedValue"
                                                                             class="select2 @error('addedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($brands as $brand)
                                                                                 <option
@@ -461,7 +461,7 @@
                                                                         </select>
                                                                     @else
                                                                         <select name="select2basic"
-                                                                            wire:model="addedValue"
+                                                                            wire:model.live="addedValue"
                                                                             class="select2 @error('addedValue') !border-danger-500 @else !border-success-500 @enderror form-control w-full text-center">
                                                                             @foreach ($countries as $country)
                                                                                 <option
@@ -473,7 +473,7 @@
                                                                         </select>
                                                                     @endif
                                                                 @else
-                                                                    <input type="number" wire:model="addedValue"
+                                                                    <input type="number" wire:model.live="addedValue"
                                                                         style="max-width: 70px"
                                                                         class="form-control text-center @error('addedValue') !border-danger-500 @else !border-success-500 @enderror">
                                                                 @endif
@@ -481,13 +481,13 @@
                                                             </td>
 
                                                             <td class="p-1">
-                                                                <input type="number" wire:model="addedRate"
+                                                                <input type="number" wire:model.live="addedRate"
                                                                     style="max-width: 70px"
                                                                     class="form-control text-center @error('addedRate') !border-danger-500 @else !border-success-500 @enderror">
                                                             </td>
 
                                                             <td class="p-1">
-                                                                <input type="number" wire:model="addedGrossRate"
+                                                                <input type="number" wire:model.live="addedGrossRate"
                                                                     style="max-width: 70px"
                                                                     placeholder="Optional"
                                                                     class="form-control text-center @error('addedGrossRate') !border-danger-500 @else !border-success-500 @enderror">
@@ -498,7 +498,7 @@
                                                                     class="form-control text-center @error('addedNote') !border-danger-500 @else !border-success-500 @enderror"
                                                                     style="min-width: 300px;"
                                                                     placeholder="Leave a note" name="note"
-                                                                    wire:model="addedNote">
+                                                                    wire:model.live="addedNote">
                                                             </td>
 
                                                             <td class="p-1">
@@ -566,13 +566,13 @@
                                                                 <td class="table-td">
                                                                     <input type="text"
                                                                         class="form-control text-center @error('eTitle') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eTitle">
+                                                                        wire:model.live="eTitle">
                                                                 </td>
 
                                                                 <td class="table-td">
                                                                     <select
                                                                         class="form-control text-center @error('eType') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eType">
+                                                                        wire:model.live="eType">
                                                                         @foreach ($calcTypes as $type)
                                                                             <option value="{{ $type }}">
                                                                                 {{ $type }}</option>
@@ -583,7 +583,7 @@
                                                                 <td class="table-td">
                                                                     <input type="number"
                                                                         class="form-control text-center @error('eValue') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eValue">
+                                                                        wire:model.live="eValue">
                                                                 </td>
 
                                                                 <td class="table-td  p-1">
@@ -647,14 +647,14 @@
 
                                                     <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newCalcTitle"
+                                                            <input type="text" wire:model.live="newCalcTitle"
                                                                 class=" @error('newCalcTitle') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
                                                         <td class="table-td">
                                                             <select
                                                                 class="form-control text-center @error('newCalcType') !border-danger-500 @else !border-success-500 @enderror"
-                                                                wire:model="newCalcType">
+                                                                wire:model.live="newCalcType">
                                                                 @foreach ($calcTypes as $type)
                                                                     <option value="{{ $type }}">
                                                                         {{ $type }}</option>
@@ -663,7 +663,7 @@
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newCalcValue"
+                                                            <input type="text" wire:model.live="newCalcValue"
                                                                 class=" @error('newCalcValue') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
@@ -752,13 +752,13 @@
                                                                 <td class="table-td">
                                                                     <input type="text"
                                                                         class="form-control text-center @error('eConfTitle') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eConfTitle">
+                                                                        wire:model.live="eConfTitle">
                                                                 </td>
 
                                                                 <td class="table-td">
                                                                     <select
                                                                         class="form-control text-center @error('eConfType') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eConfType">
+                                                                        wire:model.live="eConfType">
                                                                         @foreach ($calcTypes as $type)
                                                                             <option value="{{ $type }}">
                                                                                 {{ $type }}</option>
@@ -769,27 +769,27 @@
                                                                 <td class="table-td">
                                                                     <input type="number"
                                                                         class="form-control text-center @error('eConfValue') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eConfValue">
+                                                                        wire:model.live="eConfValue">
                                                                 </td>
 
                                                                 <td class="table-td">
                                                                     <input type="number"
                                                                         class="form-control text-center @error('eConfDue') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eConfDue">
+                                                                        wire:model.live="eConfDue">
                                                                 </td>
 
                                                                 <td class="table-td">
                                                                     <input type="number"
                                                                         class="form-control text-center @error('eConfPen') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="eConfPen">
+                                                                        wire:model.live="eConfPen">
                                                                 </td>
 
                                                                 <td class="table-td">
-                                                                    <input type="checkbox" wire:model="eMainPenalty">
+                                                                    <input type="checkbox" wire:model.live="eMainPenalty">
                                                                 </td>
 
                                                                 <td class="table-td">
-                                                                    <input type="checkbox" wire:model="eSalesOut">
+                                                                    <input type="checkbox" wire:model.live="eSalesOut">
                                                                 </td>
 
 
@@ -870,14 +870,14 @@
 
                                                     <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newConfTitle"
+                                                            <input type="text" wire:model.live="newConfTitle"
                                                                 class=" @error('newConfTitle') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
                                                         <td class="table-td">
                                                             <select
                                                                 class="form-control text-center @error('newConfType') !border-danger-500 @else !border-success-500 @enderror"
-                                                                wire:model="newConfType">
+                                                                wire:model.live="newConfType">
                                                                 @foreach ($calcTypes as $type)
                                                                     <option value="{{ $type }}">
                                                                         {{ $type }}</option>
@@ -886,26 +886,26 @@
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newConfValue"
+                                                            <input type="text" wire:model.live="newConfValue"
                                                                 class=" @error('newConfValue') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newConfDue"
+                                                            <input type="text" wire:model.live="newConfDue"
                                                                 class=" @error('newConfDue') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="text" wire:model="newConfPen"
+                                                            <input type="text" wire:model.live="newConfPen"
                                                                 class=" @error('newConfPen') !border-danger-500  @enderror form-control w-full text-center">
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="checkbox" wire:model="newMainPenalty">
+                                                            <input type="checkbox" wire:model.live="newMainPenalty">
                                                         </td>
 
                                                         <td class="table-td">
-                                                            <input type="checkbox" wire:model="newSalesOut">
+                                                            <input type="checkbox" wire:model.live="newSalesOut">
                                                         </td>
 
                                                         <td class="table-td  p-1">
@@ -983,7 +983,7 @@
                                                                 <td class="table-td">
                                                                     <input list="benefit_options"
                                                                         class="form-control text-center @error('benefitValue') !border-danger-500 @else !border-success-500 @enderror"
-                                                                        wire:model="benefitValue" />
+                                                                        wire:model.live="benefitValue" />
                                                                     <datalist id="benefit_options">
                                                                         <option>مغطي</option>
                                                                         <option>غير مغطي</option>
@@ -1043,7 +1043,7 @@
                                                     <tr class="hover:bg-slate-200 dark:hover:bg-slate-700">
                                                         <td class="table-td">
 
-                                                            <select wire:model="newBenefit"
+                                                            <select wire:model.live="newBenefit"
                                                                 class=" @error('newBenefit') !border-danger-500  @enderror form-control w-full text-center">
                                                                 @foreach ($BENEFITS as $BENEFIT)
                                                                     @if (!in_array($BENEFIT, $policy->benefits->pluck('benefit')->toArray()))
@@ -1060,7 +1060,7 @@
                                                         <td class="table-td">
                                                             <input list="benefit_options"
                                                                 class="form-control text-center @error('newValue') !border-danger-500 @enderror"
-                                                                wire:model="newValue" />
+                                                                wire:model.live="newValue" />
                                                             <datalist id="benefit_options">
                                                                 <option>مغطي</option>
                                                                 <option>غير مغطي</option>

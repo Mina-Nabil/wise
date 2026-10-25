@@ -415,7 +415,7 @@ class OfferShow extends Component
             $this->alert('success', 'Message Sent');
             $this->whatsappMsgPhone = null;
             $this->whatsappMsgSec = false;
-            $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
+            $this->dispatch('openNewTab', url: $res);
         } else {
             $this->alert('failed', 'Server Error');
         }
@@ -442,7 +442,7 @@ class OfferShow extends Component
             $this->alert('success', 'Message Sent');
             $this->emailMsgEmail = null;
             $this->emailMsgSec = false;
-            $this->dispatchBrowserEvent('openNewTab', ['url' => $res]);
+            $this->dispatch('openNewTab', url: $res);
         } else {
             $this->alert('failed', 'Server Error');
         }
@@ -690,7 +690,7 @@ class OfferShow extends Component
         $url = Storage::disk('s3')->url($doc->url);
         $url = str_replace('options//', 'options/', $url);
 
-        $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
+        $this->dispatch('openNewTab', url: $url);
     }
 
     public function downloadOptionDoc($id)
@@ -765,7 +765,7 @@ class OfferShow extends Component
         $url = Storage::disk('s3')->url($doc->url);
         $url = str_replace('docs//', 'docs/', $url);
 
-        $this->dispatchBrowserEvent('openNewTab', ['url' => $url]);
+        $this->dispatch('openNewTab', url: $url);
     }
 
     public function downloadOfferFile($id)

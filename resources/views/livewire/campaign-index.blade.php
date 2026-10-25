@@ -55,7 +55,7 @@
                                             <label for="name" class="form-label">Campaign Name</label>
                                             <input type="text"
                                                 class="form-control @error('name') !border-danger-500 @enderror"
-                                                wire:model.defer="name">
+                                                wire:model="name">
                                             @error('name')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="description" class="form-label">Description</label>
-                                            <textarea class="form-control @error('description') !border-danger-500 @enderror" wire:model.defer="description"
+                                            <textarea class="form-control @error('description') !border-danger-500 @enderror" wire:model="description"
                                                 placeholder="Campaign description"></textarea>
                                             @error('description')
                                                 <span
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="offers" class="form-label">Offers</label>
-                                            <textarea class="form-control @error('offers') !border-danger-500 @enderror" wire:model.defer="offers"
+                                            <textarea class="form-control @error('offers') !border-danger-500 @enderror" wire:model="offers"
                                                 placeholder="Campaign offers"></textarea>
                                             @error('offers')
                                                 <span
@@ -81,7 +81,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="goal" class="form-label">Goal</label>
-                                            <textarea class="form-control @error('goal') !border-danger-500 @enderror" wire:model.defer="goal"
+                                            <textarea class="form-control @error('goal') !border-danger-500 @enderror" wire:model="goal"
                                                 placeholder="Campaign goal"></textarea>
                                             @error('goal')
                                                 <span
@@ -92,7 +92,7 @@
                                             <label for="target_audience" class="form-label">Target Audience</label>
                                             <input type="text"
                                                 class="form-control @error('target_audience') !border-danger-500 @enderror"
-                                                wire:model.defer="target_audience" placeholder="Target audience">
+                                                wire:model="target_audience" placeholder="Target audience">
                                             @error('target_audience')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -103,7 +103,7 @@
                                                 Channels</label>
                                             <input type="text"
                                                 class="form-control @error('marketing_channels') !border-danger-500 @enderror"
-                                                wire:model.defer="marketing_channels" placeholder="Marketing channels">
+                                                wire:model="marketing_channels" placeholder="Marketing channels">
                                             @error('marketing_channels')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -113,7 +113,7 @@
                                             <label for="handler" class="form-label">Handler</label>
                                             <input type="text"
                                                 class="form-control @error('handler') !border-danger-500 @enderror"
-                                                wire:model.defer="handler" placeholder="Campaign handler">
+                                                wire:model="handler" placeholder="Campaign handler">
                                             @error('handler')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -123,7 +123,7 @@
                                             <label for="budget" class="form-label">Budget</label>
                                             <input type="number" step="0.01"
                                                 class="form-control @error('budget') !border-danger-500 @enderror"
-                                                wire:model.defer="budget" placeholder="Campaign budget">
+                                                wire:model="budget" placeholder="Campaign budget">
                                             @error('budget')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -133,7 +133,7 @@
                                             <label for="start_date" class="form-label">Start Date</label>
                                             <input type="date"
                                                 class="form-control @error('start_date') !border-danger-500 @enderror"
-                                                wire:model.defer="start_date">
+                                                wire:model="start_date">
                                             @error('start_date')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -143,7 +143,7 @@
                                             <label for="end_date" class="form-label">End Date</label>
                                             <input type="date"
                                                 class="form-control @error('end_date') !border-danger-500 @enderror"
-                                                wire:model.defer="end_date">
+                                                wire:model="end_date">
                                             @error('end_date')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -199,7 +199,7 @@
                                             <label for="name" class="form-label">Campaign Name</label>
                                             <input type="text"
                                                 class="form-control @error('name') !border-danger-500 @enderror"
-                                                wire:model.defer="name">
+                                                wire:model="name">
                                             @error('name')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -207,7 +207,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="description" class="form-label">Description</label>
-                                            <textarea class="form-control @error('description') !border-danger-500 @enderror" wire:model.defer="description"
+                                            <textarea class="form-control @error('description') !border-danger-500 @enderror" wire:model="description"
                                                 placeholder="Campaign description"></textarea>
                                             @error('description')
                                                 <span
@@ -216,7 +216,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="offers" class="form-label">Offers</label>
-                                            <textarea class="form-control @error('offers') !border-danger-500 @enderror" wire:model.defer="offers"
+                                            <textarea class="form-control @error('offers') !border-danger-500 @enderror" wire:model="offers"
                                                 placeholder="Campaign offers"></textarea>
                                             @error('offers')
                                                 <span
@@ -225,7 +225,7 @@
                                         </div>
                                         <div class="input-area mb-3">
                                             <label for="goal" class="form-label">Goal</label>
-                                            <textarea class="form-control @error('goal') !border-danger-500 @enderror" wire:model.defer="goal"
+                                            <textarea class="form-control @error('goal') !border-danger-500 @enderror" wire:model="goal"
                                                 placeholder="Campaign goal"></textarea>
                                             @error('goal')
                                                 <span
@@ -236,7 +236,7 @@
                                             <label for="target_audience" class="form-label">Target Audience</label>
                                             <input type="text"
                                                 class="form-control @error('target_audience') !border-danger-500 @enderror"
-                                                wire:model.defer="target_audience" placeholder="Target audience">
+                                                wire:model="target_audience" placeholder="Target audience">
                                             @error('target_audience')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -247,7 +247,7 @@
                                                 Channels</label>
                                             <input type="text"
                                                 class="form-control @error('marketing_channels') !border-danger-500 @enderror"
-                                                wire:model.defer="marketing_channels"
+                                                wire:model="marketing_channels"
                                                 placeholder="Marketing channels">
                                             @error('marketing_channels')
                                                 <span
@@ -258,7 +258,7 @@
                                             <label for="handler" class="form-label">Handler</label>
                                             <input type="text"
                                                 class="form-control @error('handler') !border-danger-500 @enderror"
-                                                wire:model.defer="handler" placeholder="Campaign handler">
+                                                wire:model="handler" placeholder="Campaign handler">
                                             @error('handler')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -268,7 +268,7 @@
                                             <label for="budget" class="form-label">Budget</label>
                                             <input type="number" step="0.01"
                                                 class="form-control @error('budget') !border-danger-500 @enderror"
-                                                wire:model.defer="budget" placeholder="Campaign budget">
+                                                wire:model="budget" placeholder="Campaign budget">
                                             @error('budget')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -278,7 +278,7 @@
                                             <label for="start_date" class="form-label">Start Date</label>
                                             <input type="date"
                                                 class="form-control @error('start_date') !border-danger-500 @enderror"
-                                                wire:model.defer="start_date">
+                                                wire:model="start_date">
                                             @error('start_date')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -288,7 +288,7 @@
                                             <label for="end_date" class="form-label">End Date</label>
                                             <input type="date"
                                                 class="form-control @error('end_date') !border-danger-500 @enderror"
-                                                wire:model.defer="end_date">
+                                                wire:model="end_date">
                                             @error('end_date')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -423,7 +423,7 @@
                                             <label for="importLeadsFile" class="form-label">Excel File</label>
                                             <input type="file"
                                                 class="form-control @error('importLeadsFile') !border-danger-500 @enderror"
-                                                wire:model="importLeadsFile" accept=".xlsx,.xls">
+                                                wire:model.live="importLeadsFile" accept=".xlsx,.xls">
                                             @error('importLeadsFile')
                                                 <span
                                                     class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -441,7 +441,7 @@
                                                     (Optional)</label>
                                                 <select
                                                     class="form-control @error('importUserId') !border-danger-500 @enderror"
-                                                    wire:model.defer="importUserId">
+                                                    wire:model="importUserId">
                                                     <option value="">-- Assign to logged-in user --</option>
                                                     @foreach ($users as $user)
                                                         <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -578,7 +578,7 @@
                     <iconify-icon wire:loading class="loading-icon text-lg pt-2"
                         icon="line-md:loading-twotone-loop"></iconify-icon>
                     <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                        wire:model="search">
+                        wire:model.live="search">
                 </div>
             </div>
         </div>

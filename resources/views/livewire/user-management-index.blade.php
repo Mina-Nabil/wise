@@ -20,7 +20,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading wire:target="search" class="loading-icon text-lg"
                 icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -265,13 +265,13 @@
                                             <label for="newFirstName" class="form-label">First Name</label>
                                             <input id="newFirstName" type="text"
                                                 class="form-control @error('newFirstName') !border-danger-500 @enderror"
-                                                wire:model.defer="newFirstName" autocomplete="off">
+                                                wire:model="newFirstName" autocomplete="off">
                                         </div>
                                         <div class="input-area">
                                             <label for="newLastName" class="form-label">Last Name</label>
                                             <input id="newLastName" type="text"
                                                 class="form-control @error('newLastName') !border-danger-500 @enderror"
-                                                wire:model.defer="newLastName" autocomplete="off">
+                                                wire:model="newLastName" autocomplete="off">
                                         </div>
                                     </div>
                                     @error('newFirstName')
@@ -290,7 +290,7 @@
                                     <label for="newType" class="form-label">Type</label>
                                     <select name="newType" id="newType"
                                         class="form-control w-full mt-2 @error('newType') !border-danger-500 @enderror"
-                                        wire:model.defer="newType" autocomplete="off">
+                                        wire:model="newType" autocomplete="off">
                                         <option>None</option>
                                         @foreach ($TYPES as $type)
                                             <option value="{{ $type }}">
@@ -309,14 +309,14 @@
                                             <label for="newPassword" class="form-label">Password</label>
                                             <input id="newPassword" type="password"
                                                 class="form-control @error('newPassword') !border-danger-500 @enderror"
-                                                wire:model.defer="newPassword" autocomplete="off">
+                                                wire:model="newPassword" autocomplete="off">
                                         </div>
                                         <div class="input-area">
                                             <label for="newPassword_confirmation" class="form-label">Confirm
                                                 Password</label>
                                             <input id="newPassword_confirmation" type="password"
                                                 class="form-control @error('newPassword_confirmation') !border-danger-500 @enderror"
-                                                autocomplete="off" wire:model.defer="newPassword_confirmation">
+                                                autocomplete="off" wire:model="newPassword_confirmation">
                                         </div>
                                     </div>
                                     @error('newPassword')
@@ -336,13 +336,13 @@
                                             <label for="newPhone" class="form-label">Phone</label>
                                             <input id="newPhone" type="text"
                                                 class="form-control @error('newPhone') !border-danger-500 @enderror"
-                                                wire:model.defer="newPhone" autocomplete="off">
+                                                wire:model="newPhone" autocomplete="off">
                                         </div>
                                         <div class="input-area">
                                             <label for="newEmail" class="form-label">Email</label>
                                             <input id="newEmail" type="email"
                                                 class="form-control @error('newEmail') !border-danger-500 @enderror"
-                                                wire:model.defer="newEmail" autocomplete="off">
+                                                wire:model="newEmail" autocomplete="off">
                                         </div>
                                     </div>
                                     @error('newPhone')
@@ -360,7 +360,7 @@
                                     <label for="newManagerId" class="form-label">Manager</label>
                                     <select name="newManagerId" id="newManagerId"
                                         class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror"
-                                        wire:model.defer="newManagerId" autocomplete="off">
+                                        wire:model="newManagerId" autocomplete="off">
                                         <option>None</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -375,7 +375,7 @@
 
                                 <div class="from-group">
                                     <label class="form-label">
-                                        <input type="checkbox" wire:model.defer="newCanReviewReviews" 
+                                        <input type="checkbox" wire:model="newCanReviewReviews" 
                                                class="form-checkbox rounded border-slate-200 text-slate-600 focus:border-slate-200 focus:ring focus:ring-slate-200 focus:ring-opacity-50 dark:border-slate-600 dark:checked:border-slate-600 dark:focus:ring-slate-600 dark:focus:ring-opacity-50 dark:checked:bg-slate-600">
                                         <span class="text-slate-500 dark:text-slate-400 ml-2">Can Review Reviews</span>
                                     </label>
@@ -446,7 +446,7 @@
                                                 <iconify-icon wire:loading wire:target="userImage,clearImage"
                                                     icon="svg-spinners:ring-resize"></iconify-icon>
                                             </label>
-                                            <input wire:model="userImage" type="file" name="userImage" id="userImage"
+                                            <input wire:model.live="userImage" type="file" name="userImage" id="userImage"
                                                 style="display:none" accept=".jpg, .jpeg, .png">
                                         @else
                                             <span wire:click="clearImage"
@@ -486,13 +486,13 @@
                                             <label for="first_name" class="form-label">First Name</label>
                                             <input id="first_name" type="text"
                                                 class="form-control @error('first_name') !border-danger-500 @enderror"
-                                                wire:model.defer="first_name" autocomplete="off">
+                                                wire:model="first_name" autocomplete="off">
                                         </div>
                                         <div class="input-area">
                                             <label for="last_name" class="form-label">Last Name</label>
                                             <input id="last_name" type="text"
                                                 class="form-control @error('last_name') !border-danger-500 @enderror"
-                                                wire:model.defer="last_name" autocomplete="off">
+                                                wire:model="last_name" autocomplete="off">
                                         </div>
                                     </div>
                                     @error('first_name')
@@ -511,7 +511,7 @@
                                     <label for="type" class="form-label">Type</label>
                                     <select name="type" id="type"
                                         class="form-control w-full mt-2 @error('type') !border-danger-500 @enderror"
-                                        wire:model.defer="type" autocomplete="off">
+                                        wire:model="type" autocomplete="off">
                                         <option>None</option>
                                         @foreach ($TYPES as $type)
                                             <option value="{{ $type }}">
@@ -528,7 +528,7 @@
                                     <label for="newManagerId" class="form-label">Manager</label>
                                     <select name="newManagerId" id="newManagerId"
                                         class="form-control w-full mt-2 @error('newManagerId') !border-danger-500 @enderror"
-                                        wire:model.defer="newManagerId" autocomplete="off">
+                                        wire:model="newManagerId" autocomplete="off">
                                         <option>None</option>
                                         @foreach ($allUsers as $u)
                                             <option value="{{ $u->id }}">{{ $u->first_name }}
@@ -547,13 +547,13 @@
                                             <label for="phone" class="form-label">Phone</label>
                                             <input id="phone" type="text"
                                                 class="form-control @error('phone') !border-danger-500 @enderror"
-                                                wire:model.defer="phone" autocomplete="off">
+                                                wire:model="phone" autocomplete="off">
                                         </div>
                                         <div class="input-area">
                                             <label for="email" class="form-label">Email</label>
                                             <input id="email" type="email"
                                                 class="form-control @error('email') !border-danger-500 @enderror"
-                                                wire:model.defer="email" autocomplete="off">
+                                                wire:model="email" autocomplete="off">
                                         </div>
                                     </div>
                                     @error('phone')
@@ -568,7 +568,7 @@
                                 </div>
                                 <div class="from-group">
                                     <label class="form-label">
-                                        <input type="checkbox" wire:model.defer="can_review_reviews" 
+                                        <input type="checkbox" wire:model="can_review_reviews" 
                                                class="form-checkbox rounded border-slate-200 text-slate-600 focus:border-slate-200 focus:ring focus:ring-slate-200 focus:ring-opacity-50 dark:border-slate-600 dark:checked:border-slate-600 dark:focus:ring-slate-600 dark:focus:ring-opacity-50 dark:checked:bg-slate-600">
                                         <span class="text-slate-500 dark:text-slate-400 ml-2">Can Review Reviews</span>
                                     </label>
@@ -582,7 +582,7 @@
                                                 <label for="password" class="form-label">Password</label>
                                                 <input id="password" type="password"
                                                     class="form-control @error('password') !border-danger-500 @enderror"
-                                                    wire:model.defer="password" autocomplete="off">
+                                                    wire:model="password" autocomplete="off">
                                             </div>
                                         </div>
                                         @error('password')

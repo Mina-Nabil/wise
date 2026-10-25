@@ -48,7 +48,7 @@
 
                                             <select
                                                 class="form-control w-full mt-2 @error('meetingType') !border-danger-500 @enderror"
-                                                wire:model="meetingType">
+                                                wire:model.live="meetingType">
                                                 <option value="Customer"
                                                     class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                     Customer</option>
@@ -80,7 +80,7 @@
                                             </div>
                                         @else
                                             <input placeholder="Search..." type="text" class="form-control"
-                                                wire:model="searchClient">
+                                                wire:model.live="searchClient">
                                         @endif
 
                                     </div>
@@ -118,7 +118,7 @@
                                     <label for="firstName" class="form-label">Title</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('followupTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="followupTitle">
+                                        wire:model="followupTitle">
                                 </div>
                                 @error('followupTitle')
                                     <span
@@ -128,7 +128,7 @@
                                     <label for="firstName" class="form-label">Line of business</label>
                                     <select name="basicSelect"
                                         class="form-control w-full mt-2 @error('FollowupLineOfBussiness') !border-danger-500 @enderror"
-                                        wire:model="FollowupLineOfBussiness">
+                                        wire:model.live="FollowupLineOfBussiness">
                                         @foreach ($LINES_OF_BUSINESS as $LOB)
                                             <option value="{{ $LOB }}"
                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
@@ -142,7 +142,7 @@
                                         <label for="followupCallDateTime" class="form-label">Call Date Time</label>
                                         <input id="followupCallDateTime" type="datetime-local"
                                             class="form-control @error('followupCallDateTime') !border-danger-500 @enderror"
-                                            wire:model.defer="followupCallDateTime">
+                                            wire:model="followupCallDateTime">
                                     </div>
                                     @error('followupCallDateTime')
                                         <span
@@ -154,7 +154,7 @@
                                     <label for="firstName" class="form-label">Description</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('followupDesc') !border-danger-500 @enderror"
-                                        wire:model.defer="followupDesc">
+                                        wire:model="followupDesc">
                                 </div>
                                 @error('followupDesc')
                                     <span
@@ -165,7 +165,7 @@
                                     <label for="campaignId" class="form-label">Campaign</label>
                                     <select name="campaignId" id="campaignId"
                                         class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
-                                        wire:model.defer="campaignId">
+                                        wire:model="campaignId">
                                         <option value="">Use Client Campaign</option>
                                         @foreach ($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>

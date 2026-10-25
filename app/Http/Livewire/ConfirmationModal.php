@@ -14,19 +14,23 @@ class ConfirmationModal extends Component
     protected $listeners = ['showConfirmation'];
     public $callbackParams = [];
 
-    public function showConfirmation($message, $color ,$callback, ...$params)
+    public function showConfirmation($message, $color, $action, $reviewId = null)
     {
         $this->message = $message;
-        $this->callback = $callback;
-        $this->callbackParams = $params;
+        $this->callback = $action;
+        $this->callbackParams = $reviewId === null || $reviewId === '' ? [] : [$reviewId];
         $this->isOpen = true;
         $this->color = $color;
-        $this->dispatchBrowserEvent('modal-open');
+        $this->dispatch('modal-open');
     }
 
     public function confirm()
     {
-        $this->emit($this->callback, ...$this->callbackParams);
+        if ($this->callbackParams !== []) {
+            $this->dispatch($this->callback, id: $this->callbackParams[0]);
+        } else {
+            $this->dispatch($this->callback);
+        }
         $this->closeModal();
     }
 

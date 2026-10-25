@@ -128,7 +128,7 @@ class OfferIndex extends Component
 
     public function redirectToShowPage($id)
     {
-        $this->dispatchBrowserEvent('openNewTab', ['url' => route('offers.show', $id)]);
+        $this->dispatch('openNewTab', url: route('offers.show', $id));
     }
 
     public function selectClient($id)

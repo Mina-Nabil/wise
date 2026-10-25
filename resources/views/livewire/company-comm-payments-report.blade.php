@@ -93,7 +93,7 @@
                 <div class="grid grid-cols-12 gap-5">
                     <div class="col-span-12 md:col-span-6 p-4">
                         <div class="input-area">
-                            <input id="searchText" type="text" class="form-control" wire:model="searchText"
+                            <input id="searchText" type="text" class="form-control" wire:model.live="searchText"
                                 placeholder="Enter policy number">
                         </div>
                     </div>
@@ -384,12 +384,12 @@
                             <div class="from-group">
                                 <label for="Estart_from" class="form-label">Start from</label>
                                 <input name="Estart_from" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Estart_from">
+                                    wire:model="Estart_from">
                             </div>
                             <div class="from-group">
                                 <label for="Estart_to" class="form-label">Start to</label>
                                 <input name="Estart_to" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Estart_to">
+                                    wire:model="Estart_to">
                             </div>
                         </div>
                         <div
@@ -432,12 +432,12 @@
                             <div class="from-group">
                                 <label for="Epayment_date_from" class="form-label">Payment date from</label>
                                 <input name="Epayment_date_from" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Epayment_date_from">
+                                    wire:model="Epayment_date_from">
                             </div>
                             <div class="from-group">
                                 <label for="Epayment_date_to" class="form-label">Payment date to</label>
                                 <input name="Epayment_date_to" type="date" class="form-control mt-2 w-full"
-                                    wire:model.defer="Epayment_date_to">
+                                    wire:model="Epayment_date_to">
                             </div>
                         </div>
                         <div
@@ -479,7 +479,7 @@
                         <div class="p-6 space-y-4">
                             @foreach ($STATUSES as $status)
                                 <div class="flex items-center">
-                                    <input type="checkbox" wire:model="Estatuses" value="{{ $status }}"
+                                    <input type="checkbox" wire:model.live="Estatuses" value="{{ $status }}"
                                         class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label class="ml-2 text-sm text-gray-900 dark:text-gray-100">
                                         {{ ucwords(str_replace('_', ' ', $status)) }}
@@ -526,7 +526,7 @@
                         <div class="p-6 space-y-4">
                             @foreach ($Alltypes as $type)
                                 <div class="flex items-center">
-                                    <input type="checkbox" wire:model="Etypes" value="{{ $type }}"
+                                    <input type="checkbox" wire:model.live="Etypes" value="{{ $type }}"
                                         class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label class="ml-2 text-sm text-gray-900 dark:text-gray-100">
                                         {{ ucwords(str_replace('_', ' ', $type)) }}
@@ -573,7 +573,7 @@
                         <div class="p-6 space-y-4">
                             @foreach ($companies as $company)
                                 <div class="flex items-center">
-                                    <input type="checkbox" wire:model="Ecompany_ids" value="{{ $company->id }}"
+                                    <input type="checkbox" wire:model.live="Ecompany_ids" value="{{ $company->id }}"
                                         class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label class="ml-2 text-sm text-gray-900 dark:text-gray-100">
                                         {{ $company->name }}
@@ -627,7 +627,7 @@
                                 <label for="Eexpiry_from" class="form-label">Expiry from</label>
                                 <input name="Eexpiry_from" type="date"
                                     class="form-control mt-2 w-full @error('Eexpiry_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Eexpiry_from">
+                                    wire:model="Eexpiry_from">
                                 @error('Eexpiry_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -637,7 +637,7 @@
                                 <label for="Eexpiry_to" class="form-label">Expiry to</label>
                                 <input name="Eexpiry_to" type="date"
                                     class="form-control mt-2 w-full @error('Eexpiry_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Eexpiry_to">
+                                    wire:model="Eexpiry_to">
                                 @error('Eexpiry_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -695,7 +695,7 @@
                                 <label for="Eissued_from" class="form-label">Issued from</label>
                                 <input name="Eissued_from" type="date"
                                     class="form-control mt-2 w-full @error('Eissued_from') !border-danger-500 @enderror"
-                                    wire:model.defer="Eissued_from">
+                                    wire:model="Eissued_from">
                                 @error('Eissued_from')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -705,7 +705,7 @@
                                 <label for="Eissued_to" class="form-label">Issued to</label>
                                 <input name="Eissued_to" type="date"
                                     class="form-control mt-2 w-full @error('Eissued_to') !border-danger-500 @enderror"
-                                    wire:model.defer="Eissued_to">
+                                    wire:model="Eissued_to">
                                 @error('Eissued_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>

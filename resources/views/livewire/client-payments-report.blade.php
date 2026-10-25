@@ -115,7 +115,7 @@
                     <header class="card-header cust-card-header noborder">
                         <iconify-icon wire:loading class="loading-icon text-lg"
                             icon="line-md:loading-twotone-loop"></iconify-icon>
-                        <input class="form-control py-2 w-auto ml-5" type="text" wire:model="searchText"
+                        <input class="form-control py-2 w-auto ml-5" type="text" wire:model.live="searchText"
                             placeholder="Search by policy number" />
 
 
@@ -541,7 +541,7 @@
                                     <label for="Estart_from" class="form-label">Start from</label>
                                     <input name="Estart_from" type="date"
                                         class="form-control mt-2 w-full @error('Estart_from') !border-danger-500 @enderror"
-                                        wire:model.defer="Estart_from">
+                                        wire:model="Estart_from">
                                     @error('Estart_from')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -551,7 +551,7 @@
                                     <label for="Estart_to" class="form-label">Start to</label>
                                     <input name="Estart_to" type="date"
                                         class="form-control mt-2 w-full @error('Estart_to') !border-danger-500 @enderror"
-                                        wire:model.defer="Estart_to">
+                                        wire:model="Estart_to">
                                     @error('Estart_to')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -608,7 +608,7 @@
                                     <label for="Eexpiry_from" class="form-label">Expiry from</label>
                                     <input name="Eexpiry_from" type="date"
                                         class="form-control mt-2 w-full @error('Eexpiry_from') !border-danger-500 @enderror"
-                                        wire:model.defer="Eexpiry_from">
+                                        wire:model="Eexpiry_from">
                                     @error('Eexpiry_from')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -618,7 +618,7 @@
                                     <label for="Eexpiry_to" class="form-label">Expiry to</label>
                                     <input name="Eexpiry_to" type="date"
                                         class="form-control mt-2 w-full @error('Eexpiry_to') !border-danger-500 @enderror"
-                                        wire:model.defer="Eexpiry_to">
+                                        wire:model="Eexpiry_to">
                                     @error('Eexpiry_to')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -675,7 +675,7 @@
                                     <label for="Eissued_from" class="form-label">Issued from</label>
                                     <input name="Eissued_from" type="date"
                                         class="form-control mt-2 w-full @error('Eissued_from') !border-danger-500 @enderror"
-                                        wire:model.defer="Eissued_from">
+                                        wire:model="Eissued_from">
                                     @error('Eissued_from')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -685,7 +685,7 @@
                                     <label for="Eissued_to" class="form-label">Issued to</label>
                                     <input name="Eissued_to" type="date"
                                         class="form-control mt-2 w-full @error('Eissued_to') !border-danger-500 @enderror"
-                                        wire:model.defer="Eissued_to">
+                                        wire:model="Eissued_to">
                                     @error('Eissued_to')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -754,7 +754,7 @@
                                 <div class="from-group">
                                     <label for="searchSalesOut" class="form-label">Search Sales Out</label>
                                     <input name="searchSalesOut" type="text" class="form-control mt-2 w-full"
-                                        wire:model="searchSalesOut">
+                                        wire:model.live="searchSalesOut">
                                 </div>
                                 <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                     <thead class="bg-slate-200 dark:bg-slate-700">
@@ -841,7 +841,7 @@
                                             <label class="inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" class="hidden"
                                                     value="{{ json_encode(['id' => $COMM_PROFILE->id, 'title' => $COMM_PROFILE->title]) }}"
-                                                    name="checkbox" wire:model.defer="Eprofiles">
+                                                    name="checkbox" wire:model="Eprofiles">
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -907,7 +907,7 @@
                                         <div class="checkbox-area">
                                             <label class="inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" class="hidden" value="{{ $STATUS }}"
-                                                    name="checkbox" wire:model="Estatuses">
+                                                    name="checkbox" wire:model.live="Estatuses">
                                                 <span
                                                     class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
                                                     <img src="{{ asset('assets/images/icon/ck-white.svg') }}"
@@ -1069,7 +1069,7 @@
                                 <div class="from-group">
                                     <label for="searchCompany" class="form-label">Search Company</label>
                                     <input name="searchCompany" type="text" class="form-control mt-2 w-full"
-                                        wire:model="searchCompany">
+                                        wire:model.live="searchCompany">
                                 </div>
                                 <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
                                     <thead class="bg-slate-200 dark:bg-slate-700">
@@ -1225,11 +1225,11 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="form-label">From Date</label>
-                                        <input type="date" class="form-control" wire:model="Edate_from">
+                                        <input type="date" class="form-control" wire:model.live="Edate_from">
                                     </div>
                                     <div>
                                         <label class="form-label">To Date</label>
-                                        <input type="date" class="form-control" wire:model="Edate_to">
+                                        <input type="date" class="form-control" wire:model.live="Edate_to">
                                     </div>
                                 </div>
                             </div>
@@ -1278,11 +1278,11 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="form-label">From Date</label>
-                                        <input type="date" class="form-control" wire:model="Ecollection_date_from">
+                                        <input type="date" class="form-control" wire:model.live="Ecollection_date_from">
                                     </div>
                                     <div>
                                         <label class="form-label">To Date</label>
-                                        <input type="date" class="form-control" wire:model="Ecollection_date_to">
+                                        <input type="date" class="form-control" wire:model.live="Ecollection_date_to">
                                     </div>
                                 </div>
                             </div>
@@ -1306,7 +1306,7 @@
 
 
     <script>
-        document.addEventListener('livewire:load', function() {
+        document.addEventListener('livewire:init', function() {
             $('#demo').daterangepicker({
                 "singleDatePicker": true,
                 "timePicker": true,

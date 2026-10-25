@@ -245,7 +245,7 @@
                                 Add document</a>
                         </label>
                         <input type="file" style="display: none" name="uploadDoc" id="uploadDoc"
-                            wire:model="docFile">
+                            wire:model.live="docFile">
                     @endif
                     @if (!$soldPolicy->policy_doc_2)
                         <label for="uploadDoc2">
@@ -255,7 +255,7 @@
                                 Add document 2</a>
                         </label>
                         <input type="file" style="display: none" name="uploadDoc2" id="uploadDoc2"
-                            wire:model="docFile2">
+                            wire:model.live="docFile2">
                     @endif
                     @can('delete', $soldPolicy)
                         <li>
@@ -536,7 +536,7 @@
 
                         <div {{ $changeWatchers ? '' : "style=display:none;'" }}>
                             <div class="w-full">
-                                <select wire:model.defer="setWatchersList" id="multiSelect" multiple
+                                <select wire:model="setWatchersList" id="multiSelect" multiple
                                     aria-label="multiple select example" class="select2 form-control w-full mt-2 py-2"
                                     multiple="multiple" style="height: 250px">
                                     @foreach ($users as $user)
@@ -587,7 +587,7 @@
 
                         <div {{ $changeDeliveryType ? '' : 'style=display:none;' }}>
                             <div class="w-full">
-                                <select wire:model.defer="deliveryType" class="form-control w-full mt-2 py-2">
+                                <select wire:model="deliveryType" class="form-control w-full mt-2 py-2">
                                     @foreach ($DEL_TYPES as $type)
                                         <option value="{{ $type }}">
                                             {{ str_replace('_', ' ', ucfirst($type)) }}</option>
@@ -662,7 +662,7 @@
 
                             </label> --}}
                             <input type="file" id="myFile" name="filename" style="display: none;"
-                                wire:model="uploadedFile"><br>
+                                wire:model.live="uploadedFile"><br>
 
                         </header>
                         <div class="loader" wire:loading wire:target="downloadFile">
@@ -772,7 +772,7 @@
                                     <p class="dropzone-para" wire:loading.remove wire:target="uploadedFile">Choose a
                                         file or drop it here...</p>
                                     <input name="file" id="fileInput" type="file"
-                                        class="dropzone dropzone-input" multiple wire:model="uploadedFile" />
+                                        class="dropzone dropzone-input" multiple wire:model.live="uploadedFile" />
                                 </div>
                             </ul>
 
@@ -1609,7 +1609,7 @@
                                                                                 <input type="file" id="compPaymentDoc"
                                                                                     name="compPaymentDoc"
                                                                                     style="display: none;"
-                                                                                    wire:model="compPaymentDoc">
+                                                                                    wire:model.live="compPaymentDoc">
                                                                             </li>
                                                                         @endif
                                                                     </ul>
@@ -1866,7 +1866,7 @@
                                                                                 <span>Add document</span></label>
                                                                             <input type="file" id="paymentDoc"
                                                                                 name="paymentDoc" style="display: none;"
-                                                                                wire:model="paymentDoc">
+                                                                                wire:model.live="paymentDoc">
                                                                         </li>
                                                                     @endcan
                                                                 @endif
@@ -2124,7 +2124,7 @@
                                                                                     <span>Add document</span></label>
                                                                                 <input type="file" id="commDoc"
                                                                                     name="filename" style="display: none;"
-                                                                                    wire:model="commDoc">
+                                                                                    wire:model.live="commDoc">
                                                                             </li>
                                                                         @endif
                                                                         @if (Auth::user()->is_admin)
@@ -2337,12 +2337,12 @@
 
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Claim Description</label>
-                                <textarea wire:model.defer="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
+                                <textarea wire:model="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
                             </div>
 
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Due Date</label>
-                                <input wire:model.defer="newTaskDue" id="textarea" type="date"
+                                <input wire:model="newTaskDue" id="textarea" type="date"
                                     class="form-control">
                             </div>
                         </div>
@@ -2357,7 +2357,7 @@
                                         <label for="newExcValue" class="form-label">Title</label>
                                         <input list="claim_title"
                                             class="form-control text-center @error('fields.' . $index . '.title') !border-danger-500 @enderror"
-                                            wire:model="fields.{{ $index }}.title" />
+                                            wire:model.live="fields.{{ $index }}.title" />
                                         <datalist id="claim_title">
                                             @foreach ($FIELDSTITLES as $FIELDSTITLE)
                                                 <option>{{ $FIELDSTITLE }}</option>
@@ -2372,7 +2372,7 @@
                                         <label for="claim_fields" class="form-label">Value</label>
                                         <input list="claim_fields"
                                             class="form-control mt-2 w-full @error('fields.' . $index . '.value') !border-danger-500 @enderror"
-                                            wire:model="fields.{{ $index }}.value">
+                                            wire:model.live="fields.{{ $index }}.value">
                                         <datalist id="claim_fields">
                                             <option>Yes</option>
                                             <option>No</option>
@@ -2459,12 +2459,12 @@
                         <div class="p-6 py-1">
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Text Description</label>
-                                <textarea wire:model.defer="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
+                                <textarea wire:model="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
                             </div>
 
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Due Date</label>
-                                <input wire:model.defer="newTaskDue" id="textarea" type="date"
+                                <input wire:model="newTaskDue" id="textarea" type="date"
                                     class="form-control">
                             </div>
                         </div>
@@ -2475,7 +2475,7 @@
                             <div class="p-6 py-1">
                                 <div class="input-area">
                                     <label class="form-label">Load titles from customer car</label>
-                                    <select class="form-control w-full mt-2" wire:model="endorsementCarId">
+                                    <select class="form-control w-full mt-2" wire:model.live="endorsementCarId">
                                         <option value="">Select a car...</option>
                                         @foreach ($endorsementCars as $car)
                                             <option value="{{ $car->id }}">
@@ -2515,7 +2515,7 @@
                                         <label for="newExcValue" class="form-label">Title</label>
                                         <select name="basicSelect"
                                             class="form-control w-full mt-2  @error('actions.' . $index . '.column_name') !border-danger-500 @enderror"
-                                            wire:model="actions.{{ $index }}.column_name">
+                                            wire:model.live="actions.{{ $index }}.column_name">
                                             <option
                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                                 Select Relation...</option>
@@ -2531,7 +2531,7 @@
                                         @if (($action['column_name'] ?? null) === 'customer_car_id')
                                             <select name="newExcValue"
                                                 class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror"
-                                                wire:model="actions.{{ $index }}.value">
+                                                wire:model.live="actions.{{ $index }}.value">
                                                 <option value="">Select a car...</option>
                                                 @foreach ($endorsementCars as $car)
                                                     <option value="{{ $car->id }}">
@@ -2546,7 +2546,7 @@
                                         @else
                                             <input name="newExcValue" type="text"
                                                 class="form-control mt-2 w-full @error('actions.' . $index . '.value') !border-danger-500 @enderror"
-                                                wire:model="actions.{{ $index }}.value">
+                                                wire:model.live="actions.{{ $index }}.value">
                                         @endif
                                         @error('actions.{{ $index }}.value')
                                             <span
@@ -2631,12 +2631,12 @@
                         <div class="p-6 py-1">
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Text Description</label>
-                                <textarea wire:model.defer="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
+                                <textarea wire:model="newTaskDesc" id="textarea" class="form-control" placeholder="Text Area"></textarea>
                             </div>
 
                             <div class="input-area mt-3">
                                 <label for="textarea" class="form-label">Due Date</label>
-                                <input wire:model.defer="newTaskDue" id="textarea" type="date"
+                                <input wire:model="newTaskDue" id="textarea" type="date"
                                     class="form-control">
                             </div>
                         </div>
@@ -2692,7 +2692,7 @@
                                     <label for="issuing_date" class="form-label">Issuing Date</label>
                                     <input name="issuing_date" type="date"
                                         class="form-control mt-2 w-full @error('issuing_date') !border-danger-500 @enderror"
-                                        wire:model.defer="issuing_date">
+                                        wire:model="issuing_date">
                                     @error('issuing_date')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2704,7 +2704,7 @@
                                     <label for="start" class="form-label">Start Date</label>
                                     <input name="start" type="date"
                                         class="form-control mt-2 w-full @error('start') !border-danger-500 @enderror"
-                                        wire:model.defer="start">
+                                        wire:model="start">
                                     @error('start')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2714,7 +2714,7 @@
                                     <label for="expiry" class="form-label">Expiry Date</label>
                                     <input name="expiry" type="date"
                                         class="form-control mt-2 w-full @error('expiry') !border-danger-500 @enderror"
-                                        wire:model.defer="expiry">
+                                        wire:model="expiry">
                                     @error('expiry')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2725,7 +2725,7 @@
                                 <label for="policy_number" class="form-label">Policy Number</label>
                                 <input name="policy_number" type="text"
                                     class="form-control mt-2 w-full @error('policy_number') !border-danger-500 @enderror"
-                                    wire:model.defer="policy_number">
+                                    wire:model="policy_number">
                                 @error('policy_number')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2735,7 +2735,7 @@
                                 <label for="car_chassis" class="form-label">Car Chassis</label>
                                 <input name="car_chassis" type="text"
                                     class="form-control mt-2 w-full @error('car_chassis') !border-danger-500 @enderror"
-                                    wire:model.defer="car_chassis">
+                                    wire:model="car_chassis">
                                 @error('car_chassis')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2745,7 +2745,7 @@
                                 <label for="car_plate_no" class="form-label">Car Plate No</label>
                                 <input name="car_plate_no" type="text"
                                     class="form-control mt-2 w-full @error('car_plate_no') !border-danger-500 @enderror"
-                                    wire:model.defer="car_plate_no">
+                                    wire:model="car_plate_no">
                                 @error('car_plate_no')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2755,7 +2755,7 @@
                                 <label for="car_engine" class="form-label">Car Engine</label>
                                 <input name="car_engine" type="text"
                                     class="form-control mt-2 w-full @error('car_engine') !border-danger-500 @enderror"
-                                    wire:model.defer="car_engine">
+                                    wire:model="car_engine">
                                 @error('car_engine')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2765,7 +2765,7 @@
                                 <label for="in_favor_to" class="form-label">In favor to</label>
                                 <input name="in_favor_to" type="text"
                                     class="form-control mt-2 w-full @error('in_favor_to') !border-danger-500 @enderror"
-                                    wire:model.defer="in_favor_to">
+                                    wire:model="in_favor_to">
                                 @error('in_favor_to')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2820,7 +2820,7 @@
                         <div class="p-6 space-y-4">
                             <div class="from-group">
                                 <label for="note" class="form-label">Note</label>
-                                <textarea class="form-control mt-2 w-full @error('note') !border-danger-500 @enderror" wire:model.defer="note"
+                                <textarea class="form-control mt-2 w-full @error('note') !border-danger-500 @enderror" wire:model="note"
                                     rows=7></textarea>
                                 @error('note')
                                     <span
@@ -2915,7 +2915,7 @@
                                 <label for="client_payment_date" class="form-label">Client payment date</label>
                                 <input name="client_payment_date" type="date"
                                     class="form-control mt-2 w-full @error('client_payment_date') !border-danger-500 @enderror"
-                                    wire:model.defer="client_payment_date">
+                                    wire:model="client_payment_date">
                                 @error('client_payment_date')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -2971,7 +2971,7 @@
                                 <label for="clientPaymentDate" class="form-label">Date</label>
                                 <input name="clientPaymentDate" type="date"
                                     class="form-control mt-2 w-full @error('clientPaymentDate') !border-danger-500 @enderror"
-                                    wire:model.defer="clientPaymentDate">
+                                    wire:model="clientPaymentDate">
                                 @error('clientPaymentDate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3027,7 +3027,7 @@
                                 <label for="clientPaymentDate" class="form-label">Date</label>
                                 <input name="clientPaymentDate" type="date"
                                     class="form-control mt-2 w-full @error('clientCancellationDate') !border-danger-500 @enderror"
-                                    wire:model.defer="clientCancellationDate">
+                                    wire:model="clientCancellationDate">
                                 @error('clientCancellationDate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3160,7 +3160,7 @@
                                 <label for="policyCommAmount" class="form-label">Amount</label>
                                 <input name="policyCommAmount" type="number"
                                     class="form-control mt-2 w-full @error('policyCommAmount') !border-danger-500 @enderror"
-                                    wire:model.defer="policyCommAmount">
+                                    wire:model="policyCommAmount">
                                 @error('policyCommAmount')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3220,7 +3220,7 @@
                                     <label for="policyCommTitle" class="form-label">Title</label>
                                     <input name="policyCommTitle" type="text"
                                         class="form-control mt-2 w-full @error('policyCommTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="policyCommTitle">
+                                        wire:model="policyCommTitle">
                                     @error('policyCommTitle')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3230,7 +3230,7 @@
                                     <label for="policyCommAmount" class="form-label">Amount</label>
                                     <input name="policyCommAmount" type="number"
                                         class="form-control mt-2 w-full @error('policyCommAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="policyCommAmount">
+                                        wire:model="policyCommAmount">
                                     @error('policyCommAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3290,7 +3290,7 @@
                                 <label for="insured_value" class="form-label">Insured Value</label>
                                 <input name="insured_value" type="number"
                                     class="form-control mt-2 w-full @error('insured_value') !border-danger-500 @enderror"
-                                    wire:model.defer="insured_value">
+                                    wire:model="insured_value">
                                 @error('insured_value')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3300,7 +3300,7 @@
                                 <label for="net_rate" class="form-label">Net Rate</label>
                                 <input name="net_rate" type="number" max="100" min="0"
                                     class="form-control mt-2 w-full @error('net_rate') !border-danger-500 @enderror"
-                                    wire:model.defer="net_rate">
+                                    wire:model="net_rate">
                                 @error('net_rate')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3310,7 +3310,7 @@
                                 <label for="net_premium" class="form-label">Net Premium</label>
                                 <input name="net_premium" type="number"
                                     class="form-control mt-2 w-full @error('net_premium') !border-danger-500 @enderror"
-                                    wire:model.defer="net_premium">
+                                    wire:model="net_premium">
                                 @error('net_premium')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3320,7 +3320,7 @@
                                 <label for="gross_premium" class="form-label">Gross Premium</label>
                                 <input name="gross_premium" type="number"
                                     class="form-control mt-2 w-full @error('gross_premium') !border-danger-500 @enderror"
-                                    wire:model.defer="gross_premium">
+                                    wire:model="gross_premium">
                                 @error('gross_premium')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3330,7 +3330,7 @@
                                 <label for="installements_count" class="form-label">Installements Count</label>
                                 <input name="installements_count" max="12" min="1" type="number"
                                     class="form-control mt-2 w-full @error('installements_count') !border-danger-500 @enderror"
-                                    wire:model.defer="installements_count">
+                                    wire:model="installements_count">
                                 @error('installements_count')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3340,7 +3340,7 @@
                                 <label for="payment_frequency" class="form-label">Payment Frequency</label>
                                 <select name="payment_frequency" id="basicSelect"
                                     class="form-control w-full mt-2 @error('payment_frequency') !border-danger-500 @enderror"
-                                    wire:model="payment_frequency">
+                                    wire:model.live="payment_frequency">
                                     <option> Select an option...</option>
                                     @foreach ($PAYMENT_FREQS as $PAYMENT_FREQ)
                                         <option value="{{ $PAYMENT_FREQ }}">{{ $PAYMENT_FREQ }}</option>
@@ -3356,7 +3356,7 @@
                                 <div class="relative">
                                     <input type="number"
                                         class="form-control !px-9 @error('discount') !border-danger-500 @enderror"
-                                        placeholder="100" wire:model.defer="discount">
+                                        placeholder="100" wire:model="discount">
                                     <span
                                         class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                         EGP </span>
@@ -3369,7 +3369,7 @@
                                 <div class="relative">
                                     <input type="number"
                                         class="form-control !px-9 @error('origin_discount') !border-danger-500 @enderror"
-                                        placeholder="100" wire:model.defer="origin_discount">
+                                        placeholder="100" wire:model="origin_discount">
                                     <span
                                         class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-full border-none flex items-center justify-center">
                                         EGP </span>
@@ -3426,7 +3426,7 @@
                                 <label for="newExcTitle" class="form-label">Title</label>
                                 <input name="newExcTitle" type="text"
                                     class="form-control mt-2 w-full @error('newExcTitle') !border-danger-500 @enderror"
-                                    wire:model.defer="newExcTitle">
+                                    wire:model="newExcTitle">
                                 @error('newExcTitle')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3436,7 +3436,7 @@
                                 <label for="newExcValue" class="form-label">Value</label>
                                 <input name="newExcValue" type="text"
                                     class="form-control mt-2 w-full @error('newExcValue') !border-danger-500 @enderror"
-                                    wire:model.defer="newExcValue">
+                                    wire:model="newExcValue">
                                 @error('newExcValue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3493,7 +3493,7 @@
                                 <label for="newBenefit" class="form-label">Benefit</label>
                                 <select name="newBenefit"
                                     class="form-control w-full mt-2 @error('newBenefit') !border-danger-500 @enderror"
-                                    wire:model="newBenefit">
+                                    wire:model.live="newBenefit">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
                                     @foreach ($BENEFITS as $BENEFIT)
@@ -3511,7 +3511,7 @@
                                 <label for="newValue" class="form-label">Value</label>
                                 <input type="text"
                                     class="form-control mt-2 w-full @error('newValue') !border-danger-500 @enderror"
-                                    wire:model.defer="newValue">
+                                    wire:model="newValue">
                                 @error('newValue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3568,7 +3568,7 @@
                                 <label for="lastName" class="form-label">Title</label>
                                 <input type="text"
                                     class="form-control mt-2 w-full @error('eExcTitle') !border-danger-500 @enderror"
-                                    wire:model.defer="eExcTitle">
+                                    wire:model="eExcTitle">
                                 @error('eExcTitle')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3578,7 +3578,7 @@
                                 <label for="lastName" class="form-label">Value</label>
                                 <input type="text"
                                     class="form-control mt-2 w-full @error('eExcValue') !border-danger-500 @enderror"
-                                    wire:model.defer="eExcValue">
+                                    wire:model="eExcValue">
                                 @error('eExcValue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3635,7 +3635,7 @@
                                 <label for="eBenefit" class="form-label">Benefit</label>
                                 <select name="eBenefit"eBenefit
                                     class="form-control w-full mt-2 @error('eBenefit') !border-danger-500 @enderror"
-                                    wire:model="eBenefit">
+                                    wire:model.live="eBenefit">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option...</option>
                                     @foreach ($BENEFITS as $BENEFIT)
@@ -3653,7 +3653,7 @@
                                 <label for="lastName" class="form-label">Value</label>
                                 <input type="text"
                                     class="form-control mt-2 w-full @error('eValue') !border-danger-500 @enderror"
-                                    wire:model.defer="eValue">
+                                    wire:model="eValue">
                                 @error('eValue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3710,7 +3710,7 @@
                                 <label for="renewalOfferDue" class="form-label">Due Date</label>
                                 <input type="Date" name="renewalOfferDue"
                                     class="form-control mt-2 w-full @error('renewalOfferDue') !border-danger-500 @enderror"
-                                    wire:model.defer="renewalOfferDue">
+                                    wire:model="renewalOfferDue">
                                 @error('renewalOfferDue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3720,7 +3720,7 @@
                                 <label for="inFavorTo" class="form-label">In Favor To</label>
                                 <input type="text" name="inFavorTo"
                                     class="form-control mt-2 w-full @error('inFavorTo') !border-danger-500 @enderror"
-                                    wire:model.defer="inFavorTo">
+                                    wire:model="inFavorTo">
                                 @error('inFavorTo')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -3777,7 +3777,7 @@
                                 <label for="renewalOfferId" class="form-label">Offer ID</label>
                                 <input type="number" name="renewalOfferId" placeholder="Enter the Offer ID"
                                     class="form-control mt-2 w-full @error('renewalOfferId') !border-danger-500 @enderror"
-                                    wire:model.defer="renewalOfferId">
+                                    wire:model="renewalOfferId">
                                 @error('renewalOfferId')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4263,7 +4263,7 @@
                                 <label for="updateTotalPolComm" class="form-label">Amount</label>
                                 <input name="updateTotalPolComm" type="number"
                                     class="form-control mt-2 w-full @error('updateTotalPolComm') !border-danger-500 @enderror"
-                                    wire:model.defer="updateTotalPolComm">
+                                    wire:model="updateTotalPolComm">
                                 @error('updateTotalPolComm')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4273,7 +4273,7 @@
                                 <label for="updateTotalPolCommNote" class="form-label">Note</label>
                                 <textarea name="updateTotalPolCommNote"
                                     class="form-control mt-2 w-full @error('updateTotalPolCommNote') !border-danger-500 @enderror"
-                                    wire:model.defer="updateTotalPolCommNote"></textarea>
+                                    wire:model="updateTotalPolCommNote"></textarea>
                                 @error('updateTotalPolCommNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4328,7 +4328,7 @@
                             <div class="from-group">
                                 <label for="payment_type" class="form-label">Payment type</label>
                                 <select name="payment_type" id="basicSelect" class="form-control w-full mt-2"
-                                    wire:model="payment_type">
+                                    wire:model.live="payment_type">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select type</option>
                                     @foreach ($PYMT_TYPES as $paymentType)
@@ -4343,7 +4343,7 @@
                                 <label for="payment_date" class="form-label">Due</label>
                                 <input type="date" name="payment_date"
                                     class="form-control mt-2 w-full @error('payment_date') !border-danger-500 @enderror"
-                                    wire:model.defer="payment_date">
+                                    wire:model="payment_date">
                                 @error('payment_date')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4402,13 +4402,13 @@
                                     Add document</a>
                             </label>
                             <input type="file" style="display: none" name="uploadCollectedDoc"
-                                id="uploadCollectedDoc" wire:model="paymentCollectedDoc">
+                                id="uploadCollectedDoc" wire:model.live="paymentCollectedDoc">
                             <hr />
 
                             <div class="from-group">
                                 <label class="form-label">Note</label>
                                 <textarea class="form-control mt-2 w-full @error('payment_collected_note') !border-danger-500 @enderror"
-                                    wire:model.defer="payment_collected_note"></textarea>
+                                    wire:model="payment_collected_note"></textarea>
                                 @error('payment_collected_note')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4470,7 +4470,7 @@
                                     <label for="commTitle" class="form-label">Title</label>
                                     <input type="text" name="commTitle"
                                         class="form-control mt-2 w-full @error('commTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="commTitle">
+                                        wire:model="commTitle">
                                     @error('commTitle')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4480,7 +4480,7 @@
                                 <div class="from-group">
                                     <label for="commFrom" class="form-label">From</label>
                                     <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
-                                        wire:model="commFrom">
+                                        wire:model.live="commFrom">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                             value="">
                                             Select option</option>
@@ -4501,7 +4501,7 @@
                                     <label for="commPer" class="form-label">Percentage</label>
                                     <input type="number" min="0" max="100" name="commPer"
                                         class="form-control mt-2 w-full @error('commPer') !border-danger-500 @enderror"
-                                        wire:model.defer="commPer">
+                                        wire:model="commPer">
                                     @error('commPer')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4511,7 +4511,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Commission Profile</label>
                                     <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="commProfile">
+                                        wire:model.live="commProfile">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select Profile</option>
                                         @foreach ($CommProfiles as $CommProfile)
@@ -4531,7 +4531,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Note</label>
                                     <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
-                                        wire:model.defer="newcommNote"></textarea>
+                                        wire:model="newcommNote"></textarea>
                                     @error('newcommNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4588,7 +4588,7 @@
                                 <div class="from-group">
                                     <label for="subSalesCommId" class="form-label">Commission Profile</label>
                                     <select name="subSalesCommId" id="subSalesCommId" class="form-control w-full mt-2"
-                                        wire:model="subSalesCommId">
+                                        wire:model.live="subSalesCommId">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                             value="">
                                             Select Profile</option>
@@ -4611,7 +4611,7 @@
                                     <label for="subSalesTitle" class="form-label">Title</label>
                                     <input type="text" name="subSalesTitle"
                                         class="form-control mt-2 w-full @error('subSalesTitle') !border-danger-500 @enderror"
-                                        wire:model.defer="subSalesTitle">
+                                        wire:model="subSalesTitle">
                                     @error('subSalesTitle')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4622,7 +4622,7 @@
                                     <label for="subSalesAmount" class="form-label">Amount</label>
                                     <input type="number" min="0" step="any" name="subSalesAmount"
                                         class="form-control mt-2 w-full @error('subSalesAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="subSalesAmount">
+                                        wire:model="subSalesAmount">
                                     @error('subSalesAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4632,7 +4632,7 @@
                                 <div class="from-group">
                                     <label for="subSalesNote" class="form-label">Note</label>
                                     <textarea class="form-control mt-2 w-full @error('subSalesNote') !border-danger-500 @enderror"
-                                        wire:model.defer="subSalesNote"></textarea>
+                                        wire:model="subSalesNote"></textarea>
                                     @error('subSalesNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4691,7 +4691,7 @@
                                 <div class="from-group">
                                     <label for="commFrom" class="form-label">From</label>
                                     <select name="commFrom" id="commFrom" class="form-control w-full mt-2"
-                                        wire:model="commFrom">
+                                        wire:model.live="commFrom">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                             value="">
                                             Select option</option>
@@ -4712,7 +4712,7 @@
                                     <label for="commAmount" class="form-label">Amount</label>
                                     <input type="number" name="commAmount"
                                         class="form-control mt-2 w-full @error('commAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="commAmount"></textarea>
+                                        wire:model="commAmount"></textarea>
                                     @error('commAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4722,7 +4722,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Commission Profile</label>
                                     <select name="basicSelect" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="commProfile">
+                                        wire:model.live="commProfile">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select Profile</option>
                                         @foreach ($linkedCommProfiles as $CommProfile)
@@ -4742,7 +4742,7 @@
                                 <div class="from-group">
                                     <label for="lastName" class="form-label">Note</label>
                                     <textarea class="form-control mt-2 w-full @error('newcommNote') !border-danger-500 @enderror"
-                                        wire:model.defer="newcommNote"></textarea>
+                                        wire:model="newcommNote"></textarea>
                                     @error('newcommNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4797,7 +4797,7 @@
                             <div class="from-group">
                                 <label for="paymentType" class="form-label">Payment type</label>
                                 <select name="paymentType" id="basicSelect" class="form-control w-full mt-2"
-                                    wire:model="paymentType">
+                                    wire:model.live="paymentType">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select type</option>
                                     @foreach ($PYMT_TYPES as $paymentType)
@@ -4813,7 +4813,7 @@
                                 <div class="from-group">
                                     <label for="salesOut" class="form-label">Sales Out Profile</label>
                                     <select name="salesOut" id="basicSelect2" class="form-control w-full mt-2"
-                                        wire:model="salesOutID">
+                                        wire:model.live="salesOutID">
                                         <option
                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                             disabled>
@@ -4837,7 +4837,7 @@
                                 <label for="paymentDue" class="form-label">Due</label>
                                 <input type="date" name="paymentDue"
                                     class="form-control mt-2 w-full @error('paymentDue') !border-danger-500 @enderror"
-                                    wire:model.defer="paymentDue">
+                                    wire:model="paymentDue">
                                 @error('paymentDue')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4847,7 +4847,7 @@
                             <div class="from-group">
                                 <label for="paymentAssignee" class="form-label">Assigned to</label>
                                 <select name="paymentAssignee" id="paymentAssignee"
-                                    class="form-control w-full mt-2" wire:model="paymentAssignee">
+                                    class="form-control w-full mt-2" wire:model.live="paymentAssignee">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select user</option>
                                     @foreach ($users as $user)
@@ -4862,7 +4862,7 @@
                             <div class="from-group">
                                 <label for="paymentNote" class="form-label">Note</label>
                                 <textarea name="paymentNote" class="form-control mt-2 w-full @error('paymentNote') !border-danger-500 @enderror"
-                                    wire:model.defer="paymentNote"></textarea>
+                                    wire:model="paymentNote"></textarea>
                                 @error('paymentNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4920,7 +4920,7 @@
                                 <div class="from-group">
                                     <label for="paymentType" class="form-label">Payment type</label>
                                     <select name="paymentType" id="basicSelect" class="form-control w-full mt-2"
-                                        wire:model="paymentType">
+                                        wire:model.live="paymentType">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select type</option>
                                         @foreach ($PYMT_TYPES as $paymentType)
@@ -4936,7 +4936,7 @@
                                     <div class="from-group">
                                         <label for="salesOut" class="form-label">Sales Out Profile</label>
                                         <select name="salesOut" id="basicSelect2" class="form-control w-full mt-2"
-                                            wire:model="salesOutID">
+                                            wire:model.live="salesOutID">
                                             <option
                                                 class="py-1 inline-block font-Inter font-normal text-sm text-slate-600"
                                                 disabled>
@@ -4959,7 +4959,7 @@
                                     <label for="paymentAmount" class="form-label">Amount</label>
                                     <input type="number" name="paymentAmount"
                                         class="form-control mt-2 w-full @error('paymentAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="paymentAmount">
+                                        wire:model="paymentAmount">
                                     @error('paymentAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4970,7 +4970,7 @@
                                     <label for="paymentDue" class="form-label">Due</label>
                                     <input type="date" name="paymentDue"
                                         class="form-control mt-2 w-full @error('paymentDue') !border-danger-500 @enderror"
-                                        wire:model.defer="paymentDue">
+                                        wire:model="paymentDue">
                                     @error('paymentDue')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -4980,7 +4980,7 @@
                                 <div class="from-group">
                                     <label for="paymentAssignee" class="form-label">Assigned to</label>
                                     <select name="paymentAssignee" id="paymentAssignee"
-                                        class="form-control w-full mt-2" wire:model="paymentAssignee">
+                                        class="form-control w-full mt-2" wire:model.live="paymentAssignee">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select user</option>
                                         @foreach ($users as $user)
@@ -4995,7 +4995,7 @@
                                 <div class="from-group">
                                     <label for="paymentNote" class="form-label">Note</label>
                                     <textarea name="paymentNote" class="form-control mt-2 w-full @error('paymentNote') !border-danger-500 @enderror"
-                                        wire:model.defer="paymentNote"></textarea>
+                                        wire:model="paymentNote"></textarea>
                                     @error('paymentNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -5055,7 +5055,7 @@
                                     <label for="compPaymentType" class="form-label">Payment type</label>
                                     <select name="compPaymentType" id="basicSelect"
                                         class="form-control w-full mt-2 @error('compPaymentType') !border-danger-500 @enderror"
-                                        wire:model="compPaymentType">
+                                        wire:model.live="compPaymentType">
                                         <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             Select type</option>
                                         @foreach ($PYMT_TYPES as $paymentType)
@@ -5075,7 +5075,7 @@
                                     <label for="compPaymentAmount" class="form-label">Amount</label>
                                     <input type="number" name="compPaymentAmount"
                                         class="form-control mt-2 w-full @error('compPaymentAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="compPaymentAmount">
+                                        wire:model="compPaymentAmount">
                                     @error('compPaymentAmount')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -5086,7 +5086,7 @@
                                     <label for="compPaymentNote" class="form-label">Note</label>
                                     <textarea name="compPaymentNote"
                                         class="form-control mt-2 w-full @error('compPaymentNote') !border-danger-500 @enderror"
-                                        wire:model.defer="compPaymentNote"></textarea>
+                                        wire:model="compPaymentNote"></textarea>
                                     @error('compPaymentNote')
                                         <span
                                             class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -5146,7 +5146,7 @@
                                     <label for="updatedMainSaledID" class="form-label">Main sales</label>
                                     <select name="updatedMainSaledID" id="basicSelect"
                                         class="form-control w-full mt-2 @error('updatedMainSaledID') !border-danger-500 @enderror"
-                                        wire:model="updatedMainSaledID">
+                                        wire:model.live="updatedMainSaledID">
                                         <option value=""
                                             class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                             None</option>
@@ -5238,7 +5238,7 @@
                                     <div class="flex items-center mt-2">
                                         <input type="checkbox" id="isPenalized"
                                             class="form-checkbox w-4 h-4 text-black-500 bg-transparent border-slate-300 rounded focus:ring-black-500 focus:ring-2 dark:bg-slate-700 dark:border-slate-600 dark:focus:ring-black-500 dark:focus:ring-offset-slate-800"
-                                            wire:model="isPenalized">
+                                            wire:model.live="isPenalized">
                                         <label for="isPenalized"
                                             class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                                             Is Sold Policy Penalized?
@@ -5255,7 +5255,7 @@
                                     <label for="penaltyAmount" class="form-label">Penalty Amount</label>
                                     <input type="number" name="penaltyAmount" step="0.01" min="0"
                                         class="form-control mt-2 w-full @error('penaltyAmount') !border-danger-500 @enderror"
-                                        wire:model.defer="penaltyAmount" placeholder="Enter penalty amount"
+                                        wire:model="penaltyAmount" placeholder="Enter penalty amount"
                                         {{ !$isPenalized ? 'disabled' : '' }}>
                                     @error('penaltyAmount')
                                         <span

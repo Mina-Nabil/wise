@@ -20,7 +20,7 @@
     <div class="card">
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
-            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..." wire:model="search">
+            <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search..." wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -149,7 +149,7 @@
 
                                     <div class="input-area mt-3">
                                         <label for="newType" class="form-label">Type</label>
-                                        <select name="newType" class="form-control w-full mt-2 @error('newType') !border-danger-500 @enderror" wire:model.defer="newType">
+                                        <select name="newType" class="form-control w-full mt-2 @error('newType') !border-danger-500 @enderror" wire:model="newType">
                                             <option>None</option>
                                             @foreach ($profileTypes as $type)
                                                 <option value="{{ $type }}">{{ ucwords(str_replace('_', ' ', $type)) }}</option>
@@ -163,7 +163,7 @@
                                     <div class="input-area mt-3">
                                         {{-- <div class="flex items-center space-x-2">
                                             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                                <input wire:model.defer="newPerPolicy" type="checkbox" value="" class="sr-only peer">
+                                                <input wire:model="newPerPolicy" type="checkbox" value="" class="sr-only peer">
                                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500"></div>
                                             </label>
                                             <span class="text-sm text-slate-600 font-Inter font-normal">Per Policy</span>
@@ -172,7 +172,7 @@
 
                                         <div class="flex items-center space-x-2 mt-3">
                                             <label class="relative inline-flex h-6 w-[46px] items-center rounded-full transition-all duration-150 cursor-pointer">
-                                                <input wire:model.defer="newSelectAvailable" type="checkbox" value="" class="sr-only peer">
+                                                <input wire:model="newSelectAvailable" type="checkbox" value="" class="sr-only peer">
                                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-0 rounded-full peer dark:bg-gray-900 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black-500"></div>
                                             </label>
                                             <span class="text-sm text-slate-600 font-Inter font-normal">Available for Selection</span>
@@ -182,7 +182,7 @@
 
                                     <div class="input-area mt-3">
                                         <label for="newUserId" class="form-label">User</label>
-                                        <select name="newUserId" id="newUserId" class="form-control w-full mt-2 @error('newUserId') !border-danger-500 @enderror" wire:model="newUserId">
+                                        <select name="newUserId" id="newUserId" class="form-control w-full mt-2 @error('newUserId') !border-danger-500 @enderror" wire:model.live="newUserId">
                                             <option value="">None</option>
                                             @foreach ($users as $user)
                                                 <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
@@ -195,7 +195,7 @@
 
                                     <div class="input-area mt-3">
                                         <label for="automaticOverrideId" class="form-label">Automatic Override</label>
-                                        <select name="automaticOverrideId" class="form-control w-full mt-2 " wire:model.defer="automaticOverrideId">
+                                        <select name="automaticOverrideId" class="form-control w-full mt-2 " wire:model="automaticOverrideId">
                                             <option>None</option>
                                             @foreach ($overrides as $o)
                                                 <option value="{{ $o->id }}">
@@ -207,13 +207,13 @@
                                     @if (!$newUserId)
                                         <div class="input-area mt-3">
                                             <label for="newTitle" class="form-label">Title</label>
-                                            <input id="newTitle" type="text" class="form-control @error('newTitle') !border-danger-500 @enderror" wire:model.defer="newTitle">
+                                            <input id="newTitle" type="text" class="form-control @error('newTitle') !border-danger-500 @enderror" wire:model="newTitle">
                                         </div>
                                     @endif
 
                                     <div class="from-group mt-3">
                                         <label for="newDesc" class="form-label">Description</label>
-                                        <textarea class="form-control mt-2 w-full" wire:model.defer="newDesc"></textarea>
+                                        <textarea class="form-control mt-2 w-full" wire:model="newDesc"></textarea>
                                         @error('newDesc')
                                             <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                         @enderror

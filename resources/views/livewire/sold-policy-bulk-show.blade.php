@@ -22,7 +22,7 @@
                 <div class="md:col-span-7 from-group">
                     <label class="form-label">Show selected sold policies to</label>
                     <select class="form-control w-full mt-2 @error('showToUser') !border-danger-500 @enderror"
-                        wire:model="showToUser">
+                        wire:model.live="showToUser">
                         <option value="">Select user...</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">
@@ -123,7 +123,7 @@
     <div class="flex items-center space-x-7 flex-wrap h-[60px]">
         <div class="secondary-radio pb-2">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="all" wire:model="isPaidCB">
+                <input type="radio" class="hidden" value="all" wire:model.live="isPaidCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
@@ -131,7 +131,7 @@
         </div>
         <div class="secondary-radio pb-2">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="isPaid" wire:model="isPaidCB">
+                <input type="radio" class="hidden" value="isPaid" wire:model.live="isPaidCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">Paid</span>
@@ -139,14 +139,14 @@
         </div>
         <div class="secondary-radio pb-2">
             <label class="flex items-center cursor-pointer">
-                <input type="radio" class="hidden" value="notPaid" wire:model="isPaidCB">
+                <input type="radio" class="hidden" value="notPaid" wire:model.live="isPaidCB">
                 <span
                     class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                 <span class="text-secondary-500 text-sm leading-6 capitalize">Not Paid</span>
             </label>
         </div>
         <input class="form-control py-2 flatpickr flatpickr-input active w-auto ml-5 mb-5" style="width:300px"
-            id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model="dateRange">
+            id="range-picker" data-mode="range" value="" type="text" readonly="readonly" wire:model.live="dateRange">
     </div>
 
     <div class="card">
@@ -154,7 +154,7 @@
             <iconify-icon wire:loading wire:target='search' class="loading-icon text-lg"
                 icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4" placeholder="Search"
-                wire:model.debounce.800ms="search">
+                wire:model.live.debounce.800ms="search">
         </header>
 
         <div class="card-body px-6 rounded overflow-hidden pb-3">
@@ -196,7 +196,7 @@
                                         class="even:bg-slate-50 dark:even:bg-slate-700 {{ in_array($policy->id, $selectedPolicies) ? '!bg-primary-500 !bg-opacity-10' : '' }}">
                                         <td class="table-td">
                                             <input type="checkbox" class="cursor-pointer" value="{{ $policy->id }}"
-                                                wire:model="selectedPolicies">
+                                                wire:model.live="selectedPolicies">
                                         </td>
                                         <td class="table-td">
                                             <div class="flex-1 text-start">

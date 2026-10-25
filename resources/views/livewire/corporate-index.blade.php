@@ -23,7 +23,7 @@
         <header class="card-header cust-card-header noborder">
             <iconify-icon wire:loading class="loading-icon text-lg" icon="line-md:loading-twotone-loop"></iconify-icon>
             <input type="text" class="form-control !pl-9 mr-1 basis-1/4"
-                placeholder="Search by name, email or phone number" wire:model="search">
+                placeholder="Search by name, email or phone number" wire:model.live="search">
         </header>
 
         <div class="card-body px-6 pb-6">
@@ -31,7 +31,7 @@
             <div class="flex items-center space-x-7 flex-wrap h-[30px]">
                 <div class="secondary-radio">
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="statusFilter" class="hidden" value="all" wire:model="statusFilter">
+                        <input type="radio" name="statusFilter" class="hidden" value="all" wire:model.live="statusFilter">
                         <span
                             class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                         <span class="text-secondary-500 text-sm leading-6 capitalize">All</span>
@@ -42,7 +42,7 @@
                 <div class="flex items-center space-x-7 flex-wrap h-[30px]">
                     <div class="secondary-radio">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="statusFilter"  class="hidden" value="{{ $cs }}" wire:model="statusFilter">
+                            <input type="radio" name="statusFilter"  class="hidden" value="{{ $cs }}" wire:model.live="statusFilter">
                             <span
                                 class="flex-none bg-white dark:bg-slate-500 rounded-full border inline-flex ltr:mr-2 rtl:ml-2 relative transition-all duration-150 h-[16px] w-[16px] border-slate-400 dark:border-slate-600 dark:ring-slate-700"></span>
                             <span class="text-secondary-500 text-sm leading-6 capitalize">{{ $cs }}</span>
@@ -54,7 +54,7 @@
             <div class="flex items-center space-x-7 flex-wrap h-[30px] mt-4">
                 <div class="input-area">
                     <label class="form-label text-sm">Campaign:</label>
-                    <select class="form-control form-control-sm" wire:model="campaignFilter">
+                    <select class="form-control form-control-sm" wire:model.live="campaignFilter">
                         <option value="">All Campaigns</option>
                         @foreach ($campaigns as $campaign)
                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
@@ -219,7 +219,7 @@
                                 <label for="lastName" class="form-label">Status</label>
                                 <select name="basicSelect" id="basicSelect"
                                     class="form-control w-full mt-2 @error('status') !border-danger-500 @enderror"
-                                    wire:model="status">
+                                    wire:model.live="status">
                                     <option class="py-1 inline-block font-Inter font-normal text-sm text-slate-600">
                                         Select an option</option>
                                     @foreach ($customerStatus as $s)
@@ -233,7 +233,7 @@
                             <div class="input-area mb-3">
                                 <label class="form-label">Reason</label>
                                 <input class="form-control py-2 @error('statusReason') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="statusReason"
+                                    id="default-picker" type="text" wire:model="statusReason"
                                     autocomplete="off">
                                 @error('statusReason')
                                     <span
@@ -243,7 +243,7 @@
                             <div class="input-area mb-3">
                                 <label class="form-label">Note</label>
                                 <input class="form-control py-2 @error('statusNote') !border-danger-500 @enderror"
-                                    id="default-picker" type="text" wire:model.defer="statusNote" autocomplete="off">
+                                    id="default-picker" type="text" wire:model="statusNote" autocomplete="off">
                                 @error('statusNote')
                                     <span
                                         class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -300,13 +300,13 @@
                                         <label for="firstName" class="form-label">Name</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('name') !border-danger-500 @enderror"
-                                            wire:model.defer="name">
+                                            wire:model="name">
                                     </div>
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Arabic Name</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('arabicName') !border-danger-500 @enderror"
-                                            wire:model.defer="arabicName">
+                                            wire:model="arabicName">
                                     </div>
                                 </div>
                                 @error('name')
@@ -322,7 +322,7 @@
                                     <label for="firstName" class="form-label">Email</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('email') !border-danger-500 @enderror"
-                                        wire:model.defer="email">
+                                        wire:model="email">
                                 </div>
                                 @error('email')
                                     <span
@@ -334,13 +334,13 @@
                                         <label for="firstName" class="form-label">Commercial Record</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('commercialRecord') !border-danger-500 @enderror"
-                                            wire:model.defer="commercialRecord">
+                                            wire:model="commercialRecord">
                                     </div>
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Commercial Record Doc.</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('commercialRecordDoc') !border-danger-500 @enderror"
-                                            wire:model.defer="commercialRecordDoc">
+                                            wire:model="commercialRecordDoc">
                                     </div>
                                 </div>
                                 @error('commercialRecord')
@@ -357,13 +357,13 @@
                                         <label for="firstName" class="form-label">Tax ID</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('taxId') !border-danger-500 @enderror"
-                                            wire:model.defer="taxId">
+                                            wire:model="taxId">
                                     </div>
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">Tax ID Doc.</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('taxIdDoc') !border-danger-500 @enderror"
-                                            wire:model.defer="taxIdDoc">
+                                            wire:model="taxIdDoc">
                                     </div>
                                 </div>
                                 @error('taxId')
@@ -380,13 +380,13 @@
                                         <label for="firstName" class="form-label">KYC</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('kyc') !border-danger-500 @enderror"
-                                            wire:model.defer="kyc">
+                                            wire:model="kyc">
                                     </div>
                                     <div class="input-area">
                                         <label for="firstName" class="form-label">KYC Doc.</label>
                                         <input id="lastName" type="text"
                                             class="form-control @error('kycDoc') !border-danger-500 @enderror"
-                                            wire:model.defer="kycDoc">
+                                            wire:model="kycDoc">
                                     </div>
                                 </div>
                                 @error('kyc')
@@ -402,7 +402,7 @@
                                     <label for="firstName" class="form-label">Contract Doc.</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('contractDoc') !border-danger-500 @enderror"
-                                        wire:model.defer="contractDoc">
+                                        wire:model="contractDoc">
                                 </div>
                                 @error('contractDoc')
                                     <span
@@ -413,7 +413,7 @@
                                     <label for="firstName" class="form-label">Main Bank Evidence</label>
                                     <input id="lastName" type="text"
                                         class="form-control @error('mainBandEvidence') !border-danger-500 @enderror"
-                                        wire:model.defer="mainBandEvidence">
+                                        wire:model="mainBandEvidence">
                                 </div>
                                 @error('mainBandEvidence')
                                     <span
@@ -424,7 +424,7 @@
                                     <label for="note" class="form-label mt-3">Note</label>
                                     <input id="note" type="text"
                                         class="form-control @error('note') !border-danger-500 @enderror"
-                                        wire:model.defer="note">
+                                        wire:model="note">
                                 </div>
                                 @error('note')
                                     <span
@@ -435,7 +435,7 @@
                                     <label for="ownerId" class="form-label">Owner</label>
                                     <select name="ownerId" id="ownerId"
                                         class="form-control w-full mt-2 @error('ownerId') !border-danger-500 @enderror"
-                                        wire:model.defer="ownerId">
+                                        wire:model="ownerId">
                                         <option>None</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -452,7 +452,7 @@
                                     <label for="campaignId" class="form-label">Campaign</label>
                                     <select name="campaignId" id="campaignId"
                                         class="form-control w-full mt-2 @error('campaignId') !border-danger-500 @enderror"
-                                        wire:model.defer="campaignId">
+                                        wire:model="campaignId">
                                         <option value="">None</option>
                                         @foreach ($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
@@ -468,7 +468,7 @@
                                     <label for="channel" class="form-label">Channel</label>
                                     <input id="channel" type="text"
                                         class="form-control w-full mt-2 @error('channel') !border-danger-500 @enderror"
-                                        wire:model.defer="channel" placeholder="Enter channel">
+                                        wire:model="channel" placeholder="Enter channel">
                                 </div>
                                 @error('channel')
                                     <span
@@ -485,7 +485,7 @@
                                         <label for="followupCallDateTime" class="form-label">Call Date Time</label>
                                         <input id="followupCallDateTime" type="datetime-local"
                                             class="form-control @error('followupCallDateTime') !border-danger-500 @enderror"
-                                            wire:model.defer="followupCallDateTime">
+                                            wire:model="followupCallDateTime">
                                     </div>
 
 
@@ -553,7 +553,7 @@
                                     <label for="name" class="form-label">Name</label>
                                     <input id="name" type="text"
                                         class="form-control @error('name') !border-danger-500 @enderror"
-                                        wire:model.defer="name">
+                                        wire:model="name">
                                 </div>
                                 @error('name')
                                     <span
@@ -564,7 +564,7 @@
                                     <label for="LeadNote" class="form-label">Note</label>
                                     <input id="LeadNote" type="text"
                                         class="form-control @error('LeadNote') !border-danger-500 @enderror"
-                                        wire:model.defer="LeadNote">
+                                        wire:model="LeadNote">
                                 </div>
                                 @error('LeadNote')
                                     <span
@@ -575,7 +575,7 @@
                                     <label for="ownerId" class="form-label">Owner</label>
                                     <select name="ownerId" id="ownerId"
                                         class="form-control w-full mt-2 @error('ownerId') !border-danger-500 @enderror"
-                                        wire:model.defer="ownerId">
+                                        wire:model="ownerId">
                                         <option>None</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -592,7 +592,7 @@
                                     <label for="leadCampaignId" class="form-label">Campaign</label>
                                     <select name="leadCampaignId" id="leadCampaignId"
                                         class="form-control w-full mt-2 @error('leadCampaignId') !border-danger-500 @enderror"
-                                        wire:model.defer="leadCampaignId">
+                                        wire:model="leadCampaignId">
                                         <option value="">None</option>
                                         @foreach ($campaigns as $campaign)
                                             <option value="{{ $campaign->id }}">{{ $campaign->name }}</option>
@@ -608,7 +608,7 @@
                                     <label for="leadChannel" class="form-label">Channel</label>
                                     <input id="leadChannel" type="text"
                                         class="form-control w-full mt-2 @error('leadChannel') !border-danger-500 @enderror"
-                                        wire:model.defer="leadChannel" placeholder="Enter channel">
+                                        wire:model="leadChannel" placeholder="Enter channel">
                                 </div>
                                 @error('leadChannel')
                                     <span
@@ -625,7 +625,7 @@
                                                 Time</label>
                                             <input id="followupCallDateTime" type="datetime-local"
                                                 class="form-control @error('followupCallDateTime') !border-danger-500 @enderror"
-                                                wire:model.defer="followupCallDateTime">
+                                                wire:model="followupCallDateTime">
                                         </div>
                                         @error('followupCallDateTime')
                                             <span
@@ -646,7 +646,7 @@
                                 <hr />
                                 <p class="text-lg mt-3"><b>Import/Export</b></p>
                                 <div class="input-area mt-3">
-                                    <input wire:model="leadsImportFile" type="file" class="form-control w-full "
+                                    <input wire:model.live="leadsImportFile" type="file" class="form-control w-full "
                                         name="basic" />
                                     @error('leadsImportFile')
                                         <span
@@ -674,7 +674,7 @@
                                     <label for="ownerId" class="form-label">Download User Leads</label>
                                     <select name="ownerId" id="ownerId"
                                         class="form-control w-full mt-2 @error('ownerId') !border-danger-500 @enderror"
-                                        wire:model.defer="downloadUserLeadsID">
+                                        wire:model="downloadUserLeadsID">
                                         <option value=null>All</option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->first_name }}
@@ -831,7 +831,7 @@
                                 <label for="editedLob" class="form-label">Line of Business</label>
                                 <select name="editedLob" id="editedLob"
                                     class="form-control w-full mt-2 @error('editedLob') !border-danger-500 @enderror"
-                                    wire:model="editedLob">
+                                    wire:model.live="editedLob">
                                     <option value="">Select Line of Business</option>
                                     @foreach ($LINES_OF_BUSINESS as $lob)
                                         <option value="{{ $lob }}">{{ ucwords(str_replace('_', ' ', $lob)) }}</option>
@@ -846,7 +846,7 @@
                                 <label for="interested" class="form-label">Interest Status</label>
                                 <select name="interested" id="interested"
                                     class="form-control w-full mt-2 @error('interested') !border-danger-500 @enderror"
-                                    wire:model="interested">
+                                    wire:model.live="interested">
                                     <option value="">Select Status</option>
                                     <option value="YES">Interested</option>
                                     <option value="NO">Not Interested</option>
@@ -860,7 +860,7 @@
                                 <label for="interestNote" class="form-label">Note</label>
                                 <textarea name="interestNote" id="interestNote" rows="3"
                                     class="form-control @error('interestNote') !border-danger-500 @enderror"
-                                    wire:model="interestNote"
+                                    wire:model.live="interestNote"
                                     placeholder="Add any notes about this interest..."></textarea>
                                 @error('interestNote')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -868,7 +868,7 @@
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <input type="checkbox" id="isCreateFollowup" wire:model="isCreateFollowup"
+                                <input type="checkbox" id="isCreateFollowup" wire:model.live="isCreateFollowup"
                                     class="form-checkbox">
                                 <label for="isCreateFollowup" class="form-label mb-0">Create followup after saving</label>
                             </div>
@@ -923,7 +923,7 @@
                                 <label for="followupTitle" class="form-label">Title</label>
                                 <input type="text" id="followupTitle"
                                     class="form-control @error('followupTitle') !border-danger-500 @enderror"
-                                    wire:model="followupTitle"
+                                    wire:model.live="followupTitle"
                                     placeholder="Enter followup title">
                                 @error('followupTitle')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -935,7 +935,7 @@
                                     <label for="followupCallDate" class="form-label">Call Date</label>
                                     <input type="date" id="followupCallDate"
                                         class="form-control @error('followupCallDate') !border-danger-500 @enderror"
-                                        wire:model="followupCallDate">
+                                        wire:model.live="followupCallDate">
                                     @error('followupCallDate')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -945,7 +945,7 @@
                                     <label for="followupCallTime" class="form-label">Call Time</label>
                                     <input type="time" id="followupCallTime"
                                         class="form-control @error('followupCallTime') !border-danger-500 @enderror"
-                                        wire:model="followupCallTime">
+                                        wire:model.live="followupCallTime">
                                     @error('followupCallTime')
                                         <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
                                     @enderror
@@ -956,7 +956,7 @@
                                 <label for="FollowupLineOfBussiness" class="form-label">Line of Business</label>
                                 <select name="FollowupLineOfBussiness" id="FollowupLineOfBussiness"
                                     class="form-control w-full mt-2 @error('FollowupLineOfBussiness') !border-danger-500 @enderror"
-                                    wire:model="FollowupLineOfBussiness">
+                                    wire:model.live="FollowupLineOfBussiness">
                                     @foreach ($LINES_OF_BUSINESS as $lob)
                                         <option value="{{ $lob }}">{{ ucwords(str_replace('_', ' ', $lob)) }}</option>
                                     @endforeach
@@ -970,7 +970,7 @@
                                 <label for="followupDesc" class="form-label">Description</label>
                                 <textarea name="followupDesc" id="followupDesc" rows="3"
                                     class="form-control @error('followupDesc') !border-danger-500 @enderror"
-                                    wire:model="followupDesc"
+                                    wire:model.live="followupDesc"
                                     placeholder="Enter followup description..."></textarea>
                                 @error('followupDesc')
                                     <span class="font-Inter text-sm text-danger-500 pt-2 inline-block">{{ $message }}</span>
@@ -978,7 +978,7 @@
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <input type="checkbox" id="is_meeting" wire:model="is_meeting"
+                                <input type="checkbox" id="is_meeting" wire:model.live="is_meeting"
                                     class="form-checkbox">
                                 <label for="is_meeting" class="form-label mb-0">This is a meeting</label>
                             </div>
