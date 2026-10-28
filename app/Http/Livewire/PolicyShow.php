@@ -396,9 +396,13 @@ class PolicyShow extends Component
 
     public function deleteCondition($id)
     {
-        $policy = PolicyCondition::find($id);
-        $p = $policy->deleteCondition();
-        if ($p) {
+        $condition = PolicyCondition::find($id);
+        if (!$condition) {
+            $this->alert('failed', 'Condition not found');
+            return;
+        }
+
+        if ($condition->deleteCondition()) {
             $this->alert('success', 'Condition Deleted!');
         } else {
             $this->alert('failed', 'Server error!');

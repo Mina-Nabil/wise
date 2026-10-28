@@ -162,5 +162,6 @@ class CountriesSeeder extends Seeder
         Country::newCountry('Zimbabwe');
         Country::newCountry('United States');
         Country::newCountry('Canada');
+        Country::newCountry('Others');
     }
 }

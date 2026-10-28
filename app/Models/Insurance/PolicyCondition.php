@@ -5,6 +5,8 @@ namespace App\Models\Insurance;
 use App\Models\Cars\Brand;
 use App\Models\Cars\Car;
 use App\Models\Cars\CarModel;
+use App\Models\Offers\OfferOption;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Base\Country;
 use App\Models\Users\AppLog;
 use Exception;
@@ -90,12 +92,16 @@ class PolicyCondition extends Model
     public function deleteCondition()
     {
         try {
-            $this->delete();
+            // Offer options keep this id. Including trashed rows, that foreign key blocks deletion.
+            $this->offerOptions()->withTrashed()->update(['policy_condition_id' => null]);
+            if (!$this->delete()) {
+                return false;
+            }
             AppLog::info('Policy condition deleted', loggable: $this);
             return true;
         } catch (Exception $e) {
             report($e);
-            AppLog::error("Can't delete policy condition", loggable: $this);
+            AppLog::error("Can't delete policy condition", desc: $e->getMessage(), loggable: $this);
             return false;
         }
     }
@@ -256,6 +262,11 @@ class PolicyCondition extends Model
     public function policy(): BelongsTo
     {
         return $this->belongsTo(Policy::class);
+    }
+
+    public function offerOptions(): HasMany
+    {
+        return $this->hasMany(OfferOption::class);
     }
 
     /**
