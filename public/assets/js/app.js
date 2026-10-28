@@ -1034,6 +1034,10 @@ window.addEventListener("toastalert", (event) => {
     }, 3000);
 });
 
+document.addEventListener("livewire:load", function () {
+    document.dispatchEvent(new Event("livewire:init"));
+});
+
 document.addEventListener("livewire:init", function () {
     // Initialize the Select2 plugin
     $("#select2basic").select2();

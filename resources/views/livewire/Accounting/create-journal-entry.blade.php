@@ -319,17 +319,27 @@
             // Livewire re-renders the selects with every option back in place, so the
             // active searches have to be applied again
             var bindLivewireHook = function () {
-                Livewire.hook('message.processed', function () {
+                var reapply = function () {
                     document.querySelectorAll('.account-search').forEach(function (input) {
                         if (input.value.trim()) window.applyAccountFilter(input);
                     });
-                });
+                };
+
+                try {
+                    Livewire.hook('message.processed', reapply);
+                } catch (e) {}
+                try {
+                    Livewire.hook('commit', function (payload) {
+                        if (payload && payload.succeed) payload.succeed(reapply);
+                    });
+                } catch (e) {}
             };
 
             if (window.Livewire) {
                 bindLivewireHook();
             } else {
                 document.addEventListener('livewire:init', bindLivewireHook);
+                document.addEventListener('livewire:load', bindLivewireHook);
             }
         }
     </script>

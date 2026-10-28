@@ -399,7 +399,7 @@
                                                                     class="text-lg"></iconify-icon>
                                                             </button>
                                                             <button
-                                                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to delete this action?', color: 'danger', action: 'deleteAction', reviewId: {{ $action->id }} })"
+                                                                wire:click="{!! \App\Support\LivewireCompat::emit('showConfirmation', ['message' => 'Are you sure you want to delete this action?', 'color' => 'danger', 'action' => 'deleteAction', 'reviewId' => (int) $action->id]) !!}"
                                                                 class="btn inline-flex justify-center btn-danger light btn-sm"
                                                                 title="Delete Action">
                                                                 <iconify-icon icon="material-symbols:delete-outline"

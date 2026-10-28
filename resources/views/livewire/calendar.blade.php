@@ -429,6 +429,12 @@
         });
 
         // Listen for Livewire updates to refresh calendar
+        document.addEventListener('livewire:load', function() {
+            Livewire.hook('message.processed', function () {
+                initializeCalendar();
+            });
+        });
+
         document.addEventListener('livewire:init', function() {
             Livewire.hook('commit', ({ succeed }) => {
                 succeed(() => initializeCalendar());

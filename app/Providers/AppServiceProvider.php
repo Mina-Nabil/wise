@@ -73,6 +73,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Livewire 3 has dispatch(). Livewire 2 only has emit() and dispatchBrowserEvent().
+        if (!method_exists(\Livewire\Component::class, 'dispatch')) {
+            \Livewire\Component::macro('dispatch', function ($event, ...$params) {
+                if (array_key_exists('data', $params) && count($params) === 1) {
+                    $this->emit($event, $params['data']);
+                    $browser = $params['data'];
+                } elseif (array_key_exists('id', $params) && count($params) === 1) {
+                    $this->emit($event, $params['id']);
+                    $browser = ['id' => $params['id']];
+                } else {
+                    $this->emit($event);
+                    $browser = $params;
+                }
+
+                $this->dispatchBrowserEvent($event, $browser);
+            });
+        }
+
         Relation::enforceMorphMap([
             City::MORPH_TYPE => City::class,
             Area::MORPH_TYPE => Area::class,

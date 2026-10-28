@@ -42,7 +42,7 @@
                                 info</button>
 
                             <button
-                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to delete this profile?', color: 'danger', action: 'deleteProfile' })"
+                                wire:click="{!! \App\Support\LivewireCompat::emit('showConfirmation', ['message' => 'Are you sure you want to delete this profile?', 'color' => 'danger', 'action' => 'deleteProfile']) !!}"
                                 class="btn inline-flex justify-center btn-outline-danger btn-sm"> Delete profile</button>
                         @endcan
                         @can('viewAny', $profile)
@@ -53,7 +53,7 @@
 
                         @can('manage', $profile)
                             <button
-                                wire:click="$dispatch('showConfirmation', { message: 'Are you sure you want to refresh the profile balances?', color: 'black', action: 'refreshBalances' })"
+                                wire:click="{!! \App\Support\LivewireCompat::emit('showConfirmation', ['message' => 'Are you sure you want to refresh the profile balances?', 'color' => 'black', 'action' => 'refreshBalances']) !!}"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm"> Refresh Balance</button>
                             <button wire:click="openStartTargetRunSec"
                                 class="btn inline-flex justify-center btn-outline-light btn-sm">Start Target run</button>
