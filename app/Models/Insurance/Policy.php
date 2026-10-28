@@ -553,27 +553,27 @@ class Policy extends Model
         //     throw new Exception("Invalid business type. Can't get policy rate by car");
 
         $this->load('conditions');
-        $customer_car->load('car');
+        $customer_car->load('car.car_model.brand');
+        $car = $customer_car->car;
+        $carModel = $car?->car_model;
+        $brand = $carModel?->brand;
         foreach ($this->conditions as $cond) {
             switch ($cond->scope) {
                 case PolicyCondition::SCOPE_MODEL:
-                    if ($customer_car->car->car_model_id == $cond->value)
+                    if ($carModel && $carModel->id == $cond->value)
                         return $cond;
                     break;
                 case PolicyCondition::SCOPE_ENGINE:
-                    $customer_car->loadMissing('car');
-                    if ($customer_car->car && $customer_car->car->engine_type === $cond->value)
+                    if ($carModel && $carModel->engine_type === $cond->value)
                         return $cond;
                     break;
                 case PolicyCondition::SCOPE_BRAND:
-                    $customer_car->car->load('car_model');
-                    if ($customer_car->car->car_model->brand_id == $cond->value)
+                    if ($carModel && $carModel->brand_id == $cond->value)
                         return $cond;
                     break;
 
                 case PolicyCondition::SCOPE_COUNTRY:
-                    $customer_car->car->load('car_model', 'car_model.brand');
-                    if ($customer_car->car->car_model->brand->country_id == $cond->value)
+                    if ($brand && $brand->country_id == $cond->value)
                         return $cond;
                     break;
 
@@ -605,6 +605,7 @@ class Policy extends Model
                                 return $cond;
                             break;
                     }
+                    break;
 
                 case PolicyCondition::SCOPE_VALUE:
                     $checkValue = $value ?? $customer_car->price;

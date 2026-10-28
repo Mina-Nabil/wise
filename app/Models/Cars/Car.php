@@ -3,6 +3,7 @@
 namespace App\Models\Cars;
 
 use App\Exceptions\UnauthorizedException;
+use App\Models\Base\Country;
 use App\Models\Users\AppLog;
 use Carbon\Carbon;
 use Exception;
@@ -69,7 +70,27 @@ class Car extends Model
         $highestCol = $activeSheet->getHighestDataColumn();
         $highestColIndex = Coordinate::columnIndexFromString($highestCol);
 
+        $countryCol = null;
+        $engineCol = null;
+        $yearColumns = [];
+        for ($p_i = 1; $p_i <= $highestColIndex; $p_i++) {
+            $col = Coordinate::stringFromColumnIndex($p_i);
+            $header = strtolower(trim((string) $activeSheet->getCell($col . '1')->getValue()));
+            if ($header === 'country') {
+                $countryCol = $col;
+            } elseif ($header === 'engine type') {
+                $engineCol = $col;
+            }
+
+            $year = $activeSheet->getCell($col . '2')->getValue();
+            if (is_numeric($year) && (int) $year >= 1900 && (int) $year <= 2100) {
+                $yearColumns[$col] = (int) $year;
+            }
+        }
+
         for ($i = 3; $i <= $highestRow; $i++) {
+            $brand = null;
+            $car_model = null;
             $category = $activeSheet->getCell('D' . $i)->getValue();
             //skip if no car category found
             if (!$category) {
@@ -77,12 +98,25 @@ class Car extends Model
             }
 
             $brand_cell = $activeSheet->getCell('B' . $i)->getValue();
+            $country = null;
+            if ($countryCol) {
+                $countryName = trim((string) $activeSheet->getCell($countryCol . $i)->getValue());
+                if ($countryName !== '') {
+                    $country = Country::where('name', $countryName)->first();
+                }
+            }
 
             if ($brand_cell) {
-                $brand = Brand::firstOrCreate([
-                    'country_id' => 1,
-                    'name' => $brand_cell,
-                ]);
+                $brand = Brand::where('name', $brand_cell)->first();
+                if (!$brand) {
+                    $brand = Brand::create([
+                        'name' => $brand_cell,
+                        'country_id' => $country?->id ?? 1,
+                    ]);
+                } elseif ($country) {
+                    $brand->country_id = $country->id;
+                    $brand->save();
+                }
             }
 
             //skip if no brand found
@@ -96,6 +130,13 @@ class Car extends Model
                     'brand_id' => $brand->id,
                     'name' => $model_cell,
                 ]);
+                if ($engineCol) {
+                    $engineType = trim((string) $activeSheet->getCell($engineCol . $i)->getValue());
+                    if ($engineType !== '' && in_array($engineType, self::ENGINE_TYPES, true)) {
+                        $car_model->engine_type = $engineType;
+                        $car_model->save();
+                    }
+                }
             }
 
             //skip if no car model found
@@ -108,23 +149,21 @@ class Car extends Model
                 'category' => $category,
                 'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
             ]);
-            for ($p_i = 5; $p_i <= $highestColIndex; $p_i++) {
-                $cellCharFromIndex = Coordinate::stringFromColumnIndex($p_i);
-                $price = $activeSheet->getCell($cellCharFromIndex . $i)->getValue();
-                $year = $activeSheet->getCell($cellCharFromIndex . '2')->getValue();
-                if (!$year || !$price) continue;
-
-                if (is_numeric($price) && is_numeric($year)) {
-                    $car->car_prices()->updateOrCreate(
-                        [
-                            'model_year' => $year,
-                        ],
-                        [
-                            'price' => $price,
-                            'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
-                        ],
-                    );
+            foreach ($yearColumns as $col => $year) {
+                $price = $activeSheet->getCell($col . $i)->getValue();
+                if ($price === null || $price === '' || !is_numeric($price)) {
+                    continue;
                 }
+
+                $car->car_prices()->updateOrCreate(
+                    [
+                        'model_year' => $year,
+                    ],
+                    [
+                        'price' => $price,
+                        'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
+                    ],
+                );
             }
         }
     }
@@ -136,7 +175,7 @@ class Car extends Model
         $activeSheet = $spreadsheet->getActiveSheet();
         
         // Get all cars with their relationships
-        $cars = self::with(['car_model.brand', 'car_prices'])
+        $cars = self::with(['car_model.brand.country', 'car_prices'])
             ->orderBy('id')
             ->get();
         
@@ -152,20 +191,15 @@ class Car extends Model
         $activeSheet->setCellValue('B1', 'Brand');
         $activeSheet->setCellValue('C1', 'Model');
         $activeSheet->setCellValue('D1', 'Category');
-        $activeSheet->setCellValue('E1', 'Description');
-        
-        // Set year headers starting from column F
-        $colIndex = 6; // Column F
+        $activeSheet->setCellValue('E1', 'Country');
+        $activeSheet->setCellValue('F1', 'Engine type');
+        $activeSheet->setCellValue('G1', 'Description');
+
+        // Year headers start at column H, on row 2 so import can find them
+        $colIndex = 8;
         foreach ($allYears as $year) {
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->setCellValue($colLetter . '1', $year);
-            $colIndex++;
-        }
-        
-        // Set year headers in row 2 as well (for compatibility with import format)
-        $colIndex = 6; // Column F
-        foreach ($allYears as $year) {
-            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $activeSheet->setCellValue($colLetter . '2', $year);
             $colIndex++;
         }
@@ -177,13 +211,15 @@ class Car extends Model
             $activeSheet->setCellValue('B' . $rowIndex, $car->car_model->brand->name ?? '');
             $activeSheet->setCellValue('C' . $rowIndex, $car->car_model->name ?? '');
             $activeSheet->setCellValue('D' . $rowIndex, $car->category);
-            $activeSheet->setCellValue('E' . $rowIndex, $car->desc ?? '');
-            
+            $activeSheet->setCellValue('E' . $rowIndex, $car->car_model->brand->country->name ?? '');
+            $activeSheet->setCellValue('F' . $rowIndex, $car->car_model->engine_type ?? '');
+            $activeSheet->setCellValue('G' . $rowIndex, $car->desc ?? '');
+
             // Create a map of prices by year for quick lookup
             $pricesByYear = $car->car_prices->keyBy('model_year');
-            
+
             // Fill price data for each year
-            $colIndex = 6; // Column F
+            $colIndex = 8;
             foreach ($allYears as $year) {
                 $colLetter = Coordinate::stringFromColumnIndex($colIndex);
                 $price = $pricesByYear->get($year);
@@ -196,9 +232,9 @@ class Car extends Model
             $rowIndex++;
         }
         
-        // Auto-size columns
-        foreach (range('A', $activeSheet->getHighestDataColumn()) as $col) {
-            $activeSheet->getColumnDimension($col)->setAutoSize(true);
+        $highestColIndex = Coordinate::columnIndexFromString($activeSheet->getHighestDataColumn());
+        for ($colIndex = 1; $colIndex <= $highestColIndex; $colIndex++) {
+            $activeSheet->getColumnDimension(Coordinate::stringFromColumnIndex($colIndex))->setAutoSize(true);
         }
         
         // Create writer and save file

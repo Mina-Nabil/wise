@@ -779,6 +779,8 @@
                                     <li>Column B: Brand name</li>
                                     <li>Column C: Car model name</li>
                                     <li>Column D: Car category</li>
+                                    <li>Country column: brand country. A known name updates the brand. An unknown name is left unchanged.</li>
+                                    <li>Engine type column: Petrol, Electric, REEV, or Hybird. A blank cell does not clear the current value.</li>
                                     <li>Row 2: Model years (headers)</li>
                                     <li>Rows 3+: Price data for each car model/year combination</li>
                                 </ul>
