@@ -484,10 +484,21 @@ class SoldPolicy extends Model
             if ($loggedInUser && !$loggedInUser->can('updatePayments', $this)) return false;
         }
 
-        assert($amount <= ($this->after_tax_comm - $this->total_company_paid), "Amount is more that what the company should pay. Please make sure the amount is less than the total commission after tax plus the company payments total");
+        // Reversal entries are negative. The ceiling checks below are for new
+        // money coming in, and assert() throws an Error that aborts the request.
+        if ($amount > 0) {
+            $remainingAfterPaid = ($this->after_tax_comm ?? 0) - ($this->total_comp_paid ?? 0);
+            if ($amount > $remainingAfterPaid) {
+                AppLog::error("Can't add company payment", desc: "Amount is more than what the company should pay", loggable: $this);
+                return false;
+            }
 
-        $total_new_payments = $this->company_comm_payments()->where('status', CompanyCommPayment::PYMT_STATE_NEW)->get()->sum('amount');
-        assert($amount <= ($this->after_tax_comm - $total_new_payments), "Amount is more that what the company should pay plus already added payment. Please check already added 'new' payments");
+            $total_new_payments = $this->company_comm_payments()->where('status', CompanyCommPayment::PYMT_STATE_NEW)->sum('amount');
+            if ($amount > (($this->after_tax_comm ?? 0) - $total_new_payments)) {
+                AppLog::error("Can't add company payment", desc: "Amount is more than remaining commission after new payments", loggable: $this);
+                return false;
+            }
+        }
 
         try {
             if ($this->company_comm_payments()->create([
@@ -583,7 +594,11 @@ class SoldPolicy extends Model
         foreach ($this->sales_comms()->notCancelled()->get() as $comm) {
             $tmp += $comm->amount;
             if ($comm->is_sales_out) {
-                $comm->refreshPaymentInfo(false, update_soldpolicy: false);
+                // Cancellation reversals already carry the offsetting amount.
+                // Recalculating them replaces that negative entry.
+                if ($comm->title !== 'Cancellation Reversal') {
+                    $comm->refreshPaymentInfo(false, update_soldpolicy: false);
+                }
                 $total_sales_out += $comm->amount;
             }
         }
@@ -1169,9 +1184,10 @@ class SoldPolicy extends Model
         $loggedInUser = Auth::user();
         if (!$skipCheck && !$loggedInUser->can('delete', $this)) return false;
         DB::transaction(function () {
-            Review::createReview($this, "Policy Cancelled", "Policy cancelled on " . Carbon::now()->format('d/m/Y'));
-            $this->client_payments()->notCollected()->get()->each(function ($payment) {
-                $payment->setAsCancelled(Carbon::now(), true);
+            $cancelledOn = $this->cancellation_time ? Carbon::parse($this->cancellation_time) : Carbon::now();
+            Review::createReview($this, "Policy Cancelled", "Policy cancelled on " . $cancelledOn->format('d/m/Y'));
+            $this->client_payments()->notCollected()->get()->each(function ($payment) use ($cancelledOn) {
+                $payment->setAsCancelled($cancelledOn, true);
             });
             $this->client_payments()->notCollected()->delete();
 
@@ -1205,14 +1221,21 @@ class SoldPolicy extends Model
             });
             $this->calculateTotalSalesComm();
 
-            $this->company_comm_payments()->notPaid()->get()->each(function ($comm) {
-                $comm->setAsCancelled(Carbon::now(), true);
+            $this->company_comm_payments()->notPaid()->get()->each(function ($comm) use ($cancelledOn) {
+                $comm->setAsCancelled($cancelledOn, true);
             });
             $this->company_comm_payments()->notPaid()->delete();
 
             $this->load('company_comm_payments');
             if ($this->company_comm_payments->count()) {
-                $this->addCompanyPayment(ClientPayment::PYMT_TYPE_BANK_TRNSFR, -1 * $this->company_comm_payments->sum('amount'), "Generated automatic after sold policy cancellation");
+                $this->addCompanyPayment(
+                    ClientPayment::PYMT_TYPE_BANK_TRNSFR,
+                    -1 * $this->company_comm_payments->sum('amount'),
+                    "Generated automatic after sold policy cancellation",
+                    null,
+                    null,
+                    true
+                );
             }
         });
 

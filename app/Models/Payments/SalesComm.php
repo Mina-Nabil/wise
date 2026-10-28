@@ -269,6 +269,10 @@ class SalesComm extends Model
         $this->load('sold_policy.policy');
         $this->load('comm_profile');
 
+        if (!$this->comm_profile || !$this->sold_policy?->policy) {
+            return false;
+        }
+
         $valid_conf = $this->comm_profile->getValidDirectCommissionConf($this->sold_policy->policy);
 
         $from_amount = 0;
@@ -276,7 +280,9 @@ class SalesComm extends Model
 
         if ($this->is_direct) {
             //direct comms use the configured percentage as is, renewal/sales out modifiers don't apply to them
-            $this->comm_percentage = $valid_conf->percentage ?? $this->comm_percentage;
+            if ($valid_conf) {
+                $this->comm_percentage = $valid_conf->percentage ?? $this->comm_percentage;
+            }
             $from_amount = $this->sold_policy->getFromAmount($this->from);
             if ($this->comm_profile->type == CommProfile::TYPE_SALES_OUT) {
                 $comm_disc = $this->sold_policy->discount + $this->sold_policy->penalty_amount;
@@ -516,7 +522,7 @@ class SalesComm extends Model
     public function getIsSalesOutAttribute()
     {
         $this->load('comm_profile');
-        return $this->comm_profile->type == CommProfile::TYPE_SALES_OUT;
+        return $this->comm_profile?->type == CommProfile::TYPE_SALES_OUT;
     }
 
     public static function exportReport(

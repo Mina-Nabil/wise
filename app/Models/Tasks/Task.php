@@ -332,7 +332,7 @@ class Task extends Model
                 if ($status == self::STATUS_COMPLETED) {
                     foreach ($this->actions as $a) {
                         if (in_array($a->id, $accepted_actions_ids)) {
-                            if (!$a->confirmAction()) throw new Exception('Unauthorized');
+                            if (!$a->confirmAction()) throw new Exception("Failed to apply action {$a->column_name}");
                         } else {
                             $a->rejectAction();
                         }
@@ -356,7 +356,7 @@ class Task extends Model
 
             AppLog::info('Status changed', "Task#$this->id state changed to $status", $this);
             return $this->save();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
             AppLog::error("Can't change task status", $e->getMessage(), $this);
             return false;

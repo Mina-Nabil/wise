@@ -100,22 +100,68 @@ class TaskAction extends Model
                 $loggedInUser = Auth::user();
                 if (!$loggedInUser->can('updateClaim', $this->task->taskable)) return false;
             }
-            $this->task->taskable->{$this->column_name} = $this->value;
-            $this->task->taskable->save();
-            if ($this->column_name == 'cancellation_time') {
-                $this->task->taskable->cancelSoldPolicy(true);
-            }
-            if($this->column_name == 'gross_premium'){
-                $this->task->taskable->createMissingClientPayments();
+            if ($this->column_name === 'cancellation_time' && $this->task->taskable instanceof SoldPolicy) {
+                $this->applyCancellationDate($this->task->taskable);
+            } else {
+                $this->task->taskable->{$this->column_name} = $this->value;
+                $this->task->taskable->save();
+                if ($this->column_name == 'gross_premium') {
+                    $this->task->taskable->createMissingClientPayments();
+                }
             }
             $new_val = $this->value ?? 'NULL';
             AppLog::info("Tast Action done", desc: "Changed column {$this->column_name} - {$this->value} to $new_val", loggable: $this);
             return true;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             report($e);
             AppLog::error("Tast Action failed", desc: $e->getMessage(), loggable: $this);
             return false;
         }
+    }
+
+    /**
+     * A cancellation date on a policy that is already cancelled is only a date
+     * change. Running the full cancellation again rolls the endorsement back
+     * when commission recalculation fails, so the completion appears to do nothing.
+     */
+    private function applyCancellationDate(SoldPolicy $policy): void
+    {
+        $date = $this->parseDate($this->value);
+        $alreadyCancelled = filled($policy->cancellation_time);
+
+        $policy->cancellation_time = $date->format('Y-m-d H:i');
+        if (!$policy->save()) {
+            throw new Exception("Couldn't save cancellation date on sold policy #{$policy->id}");
+        }
+
+        if ($alreadyCancelled) {
+            return;
+        }
+
+        if (!$policy->cancelSoldPolicy(true)) {
+            throw new Exception("Couldn't cancel sold policy #{$policy->id}");
+        }
+    }
+
+    private function parseDate($value): Carbon
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            throw new Exception('Cancellation date is empty');
+        }
+
+        foreach (['Y-m-d', 'Y-m-d H:i', 'Y-m-d H:i:s', 'd/m/Y', 'd-m-Y'] as $format) {
+            try {
+                $parsed = Carbon::createFromFormat($format, $value);
+            } catch (\Throwable $e) {
+                $parsed = false;
+            }
+            if ($parsed instanceof Carbon) {
+                return $parsed;
+            }
+        }
+
+        return Carbon::parse($value);
     }
 
     public function rejectAction()
