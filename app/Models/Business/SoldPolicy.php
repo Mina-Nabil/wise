@@ -1207,7 +1207,6 @@ class SoldPolicy extends Model
                         "comm_percentage"   => 0,
                         "amount"            => -1 * $comm->amount,
                         "comm_profile_id"   => $comm->comm_profile_id,
-                        "user_id"           => $comm->user_id,
                         "is_direct"         => $comm->is_direct,
                         "note"              => "Reversal for Sold Policy #{$this->id} cancellation",
                     ]);

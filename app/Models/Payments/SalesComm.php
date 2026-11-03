@@ -51,7 +51,6 @@ class SalesComm extends Model
         'doc_url',
         'comm_percentage',
         'sold_policy_id',
-        'user_id',
         'from',
         'client_paid_percent',
         'company_paid_percent',
