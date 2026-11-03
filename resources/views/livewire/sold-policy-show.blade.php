@@ -4620,7 +4620,7 @@
 
                                 <div class="from-group">
                                     <label for="subSalesAmount" class="form-label">Amount</label>
-                                    <input type="number" min="0" step="any" name="subSalesAmount"
+                                    <input type="number" step="any" name="subSalesAmount"
                                         class="form-control mt-2 w-full @error('subSalesAmount') !border-danger-500 @enderror"
                                         wire:model="subSalesAmount">
                                     @error('subSalesAmount')

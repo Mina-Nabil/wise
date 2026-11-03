@@ -918,7 +918,7 @@ class SoldPolicyShow extends Component
         $this->validate([
             'subSalesCommId' => 'required|integer|exists:sales_comms,id',
             'subSalesTitle' => 'required|string|max:255',
-            'subSalesAmount' => 'required|numeric|min:0.01',
+            'subSalesAmount' => 'required|numeric|not_in:0',
             'subSalesNote' => 'nullable|string',
         ]);
 
