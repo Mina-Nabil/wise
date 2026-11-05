@@ -21,8 +21,8 @@ class AccountShow extends Component
 
     public $account;
     public $accountId;
-    public $fromDate = '2024-01-01';
-    public $toDate = '2024-12-01';
+    public $fromDate;
+    public $toDate;
     protected $listeners = ['dateRangeSelected'];
 
     public $is_open_edit = true;
@@ -82,6 +82,9 @@ class AccountShow extends Component
     {
         $this->accountId = $id;
         $this->account = Account::findOrFail($id);
+        // Same window the date picker applies on first paint: last month through tomorrow.
+        $this->fromDate = Carbon::now()->subMonth()->toDateString();
+        $this->toDate = Carbon::now()->addDay()->toDateString();
     }
 
     public function downloadJournalEntries()

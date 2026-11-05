@@ -680,12 +680,17 @@
             var start = moment().subtract(1, 'months');
             var end = moment().add(1, 'days');
 
-            function cb(start, end) {
+            function publishRange(start, end) {
                 $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-                // console.log('Start date: ' + start.format('YYYY-MM-DD'));
-                // console.log('End date: ' + end.format('YYYY-MM-DD'));
 
-                Livewire.dispatch('dateRangeSelected', { startDate: start.format('YYYY-MM-DD'), endDate: end.format('YYYY-MM-DD') });
+                if (!window.Livewire) {
+                    return;
+                }
+
+                Livewire.dispatch('dateRangeSelected', {
+                    startDate: start.format('YYYY-MM-DD'),
+                    endDate: end.format('YYYY-MM-DD')
+                });
             }
 
             $('#reportrange').daterangepicker({
@@ -702,9 +707,14 @@
                     //     'month').endOf('month')],
                     'Last 3 Months': [moment().subtract(3, 'months'), moment()],
                 }
-            }, cb);
+            }, publishRange);
 
-            cb(start, end);
+            // Livewire 3 boots on DOMContentLoaded, which is the same turn as this
+            // jQuery ready handler, so an immediate dispatch is dropped.
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            document.addEventListener('livewire:initialized', function () {
+                publishRange(start, end);
+            });
 
 
         });
