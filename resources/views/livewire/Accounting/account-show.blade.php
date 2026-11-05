@@ -88,8 +88,10 @@
                     <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="line-md:download-loop"></iconify-icon>
                     Download Journal Entries
                 </button>
-                <input type="text" wire:ignore class="form-control w-auto d-inline-block cursor-pointer"
-                    style="width:auto" name="datetimes" id="reportrange" />
+                <input type="text" wire:ignore id="reportrange" name="datetimes"
+                    data-from="{{ $fromDate }}" data-to="{{ $toDate }}"
+                    class="form-control w-auto d-inline-block cursor-pointer"
+                    style="width:auto; min-width: 220px;" />
             </div>
         </header>
 
@@ -705,33 +707,5 @@
             </div>
         </div>
     @endif
-
-    @script
-        <script>
-            const input = document.getElementById('reportrange');
-            if (input && !input.dataset.pickerReady) {
-                input.dataset.pickerReady = '1';
-
-                const start = moment($wire.fromDate);
-                const end = moment($wire.toDate);
-
-                $(input).daterangepicker({
-                    startDate: start,
-                    endDate: end,
-                    alwaysShowCalendars: true,
-                    ranges: {
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last 3 Months': [moment().subtract(3, 'months'), moment()],
-                    }
-                }, function (start, end) {
-                    $wire.dateRangeSelected(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
-                });
-            }
-        </script>
-    @endscript
 
 </div>
