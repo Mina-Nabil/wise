@@ -676,46 +676,51 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
-        document.addEventListener('livewire:initialized', function () {
-            var input = document.getElementById('reportrange');
-            if (!input || input.dataset.pickerReady || typeof moment === 'undefined') {
-                return;
+        (function () {
+            function initReportRange() {
+                var input = document.getElementById('reportrange');
+                if (!input || input.dataset.pickerReady || typeof moment === 'undefined' || !window.jQuery || !jQuery.fn.daterangepicker) {
+                    return;
+                }
+                input.dataset.pickerReady = '1';
+
+                jQuery(input).daterangepicker({
+                    startDate: moment(input.dataset.from),
+                    endDate: moment(input.dataset.to),
+                    alwaysShowCalendars: true,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last 3 Months': [moment().subtract(3, 'months'), moment()],
+                    }
+                }, function (start, end) {
+                    var host = input.closest('[wire\\:id]');
+                    if (!host || !window.Livewire || typeof Livewire.find !== 'function') {
+                        return;
+                    }
+                    var wire = Livewire.find(host.getAttribute('wire:id'));
+                    if (!wire) {
+                        return;
+                    }
+                    var from = start.format('YYYY-MM-DD');
+                    var to = end.format('YYYY-MM-DD');
+                    if (typeof wire.call === 'function') {
+                        wire.call('dateRangeSelected', from, to);
+                    } else if (typeof wire.dateRangeSelected === 'function') {
+                        wire.dateRangeSelected(from, to);
+                    }
+                });
             }
-            input.dataset.pickerReady = '1';
 
-            var start = moment(input.dataset.from);
-            var end = moment(input.dataset.to);
-
-            $(input).daterangepicker({
-                startDate: start,
-                endDate: end,
-                alwaysShowCalendars: true,
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last 3 Months': [moment().subtract(3, 'months'), moment()],
-                }
-            }, function (start, end) {
-                var host = input.closest('[wire\\:id]');
-                if (!host || !window.Livewire || typeof Livewire.find !== 'function') {
-                    return;
-                }
-                var wire = Livewire.find(host.getAttribute('wire:id'));
-                if (!wire) {
-                    return;
-                }
-                var from = start.format('YYYY-MM-DD');
-                var to = end.format('YYYY-MM-DD');
-                if (typeof wire.dateRangeSelected === 'function') {
-                    wire.dateRangeSelected(from, to);
-                } else if (typeof wire.call === 'function') {
-                    wire.call('dateRangeSelected', from, to);
-                }
-            });
-        });
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initReportRange);
+            } else {
+                initReportRange();
+            }
+        })();
     </script>
 
     @yield('body')

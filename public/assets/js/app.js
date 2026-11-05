@@ -979,6 +979,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectAllCheckbox = document.getElementById("select-all");
     const rowCheckboxes = document.querySelectorAll(".row-checkbox");
 
+    if (!selectAllCheckbox) {
+        return;
+    }
+
     // Function to handle the "Select All" checkbox
     selectAllCheckbox.addEventListener("change", function () {
         rowCheckboxes.forEach(function (checkbox) {
@@ -1002,7 +1006,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Use JavaScript to add the "hide" class after 3 seconds
 setTimeout(function () {
-    document.querySelector(".alert").classList.add("hide");
+    var alertEl = document.querySelector(".alert");
+    if (alertEl) {
+        alertEl.classList.add("hide");
+    }
 }, 3000);
 
 window.addEventListener("toastalert", (event) => {
@@ -1039,8 +1046,11 @@ document.addEventListener("livewire:load", function () {
 });
 
 document.addEventListener("livewire:init", function () {
-    // Initialize the Select2 plugin
-    $("#select2basic").select2();
+    var select = document.getElementById("select2basic");
+    if (!select || !window.jQuery || typeof jQuery.fn.select2 !== "function") {
+        return;
+    }
+    jQuery(select).select2();
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1050,6 +1060,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var dropzonesArray = Array.from(dropzones);
 
     dropzonesArray.forEach(function (dropzone) {
+        if (!dropzone) {
+            return;
+        }
         dropzone.addEventListener("dragenter", function (event) {
             event.preventDefault();
             dropzone.classList.add("drag-over");

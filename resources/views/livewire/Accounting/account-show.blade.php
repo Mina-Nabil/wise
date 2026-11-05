@@ -90,8 +90,9 @@
                 </button>
                 <input type="text" wire:ignore id="reportrange" name="datetimes"
                     data-from="{{ $fromDate }}" data-to="{{ $toDate }}"
+                    value="{{ \Carbon\Carbon::parse($fromDate)->format('m/d/Y') }} - {{ \Carbon\Carbon::parse($toDate)->format('m/d/Y') }}"
                     class="form-control w-auto d-inline-block cursor-pointer"
-                    style="width:auto; min-width: 220px;" />
+                    style="width: 240px;" />
             </div>
         </header>
 
