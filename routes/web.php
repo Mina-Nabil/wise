@@ -159,6 +159,10 @@ Route::middleware('auth', 'active')->group(function () {
     Route::get('/accounts/{id}', AccountShow::class)->name('accounts.show');
 });
 
+Route::get('/pricing-tool', function () {
+    return response()->file(public_path('pricing-tool/index.html'));
+});
+
 Route::get('/welcome', [HomeController::class, 'welcome']);
 Route::post('/login', [HomeController::class, 'authenticate']);
 Route::get('/login', [HomeController::class, 'login'])->name('login');
