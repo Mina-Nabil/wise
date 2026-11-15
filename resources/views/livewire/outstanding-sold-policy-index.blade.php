@@ -455,7 +455,7 @@
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
-                                                                            class="block date-text">{{ $policy->last_company_comm_payment?->invoice->serial }}</span>
+                                                                            class="block date-text">{{ $policy->last_company_comm_payment?->invoice?->serial ?? 'N/A' }}</span>
                                                                     </td>
                                                                     <td class="table-td">
                                                                         <span
