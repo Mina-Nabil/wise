@@ -70,13 +70,16 @@ class Car extends Model
         $highestCol = $activeSheet->getHighestDataColumn();
         $highestColIndex = Coordinate::columnIndexFromString($highestCol);
 
+        $idCol = null;
         $countryCol = null;
         $engineCol = null;
         $yearColumns = [];
         for ($p_i = 1; $p_i <= $highestColIndex; $p_i++) {
             $col = Coordinate::stringFromColumnIndex($p_i);
             $header = strtolower(trim((string) $activeSheet->getCell($col . '1')->getValue()));
-            if ($header === 'country') {
+            if ($header === 'id') {
+                $idCol = $col;
+            } elseif ($header === 'country') {
                 $countryCol = $col;
             } elseif ($header === 'engine type') {
                 $engineCol = $col;
@@ -144,11 +147,26 @@ class Car extends Model
                 continue;
             }
 
-            $car = Car::firstOrCreate([
-                'car_model_id' => $car_model->id,
-                'category' => $category,
-                'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
-            ]);
+            $car = null;
+            if ($idCol) {
+                $idValue = $activeSheet->getCell($idCol . $i)->getValue();
+                if (is_numeric($idValue) && (int) $idValue > 0) {
+                    $car = self::find((int) $idValue);
+                }
+            }
+
+            if ($car) {
+                $car->update([
+                    'car_model_id' => $car_model->id,
+                    'category' => $category,
+                ]);
+            } else {
+                $car = self::firstOrCreate([
+                    'car_model_id' => $car_model->id,
+                    'category' => $category,
+                    'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
+                ]);
+            }
             foreach ($yearColumns as $col => $year) {
                 $price = $activeSheet->getCell($col . $i)->getValue();
                 if ($price === null || $price === '' || !is_numeric($price)) {
