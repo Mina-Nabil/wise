@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Car extends Model
@@ -70,19 +71,13 @@ class Car extends Model
         $highestCol = $activeSheet->getHighestDataColumn();
         $highestColIndex = Coordinate::columnIndexFromString($highestCol);
 
-        $idCol = null;
-        $countryCol = null;
-        $engineCol = null;
+        $headers = [];
         $yearColumns = [];
         for ($p_i = 1; $p_i <= $highestColIndex; $p_i++) {
             $col = Coordinate::stringFromColumnIndex($p_i);
             $header = strtolower(trim((string) $activeSheet->getCell($col . '1')->getValue()));
-            if ($header === 'id') {
-                $idCol = $col;
-            } elseif ($header === 'country') {
-                $countryCol = $col;
-            } elseif ($header === 'engine type') {
-                $engineCol = $col;
+            if ($header !== '') {
+                $headers[$header] = $col;
             }
 
             $year = $activeSheet->getCell($col . '2')->getValue();
@@ -91,25 +86,36 @@ class Car extends Model
             }
         }
 
+        $idCol = $headers['id'] ?? null;
+        $brandCol = $headers['brand'] ?? 'B';
+        $modelCol = $headers['model'] ?? 'C';
+        $categoryCol = $headers['category'] ?? 'D';
+        $countryCol = $headers['country'] ?? null;
+        $engineCol = $headers['engine type'] ?? null;
+        $descCol = $headers['description'] ?? null;
+
         for ($i = 3; $i <= $highestRow; $i++) {
             $brand = null;
             $car_model = null;
-            $category = $activeSheet->getCell('D' . $i)->getValue();
+            $category = trim((string) $activeSheet->getCell($categoryCol . $i)->getValue());
             //skip if no car category found
-            if (!$category) {
+            if ($category === '') {
                 continue;
             }
 
-            $brand_cell = $activeSheet->getCell('B' . $i)->getValue();
+            $brand_cell = trim((string) $activeSheet->getCell($brandCol . $i)->getValue());
             $country = null;
             if ($countryCol) {
                 $countryName = trim((string) $activeSheet->getCell($countryCol . $i)->getValue());
                 if ($countryName !== '') {
-                    $country = Country::where('name', $countryName)->first();
+                    $country = Country::whereRaw('LOWER(name) = ?', [strtolower($countryName)])->first();
+                    if (!$country) {
+                        $country = Country::create(['name' => $countryName]);
+                    }
                 }
             }
 
-            if ($brand_cell) {
+            if ($brand_cell !== '') {
                 $brand = Brand::where('name', $brand_cell)->first();
                 if (!$brand) {
                     $brand = Brand::create([
@@ -127,24 +133,35 @@ class Car extends Model
                 continue;
             }
 
-            $model_cell = $activeSheet->getCell('C' . $i)->getValue();
-            if ($model_cell) {
+            $engineType = null;
+            if ($engineCol) {
+                $engineValue = trim((string) $activeSheet->getCell($engineCol . $i)->getValue());
+                if ($engineValue !== '' && in_array($engineValue, self::ENGINE_TYPES, true)) {
+                    $engineType = $engineValue;
+                }
+            }
+
+            $model_cell = trim((string) $activeSheet->getCell($modelCol . $i)->getValue());
+            if ($model_cell !== '') {
                 $car_model = CarModel::firstOrCreate([
                     'brand_id' => $brand->id,
                     'name' => $model_cell,
                 ]);
-                if ($engineCol) {
-                    $engineType = trim((string) $activeSheet->getCell($engineCol . $i)->getValue());
-                    if ($engineType !== '' && in_array($engineType, self::ENGINE_TYPES, true)) {
-                        $car_model->engine_type = $engineType;
-                        $car_model->save();
-                    }
+                if ($engineType !== null) {
+                    $car_model->engine_type = $engineType;
+                    $car_model->save();
                 }
             }
 
             //skip if no car model found
             if (!$car_model) {
                 continue;
+            }
+
+            $desc = null;
+            if ($descCol) {
+                $descText = trim((string) $activeSheet->getCell($descCol . $i)->getValue());
+                $desc = $descText === '' ? null : $descText;
             }
 
             $car = null;
@@ -155,17 +172,28 @@ class Car extends Model
                 }
             }
 
+            $attributes = [
+                'car_model_id' => $car_model->id,
+                'category' => $category,
+            ];
+            if ($descCol) {
+                $attributes['desc'] = $desc;
+            }
+            if ($engineType !== null) {
+                $attributes['engine_type'] = $engineType;
+            }
+
             if ($car) {
-                $car->update([
-                    'car_model_id' => $car_model->id,
-                    'category' => $category,
-                ]);
+                $car->update($attributes);
             } else {
-                $car = self::firstOrCreate([
-                    'car_model_id' => $car_model->id,
-                    'category' => $category,
-                    'desc' => 'Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s'),
-                ]);
+                $car = self::firstOrCreate(
+                    [
+                        'car_model_id' => $car_model->id,
+                        'category' => $category,
+                        'desc' => $attributes['desc'] ?? ('Imported from file on ' . (new Carbon())->format('Y-m-d H:i:s')),
+                    ],
+                    $attributes,
+                );
             }
             foreach ($yearColumns as $col => $year) {
                 $price = $activeSheet->getCell($col . $i)->getValue();
@@ -230,7 +258,7 @@ class Car extends Model
             $activeSheet->setCellValue('C' . $rowIndex, $car->car_model->name ?? '');
             $activeSheet->setCellValue('D' . $rowIndex, $car->category);
             $activeSheet->setCellValue('E' . $rowIndex, $car->car_model->brand->country->name ?? '');
-            $activeSheet->setCellValue('F' . $rowIndex, $car->car_model->engine_type ?? '');
+            $activeSheet->setCellValue('F' . $rowIndex, $car->engine_type ?: ($car->car_model->engine_type ?? ''));
             $activeSheet->setCellValue('G' . $rowIndex, $car->desc ?? '');
 
             // Create a map of prices by year for quick lookup
@@ -250,6 +278,18 @@ class Car extends Model
             $rowIndex++;
         }
         
+        $listLastRow = max($rowIndex + 50, 3);
+        $engineList = new DataValidation();
+        $engineList->setType(DataValidation::TYPE_LIST);
+        $engineList->setErrorStyle(DataValidation::STYLE_STOP);
+        $engineList->setAllowBlank(true);
+        $engineList->setShowDropDown(true);
+        $engineList->setShowErrorMessage(true);
+        $engineList->setErrorTitle('Engine type');
+        $engineList->setError('Choose Petrol, Electric, REEV, or Hybird.');
+        $engineList->setFormula1('"' . implode(',', self::ENGINE_TYPES) . '"');
+        $activeSheet->setDataValidation('F3:F' . $listLastRow, $engineList);
+
         $highestColIndex = Coordinate::columnIndexFromString($activeSheet->getHighestDataColumn());
         for ($colIndex = 1; $colIndex <= $highestColIndex; $colIndex++) {
             $activeSheet->getColumnDimension(Coordinate::stringFromColumnIndex($colIndex))->setAutoSize(true);
